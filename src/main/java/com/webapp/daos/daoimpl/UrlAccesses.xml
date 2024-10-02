@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.webapp.daos.UrlAccessesDao">
+
+	<resultMap id="urlAccessesResultMap" type="UrlAccessesModel" >
+	    
+	    <result property="urlAccessId" column="url_access_id" />
+	    <result property="userId" column="user_id" />
+	    <result property="urlId" column="url_id" />
+	    <result property="url" column="url" />
+	    
+	    <result property="recordStatus" column="record_status" />
+		<result property="createdAt" column="created_at" />
+		<result property="updatedAt" column="updated_at" />
+		<result property="createdBy" column="created_by" />
+		<result property="updatedBy" column="updated_by" />
+		
+	</resultMap>
+
+	<insert id="addUserUrlAccesses" useGeneratedKeys="true" parameterType="UrlAccessesModel">
+
+		INSERT INTO url_accesses
+			(
+				user_id, url_id, record_status, created_at, updated_at, created_by, updated_by
+			)
+		VALUES
+			(
+				#{userId}, #{urlId}, #{recordStatus}, #{createdAt}, #{updatedAt}, #{createdBy},#{updatedBy}
+			)
+		
+	</insert>
+	
+	<insert id="addUserUrlAccessesBatch" parameterType="java.util.List">
+	
+		INSERT INTO url_accesses 
+	 		(
+				user_id, url_id, record_status, created_at, created_by, updated_at, updated_by
+			)
+		VALUES
+			<foreach collection="urlAccessesModelList" item="urlAccessesModel" separator=",">
+			(
+				#{urlAccessesModel.userId}, #{urlAccessesModel.urlId}, #{urlAccessesModel.recordStatus}, #{urlAccessesModel.createdAt}, 
+				#{urlAccessesModel.createdBy}, #{urlAccessesModel.updatedAt}, #{urlAccessesModel.updatedBy}
+			)
+			</foreach>
+				
+	</insert>
+	
+	<select id="getUserUrlAccesses" parameterType="String" resultMap="urlAccessesResultMap">
+	
+		SELECT 
+			UA.url_access_id, UA.url_id, U.url
+		FROM
+			url_accesses UA
+		INNER JOIN urls U ON U.url_id = UA.url_id 
+		WHERE 
+			user_id = #{userId}
+			
+	</select>
+	
+	<delete id="deleteUrlAccesses" parameterType="String">
+		DELETE FROM url_accesses WHERE user_id = #{userId}
+	</delete>
+	
+	<select id="hasUserurlAccess" parameterType="map" resultType="boolean">
+	
+		SELECT 
+			(count(*)>0) 
+		FROM 
+			url_accesses UA 
+		INNER JOIN urls U ON U.url_id = UA.url_id 
+		WHERE 
+			U.url = #{url} 
+		AND
+			UA.user_id = #{userId} 
+		
+	</select>
+	
+</mapper> 

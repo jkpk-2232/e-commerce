@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.webapp.daos.ProductSubCategoryDao">
+	
+	<resultMap id="ProductSubCategoryResultMap" type="ProductSubCategoryModel">
+	
+		<result property="productSubCategoryId" column="product_sub_category_id" />
+		<result property="productSubCategoryName" column="product_sub_category_name" />
+		<result property="productSubCategoryDescription" column="product_sub_category_description" />
+		<result property="isActive" column="is_active" />
+		<result property="isDeleted" column="is_deleted" />
+		<result property="productSubCategoryImage" column="product_sub_category_image"/>
+		<result property="productCategoryId" column="product_category_id" />
+		
+		<result property="createdBy" column="created_by" />
+		<result property="createdAt" column="created_at" />
+		<result property="updatedBy" column="updated_by" />
+		<result property="updatedAt" column="updated_at" />
+		
+		<result property="productCategoryName" column= "product_category_name" />
+	
+	</resultMap>
+	
+	<sql id="ProductSubCategoryColumns">
+		psc.product_sub_category_id, psc.product_sub_category_name, psc.product_sub_category_description, psc.is_active, 
+		psc.is_deleted, psc.created_by, psc.created_at, psc.updated_by, psc.updated_at, psc.product_sub_category_image,
+		psc.product_category_id
+	</sql>
+	
+	<insert id="insertProductSubCategory" parameterType="ProductSubCategoryModel">
+	
+		INSERT INTO product_sub_category
+			(
+				product_sub_category_id, product_sub_category_name, product_sub_category_description, is_active, 
+				is_deleted, created_by, created_at, updated_by, updated_at, product_sub_category_image, product_category_id
+			)
+		VALUES 
+			(
+				#{productSubCategoryId}, #{productSubCategoryName}, #{productSubCategoryDescription}, #{isActive}, 
+				#{isDeleted}, #{createdBy}, #{createdAt}, #{updatedBy}, #{updatedAt}, #{productSubCategoryImage},
+				#{productCategoryId} 
+			);
+	
+	</insert>
+	
+	<update id="updateProductSubCategory" parameterType="ProductCategoryModel">
+		
+		UPDATE 
+			product_sub_category
+		SET 
+			product_sub_category_name = #{productSubCategoryName}, 
+			product_sub_category_description = #{productSubCategoryDescription}, 
+			updated_by = #{updatedBy}, 
+			updated_at = #{updatedAt},
+			product_sub_category_image = #{productSubCategoryImage},
+			product_category_id = #{productCategoryId}
+		WHERE 
+			product_sub_category_id = #{productSubCategoryId}
+		
+	</update>
+	
+	<select id="getProductSubCategorySearchCount" resultType="int">
+	
+		SELECT
+			count(psc.product_sub_category_id)
+		FROM
+			product_sub_category psc
+		WHERE
+			(
+				psc.product_sub_category_name ilike #{searchKey}
+			OR
+				psc.product_sub_category_description ilike #{searchKey}
+			)
+		<if test="startDatelong>0">
+		AND
+			psc.created_at &gt;= #{startDatelong}
+		AND
+			psc.created_at &lt;= #{endDatelong}
+		</if>
+	
+	</select>
+	
+	<update id="updateProductSubCategoryStatus" parameterType="ProductSubCategoryModel">
+	
+		UPDATE 
+			product_sub_category
+		SET
+			is_active = #{isActive},
+			is_deleted = #{isDeleted}
+		WHERE
+			product_sub_category_id = #{productSubCategoryId}
+	
+	</update>
+	
+	<select id="getProductSubCategoryList" resultMap="ProductSubCategoryResultMap">
+	
+		SELECT
+			<include refid="ProductSubCategoryColumns"></include>
+		FROM
+			product_sub_category psc
+		
+		WHERE
+			psc.is_active = true
+		AND
+			psc.is_deleted = false
+		
+		ORDER BY psc.product_sub_category_name ASC
+
+	</select>
+	
+	<select id="getProductSubCategorySearch" resultMap="ProductSubCategoryResultMap">
+	
+		SELECT
+			<include refid="ProductSubCategoryColumns"></include>,
+			pc.product_category_name
+		FROM
+			product_sub_category psc
+		INNER JOIN product_category pc ON pc.product_category_id = psc.product_category_id	
+		WHERE
+			(
+				psc.product_sub_category_name ilike #{searchKey}
+			OR
+				psc.product_sub_category_description ilike #{searchKey}
+			)
+		<if test="startDatelong>0">
+		AND
+			psc.created_at &gt;= #{startDatelong}
+		AND
+			psc.created_at &lt;= #{endDatelong}
+		</if>
+		
+		<if test="length>0">
+		ORDER BY psc.updated_at DESC
+		LIMIT #{length} OFFSET #{start}
+		</if>
+		<if test="length==0">
+		ORDER BY psc.product_sub_category_name ASC
+		</if>
+
+	</select>
+	
+	<select id="getProductSubCategoryDetailsByProductSubCategoryId" resultMap="ProductSubCategoryResultMap">
+		
+		SELECT
+			<include refid="ProductSubCategoryColumns"></include>
+		FROM
+			product_sub_category psc
+		WHERE
+			psc.product_sub_category_id = #{productSubCategoryId}
+		
+	</select>
+	
+	<select id="isProductSubCategoryNameExists" resultType="boolean">
+		
+		SELECT
+			(count(*)>0)
+		FROM
+			product_sub_category psc
+		WHERE
+			psc.product_sub_category_name = #{productSubCategoryName}
+		<if test="productSubCategoryId!=null">
+		AND
+			psc.product_sub_category_id != #{productSubCategoryId}
+		</if>
+		
+	</select>
+	
+	<select id="getProductSubCategoryCount" resultType="int">
+	
+		SELECT
+			count(psc.product_sub_category_id)
+		FROM
+			product_sub_category psc
+		WHERE
+			psc.created_at &gt;= #{startDatelong}
+		AND
+			psc.created_at &lt;= #{endDatelong}
+		
+	</select>
+	
+	<select id="getProductSubCategoryListByProductCategoryId" resultMap="ProductSubCategoryResultMap">
+	
+		SELECT
+			<include refid="ProductSubCategoryColumns"></include>
+		FROM
+			product_sub_category psc
+		WHERE
+			psc.product_category_id = #{productCategoryId}
+		AND
+			is_active = true
+		AND
+			is_deleted = false		
+
+	</select>
+	
+	<select id="getProductSubCategoryDetailsByProductCategoryIdAndProductSubCategoryName" resultMap="ProductSubCategoryResultMap">
+		
+		SELECT
+			<include refid="ProductSubCategoryColumns"></include>
+		FROM
+			product_sub_category psc
+		WHERE
+			UPPER(psc.product_sub_category_name) = #{productSubCategoryName}
+		AND	
+			psc.product_category_id = #{productCategoryId}
+	</select>
+	
+</mapper>

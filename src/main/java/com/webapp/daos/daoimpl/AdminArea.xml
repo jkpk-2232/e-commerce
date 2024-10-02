@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.webapp.daos.AdminAreaDao">
+
+	<resultMap id="adminAreaResultMap" type="AdminAreaModel" >
+	    
+		<result property="adminAreaId" column="admin_area_id" />
+		<result property="userId" column="user_id" />
+		<result property="areaDisplayName" column="area_display_name" />
+		<result property="areaName" column="area_name" />
+		<result property="areaPlaceId" column="area_place_id" />
+		<result property="areaLatitude" column="area_latitude" />
+		<result property="areaLongitude" column="area_longitude" />
+		<result property="areaGeolocation" column="area_geolocation" />
+		<result property="areaCountry" column="area_country" />
+		<result property="areaRadius" column="area_radius" />
+		<result property="recordStatus" column="record_status" />
+		<result property="createdAt" column="created_at" />
+		<result property="updatedAt" column="updated_at" />
+		<result property="createdBy" column="created_by" />
+		<result property="updatedBy" column="updated_by" />
+		
+	</resultMap>
+
+	<sql id="adminAreaTableColsWithOutTypeAlias">
+		admin_area_id, user_id, area_name, area_place_id, area_country,
+		area_latitude, area_longitude, area_geolocation, area_radius, area_display_name,
+        record_status, created_by, created_at, updated_by, updated_at
+	</sql>
+	
+	<insert id="addAdminArea" parameterType="AdminAreaModel">
+
+		INSERT INTO 
+			admin_area
+				(
+            		admin_area_id, user_id, area_name, area_place_id, area_latitude, 
+            		area_longitude, area_geolocation, area_radius, area_country, area_display_name,
+            		record_status, created_by, created_at, updated_by, updated_at
+            	)
+	    VALUES 
+				(
+					#{adminAreaId}, #{userId}, #{areaName}, #{areaPlaceId}, #{areaLatitude},
+					#{areaLongitude}, ${areaGeolocation}, #{areaRadius}, #{areaCountry}, #{areaDisplayName},
+					'A', #{createdBy}, #{createdAt}, #{updatedBy}, #{updatedAt}
+				)
+				
+	</insert>
+	
+	<select id="getAdminAreaCount" resultType="int">
+	
+		SELECT 
+			count(*)
+		FROM 
+			admin_area
+		WHERE
+			record_status = 'A'
+		
+	</select>
+	
+	<select id="getAdminAreaListForSearch" resultMap="adminAreaResultMap">
+		
+		SELECT     
+			admin_area_id, user_id, area_name, area_place_id, area_country,
+			area_latitude, area_longitude, area_geolocation, area_radius, area_display_name,
+        	record_status, created_by, created_at, updated_by, updated_at
+		FROM 
+			admin_area
+ 		WHERE 
+ 			(
+ 				area_name iLIKE #{globalSearchString}
+ 			OR
+				area_display_name iLIKE #{globalSearchString}
+ 			) 
+            
+		AND 
+			record_status = 'A'
+		ORDER BY updated_at DESC
+		LIMIT  #{length}  OFFSET  #{start}         
+        
+	</select>
+	
+	<select id="getTotalAdminAreaCountBySearch" resultType="int"> 		
+		
+	   	SELECT     
+			count(*)
+		FROM 
+			admin_area
+ 		WHERE  
+            area_name iLIKE #{globalSearchString}
+		AND 
+			record_status = 'A'
+				
+	</select>
+	
+	<update id="deleteAdminArea" parameterType="AdminAreaModel">
+	
+		UPDATE
+			admin_area
+		SET
+			record_status = 'D',
+			updated_at = #{updatedAt},
+			updated_by = #{updatedBy}
+		WHERE
+			admin_area_id = #{adminAreaId}
+			
+	</update>
+	
+	<select id="isAdminAreaExists" resultType="boolean"> 		
+		
+	   	SELECT     
+			(count(*)>0)
+		FROM 
+			admin_area
+ 		WHERE  
+            area_place_id = #{areaPlaceId}
+		AND 
+			record_status = 'A'
+				
+	</select>
+	
+	<select id="getAdminAreaList" resultMap="adminAreaResultMap">
+		
+		SELECT     
+			admin_area_id, user_id, area_name, area_place_id, area_country,
+			area_latitude, area_longitude, area_geolocation, area_radius, area_display_name,
+        	record_status, created_by, created_at, updated_by, updated_at
+		FROM 
+			admin_area
+ 		WHERE   
+			record_status = 'A'
+		ORDER BY updated_at DESC
+        
+	</select>
+	
+</mapper> 

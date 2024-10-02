@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.webapp.daos.RoleDao">
+
+	<resultMap id="roleResultMap" type="RoleModel">
+	
+		<id property="roleId" column="role_id" />
+		<result property="role" column="role" />
+		
+	</resultMap>
+
+	<select id="getAllRoles" resultMap="roleResultMap">
+	
+		SELECT 
+			* 
+		FROM 
+			roles 
+		WHERE
+			record_status ='A'
+		
+	</select>
+	
+	<select id="getRolesByIds" resultMap="roleResultMap">
+	
+		SELECT 
+			*
+	    FROM 
+	    	roles	
+	    WHERE
+			role_id IN	
+			<foreach item="item" index="index" collection="roleIds" open="(" separator="," close=")">
+	        	#{item}
+	    	</foreach>
+	    	
+	</select>
+
+	<select id="getRoleModelById" resultMap="roleResultMap">
+	
+		SELECT 
+			* 
+		FROM 
+			roles
+		WHERE 
+			role_id = #{roleId} 
+		AND 
+			record_status = 'A'
+		
+	</select>
+
+	<select id="isRoleNameExist" parameterType="String" resultType="boolean">
+	
+		SELECT 
+			* 
+		FROM 
+			roles 
+		WHERE 
+			LOWER(role) = #{roleName} 
+		AND 
+			record_status = 'A'
+		
+	</select>
+
+	<insert id="addRole" keyColumn="role_id" useGeneratedKeys="true" parameterType="RoleModel">
+
+		INSERT INTO 
+			roles
+				(
+					role_id, role, created_by, created_at,
+					updated_by, updated_at,record_status
+				)
+		VALUES
+				(
+					#{roleId},#{role},#{createdBy},#{createdAt},#{updatedBy},#{updatedAt},#{recordStatus}
+				)
+				
+	</insert>
+
+	<select id="getRoleNameById" parameterType="String" resultType="String">
+	
+		SELECT 
+			role 
+		FROM 
+			roles 
+		WHERE 
+			role_id = #{roleId} 
+		AND 
+			record_status = 'A'
+		
+	</select>
+
+	<update id="deleteRoleById" parameterType="String">
+	
+		UPDATE 
+			roles 
+		SET 
+			record_status = 'D'
+		WHERE 
+			role_id = #{roleId}
+			
+	</update>
+	
+	<select id="isUserHasLoginAccess" parameterType="map" resultType="boolean">
+	
+		SELECT 
+			COUNT(U.user_id)>0 
+		FROM 
+			users U 
+		INNER JOIN roles R ON U.role_id=R.role_id 
+		WHERE
+			U.user_id = #{userId} 
+		AND 
+			U.role_id IN	
+			<foreach item="item" index="index" collection="roleList" open="(" separator="," close=")">
+	        	#{item}
+	    	</foreach>
+			
+	</select>
+	
+	<select id="isUserHasPassengerLoginAccess" parameterType="map" resultType="boolean">
+	
+		SELECT 
+			COUNT(U.user_id)>0 
+		FROM 
+			users U 
+		INNER JOIN roles R ON U.role_id=R.role_id 
+		WHERE
+			 U.user_id = #{userId} 
+		AND 
+			(
+				R.role = #{passenger}
+			)
+	</select>
+	
+	<select id="getRoleDetailsByRoleId" resultMap="roleResultMap">
+	
+		SELECT 
+			* 
+		FROM 
+			roles
+		WHERE 
+			role_id = #{roleId} 
+		
+	</select>
+
+</mapper>

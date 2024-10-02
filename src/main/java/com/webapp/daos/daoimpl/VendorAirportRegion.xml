@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.webapp.daos.VendorAirportRegionDao">
+
+	<resultMap id="VendorAirportRegionResultMap" type="VendorAirportRegionModel" >
+	
+		<result property="vendorAirportRegionId" column="vendor_airport_region_id" />
+		<result property="vendorId" column="vendor_id" />
+		<result property="airportRegionId" column="airport_region_id" />
+		<result property="multicityCityRegionId" column="multicity_city_region_id" />
+		<result property="multicityCountryId" column="multicity_country_id" />
+		
+		<result property="isActive" column="is_active" />
+		<result property="createdAt" column="created_at" />
+		<result property="updatedAt" column="updated_at" />
+		<result property="createdBy" column="created_by" />
+		<result property="updatedBy" column="updated_by" />
+		
+		<result property="aliasName" column="alias_name" />
+		<result property="address" column="address" />
+		<result property="recordStatus" column="record_status" />
+		<result property="regionName" column="region_name" />
+		<result property="cityDisplayName" column="city_display_name" />
+		<result property="airportDistance" column="airport_distance" />
+		
+	</resultMap>
+	
+	<sql id="VendorAirportRegionColumns">
+	  	var.vendor_airport_region_id, var.vendor_id, var.airport_region_id, var.multicity_city_region_id, 
+    	var.multicity_country_id, var.is_active, var.created_by, var.created_at, var.updated_by, var.updated_at	 
+	</sql>
+			
+	<insert id="addVendorAirportRegion" parameterType="VendorAirportRegionModel">
+
+		INSERT INTO vendor_airport_regions
+				(
+					vendor_airport_region_id, vendor_id, airport_region_id, multicity_city_region_id, 
+           			multicity_country_id, is_active, created_by, created_at, updated_by, updated_at	            	
+       			)
+	    VALUES 
+				(
+					#{vendorAirportRegionId}, #{vendorId}, #{airportRegionId}, #{multicityCityRegionId},
+					#{multicityCountryId}, #{isActive}, #{createdBy}, #{createdAt}, #{updatedBy}, #{updatedAt}			
+				)
+					
+	</insert>
+	
+	<select id="getVendorAirportDetailsByVendorIdAndAirportRegionId" parameterType="String" resultMap="VendorAirportRegionResultMap">
+		
+		SELECT
+			<include refid="VendorAirportRegionColumns"></include>
+		FROM
+			vendor_airport_regions var
+		WHERE
+			var.vendor_id = #{vendorId}
+		AND
+			var.airport_region_id = #{airportRegionId}
+		LIMIT 1
+		
+	</select>
+	
+	<update id="updateMulticityRegionId" parameterType="VendorAirportRegionModel">
+	
+		UPDATE
+			vendor_airport_regions
+		SET
+			multicity_city_region_id = #{multicityCityRegionId}
+		WHERE
+			airport_region_id = #{airportRegionId}
+	
+	</update>
+	
+	<select id="getVendorAirportRegionCount" parameterType="map" resultType="int">
+	
+		SELECT
+			count(VAR.airport_region_id)
+		FROM
+        	vendor_airport_regions VAR
+        INNER JOIN airport_regions AR ON AR.airport_region_id = VAR.airport_region_id
+        INNER JOIN multicity_city_region MCR ON VAR.multicity_city_region_id = MCR.multicity_city_region_id
+		WHERE
+			VAR.vendor_id = #{vendorId}
+		<if test="regionIds != null">
+		AND	   
+			var.multicity_city_region_id IN
+			<foreach item="item" index="index" collection="regionIds" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+		<if test="onOffStatusForCheck != null">
+		AND
+			AR.is_active = #{onOffStatus}
+		</if> 
+	
+	</select>
+	
+	<select id="getVendorAirportRegionSearchDatatable" parameterType="map" resultMap="VendorAirportRegionResultMap">
+			
+		SELECT
+			<include refid="VendorAirportRegionColumns"></include>,
+	    	MCR.multicity_city_region_id, MCR.city_display_name,
+       	   	AR.alias_name, AR.address, AR.is_active AS is_active, AR.record_status, AR.airport_distance
+       	FROM
+        	vendor_airport_regions var
+        INNER JOIN airport_regions AR ON AR.airport_region_id = var.airport_region_id
+        INNER JOIN multicity_city_region MCR ON VAR.multicity_city_region_id = MCR.multicity_city_region_id
+		WHERE
+			(
+				AR.alias_name iLIKE #{globalSearchString} 
+			OR
+				MCR.region_name iLIKE #{globalSearchString} 
+			)
+ 		AND
+			var.vendor_id = #{vendorId}
+		<if test="regionIds != null">
+		AND	   
+			var.multicity_city_region_id IN
+			<foreach item="item" index="index" collection="regionIds" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+		<if test="onOffStatusForCheck != null">
+		AND
+			AR.is_active = #{onOffStatus}
+		</if> 
+		ORDER BY var.updated_at DESC
+		LIMIT #{length} OFFSET #{start}
+	
+	</select>
+	
+	<select id="getVendorAirportRegionDetailsById" parameterType="String" resultMap="VendorAirportRegionResultMap">
+		
+		SELECT
+			<include refid="VendorAirportRegionColumns"></include>
+		FROM
+			vendor_airport_regions var
+		WHERE
+			var.vendor_airport_region_id = #{vendorAirportRegionId}
+		
+	</select>
+	
+</mapper> 

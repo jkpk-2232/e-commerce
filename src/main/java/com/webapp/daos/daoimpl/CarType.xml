@@ -1,0 +1,211 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.webapp.daos.CarTypeDao">
+
+	<resultMap id="carTypeResultMap" type="carTypeModel" >
+	    
+		<result property="carTypeId" column="car_type_id" />
+		<result property="carType" column="car_type" />
+		<result property="createdAt" column="created_at" />
+		<result property="updatedAt" column="updated_at" />
+		<result property="createdBy" column="created_by" />
+		<result property="updatedBy" column="updated_by" />
+		<result property="carPriority" column="car_priority" />
+		<result property="icon" column="icon" />
+		<result property="isActive" column="is_active" />
+		<result property="isDeleted" column="is_deleted" />
+		<result property="isPermanentDeleted" column="is_permanent_deleted" />
+		<result property="isPredefinedCar" column="is_predefined_car" />
+		<result property="carTypeIconImage" column="car_type_icon_image" />
+		
+	</resultMap>
+	
+	<sql id="carTypeColumns">
+		car_type_id, car_type, created_by, created_at, updated_by, updated_at, 
+       	is_active, car_priority, icon, is_deleted, is_permanent_deleted, is_predefined_car,
+       	car_type_icon_image
+	</sql>
+	
+	<select id="getAllCarsActiveDeactive" parameterType="carTypeModel" resultMap="carTypeResultMap">
+		
+	    SELECT 
+	    	<include refid="carTypeColumns"></include>
+	    FROM 
+	    	car_type
+	    
+	</select>
+	
+	<select id="getAllCars" parameterType="carTypeModel" resultMap="carTypeResultMap">
+		
+	    SELECT 
+	    	<include refid="carTypeColumns"></include>
+	    FROM 
+	    	car_type
+	    WHERE
+	    	is_active = true
+	    AND
+	    	is_deleted = false
+	    AND
+	    	is_permanent_deleted = false
+	    ORDER BY car_priority ASC
+	    
+	</select>
+	
+	<select id="getCarTypeByCarTypeId" parameterType="String" resultMap="carTypeResultMap">
+		
+	    SELECT 
+	    	<include refid="carTypeColumns"></include>
+	    FROM 
+	    	car_type
+	    WHERE
+	    	car_type_id = #{carTypeId}
+	    
+	</select>
+	
+	<select id="getActiveDeactaiveCarDetails" resultMap="carTypeResultMap">
+		
+	    SELECT 
+	    	<include refid="carTypeColumns"></include>
+	    FROM 
+	    	car_type
+	    WHERE
+	    	car_type_id != '5'
+	    AND
+	    	is_active = true
+	    AND
+	    	is_deleted = false
+	    AND
+	    	is_permanent_deleted = false
+	    ORDER BY car_priority ASC
+	    
+	</select>
+	
+	<select id="getCarTypeCount" resultType="int">
+		
+	    SELECT 
+	    	count(car_type_id)
+	    FROM 
+	    	car_type
+	    WHERE
+	    	is_permanent_deleted = false
+	    
+	</select>
+	
+	<select id="getCarTypeListForSearch" parameterType="String" resultMap="carTypeResultMap">
+		
+	    SELECT 
+	    	<include refid="carTypeColumns"></include>
+	    FROM 
+	    	car_type
+	    WHERE
+	    	is_permanent_deleted = false
+	    AND
+	    	(
+	    		car_type ilike #{globalSearchString}
+	    	)
+	    ORDER BY updated_at DESC
+	    LIMIT #{length} OFFSET #{start}
+	    
+	</select>
+	
+	<select id="getCarTypeListCountForSearch" parameterType="String" resultType="int">
+		
+	    SELECT 
+	    	count(car_type_id)
+	    FROM 
+	    	car_type
+	    WHERE
+	    	is_permanent_deleted = false
+	    AND
+	    	(
+	    		car_type ilike #{globalSearchString}
+	    	)
+	    
+	</select>
+	
+	<update id="updateCarTypeStatus" parameterType="carTypeModel">
+	
+		UPDATE
+			car_type
+		SET
+			is_active = #{isActive},
+			is_deleted = #{isDeleted}	
+		WHERE
+			car_type_id = #{carTypeId}
+			
+	</update>
+	
+	<select id="getLastPriority" parameterType="String" resultMap="carTypeResultMap">
+		
+		SELECT 
+			<include refid="carTypeColumns"></include>
+		FROM 
+			car_type
+		ORDER BY car_priority DESC 
+		LIMIT 1
+		
+	</select>
+	
+	<insert id="insertCarType" parameterType="carTypeModel">
+	
+		INSERT INTO car_type
+			(
+	            car_type_id, car_type, created_by, created_at, updated_by, updated_at, 
+	            is_active, car_priority, icon, is_deleted, is_permanent_deleted, 
+	            is_predefined_car, car_type_icon_image
+	        )
+    	VALUES 
+    		(
+    			#{carTypeId}, #{carType}, #{createdBy}, #{createdAt}, #{updatedBy}, #{updatedAt}, 
+            	#{isActive}, #{carPriority}, #{icon}, #{isDeleted}, #{isPermanentDeleted}, 
+            	#{isPredefinedCar}, #{carTypeIconImage}
+            );
+		
+	</insert>
+	
+	<update id="updateCarType" parameterType="carTypeModel">
+	
+		UPDATE
+			car_type
+		SET
+			car_type = #{carType},
+			icon = #{icon},
+			car_type_icon_image = #{carTypeIconImage},
+			updated_by = #{updatedBy},
+			updated_at = #{updatedAt}	
+		WHERE
+			car_type_id = #{carTypeId}
+			
+	</update>
+	
+	<select id="isCarTypeNameExists" parameterType="String" resultType="boolean">
+		
+		SELECT 
+			(count(car_type_id)>0)
+		FROM 
+			car_type
+		WHERE
+			car_type = #{carType}
+		<if test="carTypeId!=null">
+		AND
+			car_type_id != #{carTypeId}
+		</if>
+		
+	</select>
+	
+	<select id="getCarListByIds" parameterType="String" resultMap="carTypeResultMap">
+		
+		SELECT 
+			<include refid="carTypeColumns"></include>
+		FROM 
+			car_type
+		WHERE
+			car_type_id IN
+			<foreach item="item" index="index" collection="carType" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+			
+	</select>
+	
+</mapper> 

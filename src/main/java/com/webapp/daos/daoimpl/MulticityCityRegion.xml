@@ -1,0 +1,330 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.webapp.daos.MulticityCityRegionDao">
+
+	<resultMap id="multicityCityRegionResultMap" type="MulticityCityRegionModel" >
+	
+		<result property="multicityCityRegionId" column="multicity_city_region_id" />
+		<result property="multicityCountryId" column="multicity_country_id" />
+		<result property="cityDisplayName" column="city_display_name" />
+		<result property="cityOriginalName" column="city_original_name" />
+		<result property="regionName" column="region_name" />
+		<result property="regionPlaceId" column="region_place_id" />
+		<result property="regionLatitude" column="region_latitude" />
+		<result property="regionLongitude" column="region_longitude" />
+		<result property="regionGeolocation" column="region_geolocation" />
+		<result property="regionRadius" column="region_radius" />
+		<result property="isActive" column="is_active" />
+		<result property="isDeleted" column="is_deleted" />
+		<result property="isPermanentDelete" column="is_permanent_delete" />
+
+		<result property="recordStatus" column="record_status" />
+		<result property="createdAt" column="created_at" />
+		<result property="updatedAt" column="updated_at" />
+		<result property="createdBy" column="created_by" />
+		<result property="updatedBy" column="updated_by" />
+		
+	</resultMap>
+
+	<sql id="multicityCityRegionTableColsWithOutTypeAlias">
+		multicity_city_region_id, multicity_country_id, city_display_name, 
+    	city_original_name, region_name, region_place_id, region_latitude, 
+       	region_longitude, region_geolocation, region_radius, is_active, 
+       	is_deleted, record_status, created_by, created_at, updated_by, 
+       	updated_at, is_permanent_delete
+	</sql>
+	
+	<sql id="addMulticityCityRegionTableColsWithOutTypeAlias">
+		#{multicityCityRegionId},#{multicityCountryId},#{cityDisplayName},
+		#{cityOriginalName},#{regionName},#{regionPlaceId},#{regionLatitude},
+		#{regionLongitude},${regionGeolocation},#{regionRadius},#{isActive},
+		#{isDeleted},'A',#{createdBy},#{createdAt},#{updatedBy},
+		#{updatedAt}, #{isPermanentDelete}
+	</sql>
+	
+	<insert id="addMulticityCityRegion" parameterType="MulticityCityRegionModel">
+
+		INSERT INTO 
+			multicity_city_region
+				(
+            		<include refid="multicityCityRegionTableColsWithOutTypeAlias" /> 
+            	)
+	    VALUES 
+				(
+					<include refid="addMulticityCityRegionTableColsWithOutTypeAlias" /> 
+				)
+	</insert>
+	
+	<select id="getMulticityCityRegionCount" resultType="int">
+	
+		SELECT
+			count(*)
+		FROM
+			multicity_city_region
+		WHERE
+			is_active = true
+		AND
+			is_deleted = false
+		AND
+			multicity_country_id = #{multicityCountryId}
+	
+	</select>
+	
+	<select id="getMulticityCityRegionSearch" resultMap="multicityCityRegionResultMap">
+	
+		SELECT
+			<include refid="multicityCityRegionTableColsWithOutTypeAlias" /> 
+		FROM
+			multicity_city_region
+		WHERE
+			is_active = true
+		AND
+			is_deleted = false
+		<if test="multicityCountryId != null">
+		AND
+			multicity_country_id = #{multicityCountryId}
+		</if>
+		AND	 
+		 	(
+		 		city_display_name iLIKE #{globalSearchString} 
+            OR 
+            	region_name iLIKE #{globalSearchString}
+            )
+		ORDER BY created_at DESC
+		LIMIT #{length} OFFSET #{start}
+	
+	</select>
+	
+	<select id="getMulticityCityRegionDetailsByCityId" resultMap="multicityCityRegionResultMap">
+	
+		SELECT
+			<include refid="multicityCityRegionTableColsWithOutTypeAlias" /> 
+		FROM
+			multicity_city_region
+		WHERE
+			is_permanent_delete = false
+		<!-- AND	
+			is_active = true
+		AND
+			is_deleted = false -->
+		AND
+			multicity_city_region_id = #{multicityCityRegionId}
+	</select>
+	
+	<select id="getNearByRegionList" parameterType="map" resultMap="multicityCityRegionResultMap">
+	    
+       	SELECT
+        	multicity_city_region_id, region_radius,
+        	ST_Y(region_geolocation::geometry) AS regionLatitude,  
+			ST_X(region_geolocation::geometry) as regionLongitude,
+			multicity_country_id
+       	FROM 
+        	multicity_city_region
+		WHERE 
+	        ${latAndLong}
+	    AND
+	    	is_active = true
+	    AND
+	    	is_deleted = false
+	    ORDER BY  
+		    ${distance} ASC 
+	   			    
+	</select>
+	
+	<update id="editMulticityCityRegion" parameterType="MulticityCityRegionModel">
+	
+		UPDATE
+			multicity_city_region
+		SET
+			city_display_name = #{cityDisplayName}, 
+    		city_original_name = #{cityOriginalName}, 
+    		region_name = #{regionName}, 
+    		region_place_id = #{regionPlaceId}, 
+    		region_latitude = #{regionLatitude}, 
+       		region_longitude = #{regionLongitude}, 
+       		region_geolocation = ${regionGeolocation}, 
+       		region_radius = #{regionRadius}
+       	WHERE
+			multicity_country_id = #{multicityCountryId}
+		AND
+			multicity_city_region_id = #{multicityCityRegionId}
+	
+	</update>
+	
+	<select id="getMulticityCityRegionList" resultMap="multicityCityRegionResultMap">
+	
+		SELECT
+			<include refid="multicityCityRegionTableColsWithOutTypeAlias" /> 
+		FROM
+			multicity_city_region
+		WHERE
+			is_active = true
+		AND
+			is_deleted = false
+		<if test="multicityCountryId != null">
+		AND
+			multicity_country_id = #{multicityCountryId}
+		</if>
+		AND	 
+		 	multicity_city_region_id NOT IN 
+		 	<foreach item="item" index="index" collection="regionList" open="(" separator="," close=")">
+				 #{item}
+  			</foreach>     
+	</select>
+	
+	<select id="getMulticityCityRegionSearchDatatable" resultMap="multicityCityRegionResultMap">
+	
+		SELECT
+			<include refid="multicityCityRegionTableColsWithOutTypeAlias" /> 
+		FROM
+			multicity_city_region
+		WHERE
+			is_permanent_delete = false
+		AND
+			(
+		 		city_display_name iLIKE #{globalSearchString} 
+            OR 
+            	region_name iLIKE #{globalSearchString}
+            )
+		<if test="multicityCountryId != null">
+		AND
+			multicity_country_id = #{multicityCountryId}
+		</if>
+		ORDER BY updated_at DESC
+		LIMIT #{length} OFFSET #{start}
+	
+	</select>
+	
+	<update id="permanentDeleteRegion" parameterType="MulticityCityRegionModel">
+	
+		UPDATE
+			multicity_city_region
+		SET
+			is_permanent_delete = true,
+			is_active = false, 
+    		is_deleted = true, 
+    		updated_at = #{updatedAt}
+       	WHERE
+			multicity_city_region_id = #{multicityCityRegionId}
+	
+	</update>
+	
+	<update id="deleteRegion" parameterType="MulticityCityRegionModel">
+	
+		UPDATE
+			multicity_city_region
+		SET
+			is_active = false, 
+    		is_deleted = true,
+    		updated_at = #{updatedAt}
+       	WHERE
+			multicity_city_region_id = #{multicityCityRegionId}
+	
+	</update>
+	
+	<update id="activateRegion" parameterType="MulticityCityRegionModel">
+	
+		UPDATE
+			multicity_city_region
+		SET
+			is_active = true, 
+    		is_deleted = false,
+    		updated_at = #{updatedAt}
+       	WHERE
+			multicity_city_region_id = #{multicityCityRegionId}
+	
+	</update>
+	
+	<select id="getMulticityCityRegionListByMulticityCountryId" parameterType="map" resultMap="multicityCityRegionResultMap">
+	
+		SELECT
+			<include refid="multicityCityRegionTableColsWithOutTypeAlias" /> 
+			
+		FROM
+			multicity_city_region
+			
+		WHERE
+			is_active = true
+		AND
+			is_deleted = false
+		<if test="multicityCountryId != null">
+		AND
+			multicity_country_id = #{multicityCountryId}
+		</if>
+		<if test="assignedRegionList != null">
+	    AND
+	    	multicity_city_region_id IN
+	    		
+	    		<foreach item="item" index="index" collection="assignedRegionList" open="(" separator="," close=")">
+					#{item}
+				</foreach>
+	    </if>
+		ORDER BY created_at DESC
+		<if test="length>0">
+		LIMIT #{length} OFFSET #{start}
+		</if>
+	
+	</select>
+
+	<select id="getMulticityCityRegionDetails" resultMap="multicityCityRegionResultMap">
+	
+		SELECT
+			multicity_city_region_id, multicity_country_id, city_display_name,
+			region_name,region_latitude,region_longitude
+		FROM
+			multicity_city_region
+		WHERE
+			is_permanent_delete = false
+	
+	</select>
+	
+	<select id="getMulticityCityRegionCountByVendorId" resultType="int">
+	
+		SELECT
+			count(*)
+		FROM
+			multicity_city_region
+		WHERE
+			is_active = true
+		AND
+			is_deleted = false
+		AND
+			multicity_country_id = #{multicityCountryId}
+		AND
+	    	multicity_city_region_id IN
+	    	(
+	    		SELECT multicity_city_region_id FROM multicity_user_region WHERE user_id = #{vendorId}
+	    	)
+	
+	</select>
+	
+	<select id="getMulticityCityRegionSearchDatatableByVendorId" resultMap="multicityCityRegionResultMap">
+	
+		SELECT
+			<include refid="multicityCityRegionTableColsWithOutTypeAlias" /> 
+		FROM
+			multicity_city_region
+		WHERE
+			is_permanent_delete = false
+		AND
+			(
+		 		city_display_name iLIKE #{globalSearchString} 
+            OR 
+            	region_name iLIKE #{globalSearchString}
+            )
+		<if test="multicityCountryId != null">
+		AND
+			multicity_country_id = #{multicityCountryId}
+		</if>
+		AND
+	    	multicity_city_region_id IN
+	    	(
+	    		SELECT multicity_city_region_id FROM multicity_user_region WHERE user_id = #{vendorId}
+	    	)
+		ORDER BY updated_at DESC
+		LIMIT #{length} OFFSET #{start}
+	
+	</select>
+
+</mapper> 

@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.webapp.daos.TaxDao">
+
+	<resultMap id="taxResultMap" type="TaxModel" >
+	
+		<result property="taxId" column="tax_id" /> 
+		<result property="taxName" column="tax_name" />
+		<result property="taxPercentage" column="tax_percentage" />
+		<result property="isActive" column="is_active" />
+		
+		<result property="recordStatus" column="record_status" />
+		<result property="createdAt" column="created_at" />
+		<result property="createdBy" column="created_by" />
+		<result property="updatedAt" column="updated_at" />
+		<result property="updatedBy" column="updated_by" />
+		
+	</resultMap>
+	
+	<insert id="addTaxDetails" parameterType="TaxModel" useGeneratedKeys="false">
+	
+		INSERT INTO 
+			taxes
+				(
+					tax_id, tax_name, tax_percentage, is_active,
+					record_status, created_at, created_by, updated_at, updated_by
+				)
+		VALUES
+				(
+					#{taxId}, #{taxName}, #{taxPercentage}, #{isActive},
+					#{recordStatus}, #{createdAt}, #{createdBy}, #{updatedAt}, #{updatedBy}
+				)
+				
+	</insert>
+	
+	<update id="updateTaxDetails" parameterType="TaxModel" >
+	
+		UPDATE 
+			taxes 
+			
+		SET 
+			tax_name = #{taxName}, 
+			tax_percentage = #{taxPercentage},
+			updated_at = #{updatedAt},
+			updated_by = #{updatedBy}
+			
+		WHERE  
+			tax_id = #{taxId} 
+		AND 
+			record_status = 'A'
+		
+	</update>
+	
+	<select id="getTaxDetailsById" parameterType="String" resultMap="taxResultMap">
+	
+		SELECT 
+			tax_id, tax_name, tax_percentage, is_active,
+			record_status, created_at, created_by, updated_at, updated_by
+			
+		FROM 
+			taxes 
+			
+		WHERE 
+			tax_id = #{taxId} 
+		AND 
+			record_status = 'A'
+			
+	</select>
+	
+	<select id="getActiveTaxList"  resultMap="taxResultMap">
+		
+		SELECT     
+			tax_id, tax_name, tax_percentage, is_active,
+			record_status, created_at, created_by, updated_at, updated_by
+			
+		FROM 
+			taxes 
+			
+		WHERE 
+			record_status = 'A'  
+		AND
+			is_active = TRUE
+			
+		ORDER BY
+				tax_name
+        
+	</select>
+	
+	<select id="getTaxCount" resultType="int">
+	
+		SELECT 
+			count(*)
+			
+		FROM 
+			taxes
+			
+		WHERE 
+			record_status = 'A'
+	
+	</select>
+	
+	<select id="getTaxListForSearch" parameterType="map" resultMap="taxResultMap">
+		
+		SELECT     
+			tax_id, tax_name, tax_percentage, is_active,
+			record_status, created_at, created_by, updated_at, updated_by
+			
+		FROM 
+			taxes
+			
+ 		WHERE 
+ 			record_status = 'A'
+ 		AND
+ 			(
+ 				tax_name iLIKE #{globalSearchString}
+ 			) 
+ 			
+		ORDER BY updated_at DESC
+		
+		LIMIT  #{length}  OFFSET  #{start}         
+        
+	</select>
+	
+	<select id="getTotalTaxCountBySearch" parameterType="map" resultType="int"> 		
+		
+	   	SELECT     
+			count(*)
+		
+		FROM 
+			taxes
+			
+ 		WHERE 
+ 			record_status = 'A'
+ 		AND
+ 			(
+ 				tax_name iLIKE #{globalSearchString}
+ 			) 
+				
+	</select>
+	
+	<update id="deleteTax" parameterType="TaxModel">
+	
+		UPDATE
+			taxes
+			
+		SET
+			is_active = #{isActive},
+			record_status = #{recordStatus},
+			updated_at = #{updatedAt},
+			updated_by = #{updatedBy}
+			
+		WHERE
+			tax_id = #{taxId} 
+			
+	</update>
+	
+	<update id="updateTaxStatus" parameterType="TaxModel">
+	
+		UPDATE
+			taxes
+			
+		SET
+			is_active = #{isActive},
+			updated_at = #{updatedAt},
+			updated_by = #{updatedBy}
+			
+		WHERE
+			tax_id = #{taxId} 
+			
+	</update>
+	
+</mapper>

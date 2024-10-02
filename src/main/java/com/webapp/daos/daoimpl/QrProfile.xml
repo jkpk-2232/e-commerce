@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.webapp.daos.QrProfileDao">
+
+	<resultMap id="QrProfileResultMap" type="QrProfileModel" >
+		
+		<result property="qrProfileId" column="qr_profile_id"/>
+		<result property="vendorStoreId" column="vendor_store_id"/>
+		<result property="qrCodeId" column="qr_code_id"/>
+		<result property="terminalId" column="terminal_id"/>
+		
+		<result property="createdAt" column="created_at" />
+		<result property="updatedAt" column="updated_at" />
+		<result property="createdBy" column="created_by" />
+		<result property="updatedBy" column="updated_by" />
+		
+	</resultMap>
+	
+	<sql id="QrProfileColumns">
+		qp.qr_profile_id, qp.vendor_store_id, qp.qr_code_id, qp.terminal_id,
+		qp.created_by, qp.created_at, qp.updated_by, qp.updated_at
+	</sql>
+	
+	<insert id="insertQrProfile" parameterType="QrProfileModel">
+	
+		INSERT INTO qr_profiles
+			(
+				qr_profile_id, vendor_store_id, qr_code_id, terminal_id, 
+				created_by, created_at, updated_by, updated_at
+			)
+		VALUES 
+			(
+				#{qrProfileId}, #{vendorStoreId}, #{qrCodeId}, #{terminalId},
+				#{createdBy}, #{createdAt}, #{updatedBy}, #{updatedAt}
+			);
+	
+	</insert>
+	
+	<select id="isQrCodeIdExists" resultType="boolean">
+		
+		SELECT
+			(count(*)>0)
+		FROM
+			qr_profiles qp
+		WHERE
+			qp.qr_code_id = #{qrCodeId}
+		<if test="qrProfileId!=null">
+		AND
+			qp.qr_profile_id != #{qrProfileId}
+		</if>
+		
+	</select>
+	
+	
+	<select id="getQrProfileCount" resultType="int">
+		
+		SELECT
+			count(qp.qr_profile_id)
+		FROM
+			qr_profiles qp
+		WHERE
+			
+		<if test="vendorStoreId!=null">
+		
+			qp.vendor_store_id = #{vendorStoreId}	
+		</if>		
+	
+	</select>
+	
+	<select id="getQrProfileSearch" resultMap="QrProfileResultMap">
+		
+		SELECT
+			<include refid="QrProfileColumns"></include>
+			
+		FROM
+			qr_profiles qp
+		
+		WHERE
+		
+			(
+				qp.qr_code_id ilike #{searchKey}
+			OR
+				qp.terminal_id ilike #{searchKey}
+			
+			)
+			
+		<if test="vendorStoreId!=null">
+		AND
+			qp.vendor_store_id = #{vendorStoreId}	
+		</if>	
+		ORDER BY qp.updated_at DESC
+		<if test="length>0">
+		LIMIT #{length} OFFSET #{start}
+		</if>	
+	
+	</select>
+	
+	<select id="getQrProfileSearchCount" resultType="int">
+		
+		SELECT
+			count(qp.qr_profile_id)
+		FROM
+			qr_profiles qp
+		
+		WHERE
+		
+			(
+				qp.qr_code_id ilike #{searchKey}
+			OR
+				qp.terminal_id ilike #{searchKey}
+			
+			)
+			
+		<if test="vendorStoreId!=null">
+		AND
+			qp.vendor_store_id = #{vendorStoreId}	
+		</if>
+	
+	</select>
+	
+	
+</mapper>

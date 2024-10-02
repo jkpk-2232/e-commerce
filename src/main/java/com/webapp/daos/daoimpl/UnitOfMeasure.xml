@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.webapp.daos.UnitOfMeasureDao">
+	
+	<resultMap id="UOMResultMap" type="UnitOfMeasureModel">
+	
+		<result property="uomId" column="uom_id" />
+		<result property="uomName" column="uom_name" />
+		<result property="uomDescription" column="uom_description" />
+		<result property="uomShortName" column="uom_short_name" />
+		<result property="isActive" column="is_active" />
+		<result property="isDeleted" column="is_deleted" />
+		
+		<result property="createdBy" column="created_by" />
+		<result property="createdAt" column="created_at" />
+		<result property="updatedBy" column="updated_by" />
+		<result property="updatedAt" column="updated_at" />
+	
+	</resultMap>
+	
+	<sql id="UOMColumns">
+		uom.uom_id, uom.uom_name, uom.uom_description, uom.uom_short_name, uom.is_active, 
+		uom.is_deleted, uom.created_by, uom.created_at, uom.updated_by, uom.updated_at
+	</sql>
+	
+	<select id="isUomNameExists" resultType="boolean">
+		
+		SELECT
+			(count(*)>0)
+		FROM
+			unit_of_measures uom
+		WHERE
+			uom.uom_name = #{uomName}
+		<if test="uomId > 0">
+		AND
+			uom.uom_id != #{uomId}
+		</if>
+		
+	</select>
+	
+	<insert id="insertUom" parameterType="UnitOfMeasureModel">
+	
+		INSERT INTO unit_of_measures
+			(
+				uom_name, uom_description, uom_short_name, is_active, 
+				is_deleted, created_by, created_at, updated_by, updated_at
+			)
+		VALUES 
+			(
+				#{uomName}, #{uomDescription}, #{uomShortName}, #{isActive}, 
+				#{isDeleted}, #{createdBy}, #{createdAt}, #{updatedBy}, #{updatedAt}
+			);
+	
+	</insert>
+	
+	<select id="getUomDetailsByUomId" resultMap="UOMResultMap">
+		
+		SELECT
+			<include refid="UOMColumns"></include>
+		FROM
+			unit_of_measures uom
+		WHERE
+			uom.uom_id = #{uomId}
+		
+	</select>
+	
+	<update id="updateUom" parameterType="UnitOfMeasureModel">
+		
+		UPDATE 
+			unit_of_measures
+		SET 
+			uom_name = #{uomName}, 
+			uom_description = #{uomDescription},
+			uom_short_name = #{uomShortName},
+			updated_by = #{updatedBy}, 
+			updated_at = #{updatedAt}
+		WHERE 
+			uom_id = #{uomId}
+		
+	</update>
+	
+	<select id="getUomsCount" resultType="int">
+	
+		SELECT
+			count(uom.uom_id)
+		FROM
+			unit_of_measures uom
+		WHERE
+			uom.created_at &gt;= #{startDatelong}
+		AND
+			uom.created_at &lt;= #{endDatelong}
+		
+	</select>
+	
+	<select id="getUomSearch" resultMap="UOMResultMap">
+	
+		SELECT
+			<include refid="UOMColumns"></include>
+		FROM
+			unit_of_measures uom
+		WHERE
+			(
+				uom.uom_name ilike #{searchKey}
+			OR
+				uom.uom_description ilike #{searchKey}
+			)
+		<if test="startDatelong>0">
+		AND
+			uom.created_at &gt;= #{startDatelong}
+		AND
+			uom.created_at &lt;= #{endDatelong}
+		</if>
+		
+		<if test="length>0">
+		ORDER BY uom.updated_at DESC
+		LIMIT #{length} OFFSET #{start}
+		</if>
+		
+		<if test="length==0">
+		ORDER BY uom.uom_name ASC
+		</if>
+
+	</select>
+	
+	<select id="getUomSearchCount" resultType="int">
+	
+		SELECT
+			count(uom.uom_id)
+		FROM
+			unit_of_measures uom
+		WHERE
+			(
+				uom.uom_name ilike #{searchKey}
+			OR
+				uom.uom_description ilike #{searchKey}
+			)
+		<if test="startDatelong>0">
+		AND
+			uom.created_at &gt;= #{startDatelong}
+		AND
+			uom.created_at &lt;= #{endDatelong}
+		</if>
+	
+	</select>
+	
+	<update id="updateUomStatus" parameterType="UnitOfMeasureModel">
+	
+		UPDATE 
+			unit_of_measures
+		SET
+			is_active = #{isActive},
+			is_deleted = #{isDeleted}
+		WHERE
+			uom_id = #{uomId}
+	
+	</update>
+	
+	<select id="getuomList" resultMap="UOMResultMap">
+		
+		SELECT
+			<include refid="UOMColumns"></include>
+		FROM
+			unit_of_measures uom
+		WHERE
+			uom.is_active = true
+		AND
+			uom.is_deleted = false	
+		
+	</select>
+	
+</mapper>

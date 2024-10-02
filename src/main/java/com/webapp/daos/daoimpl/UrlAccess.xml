@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.webapp.daos.UrlAccessDao">
+
+
+	<resultMap id="roleResultMap" type="UrlAccessModel">
+	
+		<id property="urlAccessId" column="url_access_id" />
+		<result property="roleId" column="role_id" />
+		<result property="urlId" column="url_id" />
+		
+	</resultMap>
+
+	<select id="hasAccess" parameterType="map" resultType="boolean">
+	
+		SELECT 
+			url_access_id 
+		FROM 
+			url_accesses UA 
+		INNER JOIN 
+			urls U 
+		ON 
+			U.url_id = UA.url_id 
+		WHERE 
+			U.url = #{url} 
+		AND 
+			UA.role_id = #{roleId} 
+		AND 
+			U.record_status = 'A' 
+		AND 
+			UA.record_status = 'A'
+		
+	</select>
+
+	<delete id="removeAccess" parameterType="map">
+	
+		DELETE FROM 
+			url_accesses 
+		WHERE 
+			url_id = #{urlId} 
+		AND 
+			role_id = #{roleId}
+		
+	</delete>
+
+	<insert id="addAccess" keyColumn="url_access_id" parameterType="UrlAccessModel">
+
+		INSERT INTO 
+			url_accesses
+				(
+					url_access_id, role_id, url_id, created_by, created_at,
+					updated_by, updated_at,record_status
+				)
+		VALUES
+				(
+					#{urlAccessId},#{roleId},#{createdBy},#{createdAt},#{updatedBy},#{updatedAt},#{recordStatus}
+				)
+		
+	</insert>
+
+</mapper>

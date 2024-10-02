@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.webapp.daos.AdminCompanyContactDao">
+
+	<resultMap id="adminCompanyContactResultMap" type="AdminCompanyContactModel" >
+	    
+		<result property="adminCompanyContactId" column="admin_company_contact_id" />
+		<result property="vendorId" column="vendor_id" />
+		<result property="address" column="address" />
+		<result property="phoneNumberOne" column="phone_number_one" />
+		<result property="phoneNumberTwo" column="phone_number_two" />
+		<result property="phoneNumberOneCode" column="phone_number_one_code" />
+		<result property="phoneNumberTwoCode" column="phone_number_two_code" />
+		<result property="latitude" column="latitude" />
+		<result property="longitude" column="longitude" />
+		<result property="geolocation" column="geolocation" />
+		<result property="fax" column="fax" />
+		<result property="email" column="email" />
+		<result property="recordStatus" column="record_status" />
+		<result property="createdAt" column="created_at" />
+		<result property="updatedAt" column="updated_at" />
+		<result property="createdBy" column="created_by" />
+		<result property="updatedBy" column="updated_by" />
+		
+	</resultMap>
+
+	<sql id="adminCompanyContactTableColsWithOutTypeAlias">
+		admin_company_contact_id, vendor_id, address, phone_number_one, 
+        phone_number_two, latitude, longitude, geolocation, fax, email,
+        record_status, created_by, created_at, updated_by, updated_at
+	</sql>
+	
+	<insert id="addAdminCompanyContact" parameterType="AdminCompanyContactModel">
+
+		INSERT INTO admin_company_contact
+				(
+            		admin_company_contact_id, vendor_id, address, phone_number_one, 
+            		phone_number_two, latitude, longitude, geolocation,
+            		phone_number_one_code, phone_number_two_code, fax, email,
+            		record_status, created_by, created_at, updated_by, updated_at
+            	)
+    	VALUES 
+				(
+					#{adminCompanyContactId}, #{vendorId}, #{address}, #{phoneNumberOne}, 
+					#{phoneNumberTwo}, #{latitude}, #{longitude}, ${geolocation},
+					#{phoneNumberOneCode},#{phoneNumberTwoCode}, #{fax},#{email},
+					'A', #{createdBy}, #{createdAt}, #{updatedBy}, #{updatedAt}
+				)
+				
+	</insert>
+	
+	<select id="getAdminCompanyContactByVendorId" resultMap="adminCompanyContactResultMap">
+		
+		SELECT     
+			admin_company_contact_id, vendor_id, address, phone_number_one, 
+            phone_number_two, latitude, longitude, geolocation,
+            phone_number_one_code, phone_number_two_code, fax, email,
+            record_status, created_by, created_at, updated_by, updated_at
+		FROM 
+			admin_company_contact
+ 		WHERE   
+			record_status = 'A'
+		AND
+			vendor_id = #{vendorId}
+		ORDER BY updated_at DESC LIMIT 1
+        
+	</select>
+	
+	<update id="updateAdminCompanyContact" parameterType="AdminCompanyContactModel">
+		
+		UPDATE
+			admin_company_contact
+		SET
+			address = #{address},
+			phone_number_one = #{phoneNumberOne},
+			phone_number_two = #{phoneNumberTwo},
+			fax = #{fax},
+			email = #{email},
+			latitude = #{latitude},
+			longitude = #{longitude},	
+			geolocation = ${geolocation},	
+			phone_number_one_code = #{phoneNumberOneCode},	
+			phone_number_two_code = #{phoneNumberTwoCode},
+			updated_at = #{updatedAt},
+			updated_by = #{updatedBy}
+		WHERE
+			admin_company_contact_id = #{adminCompanyContactId}
+	
+	</update>
+	
+</mapper> 

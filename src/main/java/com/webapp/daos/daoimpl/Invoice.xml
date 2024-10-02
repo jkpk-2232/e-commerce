@@ -1,0 +1,630 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.webapp.daos.InvoiceDao">
+
+	<resultMap id="invoiceResultMap" type="InvoiceModel" >
+	    
+		<result property="invoiceId" column="invoice_id" />
+		<result property="tourId" column="tour_id" />
+		<result property="userTourId" column="user_tour_id" />		
+		<result property="initialFare" column="initial_fare" />
+		<result property="perKmFare" column="per_km_fare" />
+		<result property="perMinuteFare" column="per_minute_fare" />
+		<result property="bookingFees" column="booking_fees" />
+		<result property="discount" column="discount" />
+		<result property="minimumFare" column="minimum_fare" />		
+		<result property="subTotal" column="sub_total" />
+		<result property="total" column="total" />
+		<result property="distance" column="distance" />
+		<result property="duration" column="duration" />
+		<result property="avgSpeed" column="avg_speed" />
+		<result property="fine" column="fine" />
+		<result property="distanceFare" column="distance_fare" />
+		<result property="timeFare" column="time_fare" />
+		<result property="baseFare" column="base_fare" />
+		<result property="transactionId" column="transaction_id" />
+		<result property="refundAmount" column="refund_amount" />		
+		<result property="sourceAddess" column="source_address" />
+		<result property="destiAddess" column="destination_address" />
+		<result property="createdAt" column="created_at" />
+		<result property="updatedAt" column="updated_at" />
+		<result property="createdBy" column="created_by" />
+		<result property="updatedBy" column="updated_by" />
+		<result property="charges" column="charges" />
+		
+		<result property="percentage" column="percentage" />
+		<result property="driverAmount" column="driver_amount" />
+		<result property="paymentMode" column="payment_mode" />
+		<result property="cashCollected" column="cash_collected" />
+		<result property="cashToBeCollected" column="cash_to_be_collected" />
+		<result property="paymentStatus" column="payment_status" />
+		<result property="isCashNotReceived" column="is_cash_not_received" />
+		<result property="isRefunded" column="is_refunded" />
+		<result property="promoDiscount" column="promo_discount" />
+		<result property="promoCodeId" column="promo_code_id" />
+		<result property="usedCredits" column="used_credits" />
+		<result property="isPromoCodeApplied" column="is_promo_code_applied" />
+		<result property="waitingTime" column="waiting_time" />
+		<result property="finalAmountCollected" column="final_amount_collected" />
+		<result property="arrivedWaitingTime" column="arrived_waiting_time" />
+		<result property="tollAmount" column="toll_amount" /> 
+		<result property="adminSettlementAmount" column="admin_settlement_amount" />
+		<result property="monthOnly" column="month_only" />
+		<result property="weekOnly" column="week_only" />
+		<result property="dayOnly" column="day_only" />
+		<result property="tripCount" column="trip_count" />
+		<result property="totalEarning" column="total_earning" />
+		<result property="avgRating" column="avg_rating" />
+		<result property="staticMapImgUrl" column="static_map_img_url" />
+		
+		<result property="isSurgePriceApplied" column="is_surge_price_applied" />
+		<result property="surgePriceId" column="surge_price_id" />
+		<result property="surgePrice" column="surge_price" />
+		<result property="totalWithSurge" column="total_with_surge" />
+		<result property="surgeFare" column="surge_fare" />
+		
+		<result property="isPaymentPaid" column="is_payment_paid" />
+		<result property="photoUrl" column="photo_url" /> 
+		<result property="pEmail" column="p_email" />
+		<result property="pPhone" column="p_phone" />
+		<result property="pPhoneCode" column="p_phone_code" />
+		
+		<result property="totalTaxAmount" column="total_tax_amount" />
+		<result property="arrivedWaitingTimeFare" column="arrived_waiting_time_fare" />
+		
+		<result property="isRentalBooking" column="is_rental_booking" />
+		<result property="rentalPackageId" column="rental_package_id" />
+		<result property="rentalPackageTime" column="rental_package_time" />
+		
+		<result property="updatedAmountCollected" column="updated_amount_collected" />
+		<result property="remark" column="remark" /> 
+		<result property="remarkBy" column="remark_by" />
+		
+		<result property="fareAfterSpecificKm" column="fare_after_specific_km" />
+		<result property="kmToIncreaseFare" column="km_to_increase_fare" /> 
+		<result property="distanceBeforeSpecificKm" column="distance_before_specific_km" />
+		<result property="distanceAfterSpecificKm" column="distance_after_specific_km" />
+		<result property="distanceFareBeforeSpecificKm" column="distance_fare_before_specific_km" /> 
+		<result property="distanceFareAfterSpecificKm" column="distance_fare_after_specific_km" />
+		<result property="markupFare" column="markup_fare" /> 
+		
+		<result property="isPassReleasedByAdmin" column="is_pass_released_by_admin" />
+		<result property="passengerReleasedAt" column="passenger_released_at" />
+		<result property="passengerReleasedBy" column="passenger_released_by" />
+		
+		<result property="driverFullName" column="driverFullName" />
+		<result property="passengerFullName" column="passengerFullName" />
+		<result property="bookingType" column="booking_type" />
+				
+	</resultMap>
+	
+	<insert id="generateInvoice" parameterType="InvoiceModel">
+
+		INSERT INTO invoices
+			(
+				invoice_id, tour_id, initial_fare, per_km_fare, distance_fare, time_fare, per_minute_fare, booking_fees, discount, minimum_fare, 
+				sub_total, total, distance, duration, avg_speed, fine, percentage, driver_amount, created_by, created_at, updated_by,
+				updated_at, charges, promo_discount, promo_code_id,is_promo_code_applied,used_credits, payment_mode, cash_collected, payment_status, 
+				is_cash_not_received, waiting_time, cash_to_be_collected, final_amount_collected,arrived_waiting_time,toll_amount, admin_settlement_amount, 
+				base_fare, is_surge_price_applied, surge_price_id, surge_price, total_with_surge, surge_fare, is_payment_paid, total_tax_amount, 
+				arrived_waiting_time_fare, is_rental_booking, rental_package_id, rental_package_time,
+				updated_amount_collected, remark, remark_by,
+				fare_after_specific_km, km_to_increase_fare, distance_before_specific_km, distance_after_specific_km, distance_fare_before_specific_km,
+				distance_fare_after_specific_km,markup_fare
+			)
+		VALUES
+			(
+				#{invoiceId}, #{tourId}, #{initialFare}, #{perKmFare}, #{distanceFare}, #{timeFare}, #{perMinuteFare}, #{bookingFees}, #{discount}, #{minimumFare}, 
+				#{subTotal}, #{total}, #{distance}, #{duration}, #{avgSpeed}, #{fine}, #{percentage}, #{driverAmount}, #{createdBy}, #{createdAt}, #{updatedBy},
+				#{updatedAt},#{charges}, #{promoDiscount}, #{promoCodeId}, #{isPromoCodeApplied}, #{usedCredits}, #{paymentMode}, #{cashCollected}, #{paymentStatus}, 
+				#{isCashNotReceived}, #{waitingTime}, #{cashToBeCollected}, #{finalAmountCollected}, #{arrivedWaitingTime}, #{tollAmount}, #{adminSettlementAmount}, 
+				#{baseFare}, #{isSurgePriceApplied}, #{surgePriceId}, #{surgePrice}, #{totalWithSurge}, #{surgeFare}, #{isPaymentPaid}, #{totalTaxAmount}, 
+				#{arrivedWaitingTimeFare}, #{isRentalBooking}, #{rentalPackageId}, #{rentalPackageTime},
+				#{updatedAmountCollected}, #{remark}, #{remarkBy},
+				#{fareAfterSpecificKm}, #{kmToIncreaseFare}, #{distanceBeforeSpecificKm},#{distanceAfterSpecificKm}, #{distanceFareBeforeSpecificKm}, 
+				#{distanceFareAfterSpecificKm},#{markupFare}
+			)
+	</insert>
+	
+	<select id="getInvoiceByTourId" parameterType="string" resultMap="invoiceResultMap">
+	
+		SELECT
+			inv.invoice_id, inv.tour_id, inv.initial_fare, inv.per_km_fare, inv.fine, inv.distance_fare, inv.time_fare, inv.is_refunded, inv.base_fare, 
+			inv.per_minute_fare, inv.booking_fees, inv.discount, inv.minimum_fare, inv.sub_total, inv.refund_amount, inv.percentage, inv.driver_amount, 
+			inv.total, inv.distance, inv.duration, inv.avg_speed, inv.transaction_id, inv.created_by, inv.created_at, inv.updated_by, inv.updated_at, inv.charges, 
+			inv.payment_mode, inv.cash_collected, inv.payment_status, inv.is_cash_not_received, inv.promo_discount, inv.promo_code_id, inv.is_promo_code_applied, 
+			inv.static_map_img_url, inv.waiting_time,used_credits, inv.cash_to_be_collected,final_amount_collected,arrived_waiting_time, inv.toll_amount, 
+			inv.admin_settlement_amount, inv.is_surge_price_applied, inv.surge_price_id, inv.surge_price, inv.total_with_surge, inv.surge_fare, inv.is_payment_paid,
+			inv.total_tax_amount, inv.arrived_waiting_time_fare, inv.is_rental_booking, inv.rental_package_id, inv.rental_package_time,
+			inv.updated_amount_collected, inv.remark,inv.markup_fare,
+			CONCAT(rui.first_name, CONCAT(' ', rui.last_name)) AS remark_by,
+			inv.fare_after_specific_km, inv.km_to_increase_fare, inv.distance_before_specific_km, inv.distance_after_specific_km, inv.distance_fare_before_specific_km,
+			inv.distance_fare_after_specific_km
+		FROM 
+			invoices inv
+		LEFT JOIN user_info rui ON rui.user_id = inv.remark_by
+		WHERE 
+			inv.tour_id = #{tourId}
+		LIMIT 1
+	    
+	</select>
+	
+	<update id="updateTransactionId" parameterType="map">
+	
+		UPDATE 
+			invoices 
+		SET 
+		    transaction_id = #{transactionId}
+		WHERE  
+		    tour_id = #{tourId}
+		    
+	</update>
+	
+	<update id="updateRefundAndTotalAmount" parameterType="map">
+	
+		UPDATE 
+			invoices 
+		SET 		    
+		    refund_amount = #{refundAmount},
+		    is_refunded = 'true',
+		    updated_at = #{updatedAt}	
+		WHERE  
+		    tour_id = #{tourId}
+		AND
+			is_refunded = 'false'
+			
+	</update>
+	
+	<select id="getTotalInvoicesByUserId" parameterType="map" resultType="int">
+	
+		SELECT
+			count(*)
+		FROM 
+			invoices inv
+		INNER JOIN tours t ON t.tour_id = inv.tour_id
+		WHERE
+			inv.created_at &gt; #{startDatelong}
+		AND
+			inv.created_at &lt; #{endDatelong}
+		AND
+			t.booking_type iLike '%individual booking%'
+		<if test="userId!= null">
+		AND
+			t.passenger_id= #{userId}
+		</if>
+		<if test="assignedRegionList != null">
+	    AND
+	    	t.multicity_city_region_id IN
+    		<foreach item="item" index="index" collection="assignedRegionList" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+	    </if>
+		
+	</select>
+	
+	<select id="getTotalInvoicesAmountByDriverId" parameterType="string" resultType="int">
+	
+		SELECT
+			COALESCE(sum(inv.charges), 0)
+		FROM 
+		    invoices inv
+		INNER JOIN tours t ON t.tour_id = inv.tour_id 
+		WHERE	
+			t.driver_id= #{userId}
+		
+	</select>
+	
+	<select id="getInvoiceListBySearch" parameterType="map" resultMap="invoiceResultMap">
+	
+		SELECT
+			invoice_id, t.tour_id, user_tour_id, source_address, destination_address, base_fare, inv.total, t.created_at, is_refunded,inv.percentage,
+			inv.driver_amount,inv.charges, inv.promo_code_id,inv.is_promo_code_applied,inv.promo_discount,inv.used_credits, inv.static_map_img_url,
+			inv.payment_mode, inv.cash_collected, inv.payment_status, inv.is_cash_not_received, inv.waiting_time, inv.cash_to_be_collected,
+			inv.is_surge_price_applied, inv.surge_price_id, inv.surge_price, inv.total_with_surge, inv.surge_fare, inv.is_payment_paid,
+			inv.total_tax_amount, inv.arrived_waiting_time_fare, inv.is_rental_booking, inv.rental_package_id, inv.rental_package_time,
+			inv.updated_amount_collected, inv.remark, inv.remark_by,
+			inv.fare_after_specific_km, inv.km_to_increase_fare, inv.distance_before_specific_km, inv.distance_after_specific_km, inv.distance_fare_before_specific_km,
+			inv.distance_fare_after_specific_km, 
+			concat(ui.first_name,' ',ui.last_name) AS driverFullName,
+			concat(t.p_first_name,' ',t.p_last_name) AS passengerFullName,
+			t.booking_type
+		FROM 
+			invoices inv
+		INNER JOIN tours t ON (t.tour_id = inv.tour_id)
+		INNER JOIN user_info ui ON (ui.user_id = t.driver_id)
+		WHERE	
+			inv.created_at &gt; #{startDatelong}
+		AND
+			inv.created_at &lt; #{endDatelong}
+		AND
+			t.booking_type iLike '%individual booking%'
+		AND
+		 		( 
+			 			CONCAT(ui.first_name,CONCAT(' ',ui.last_name)) iLIKE #{globalSearchString} 
+	                OR 
+	                	CONCAT(t.p_first_name,CONCAT(' ',t.p_last_name)) iLIKE #{globalSearchString}
+	                OR 
+	                	t.booking_type iLIKE #{globalSearchString}
+	                OR 
+	                	inv.payment_mode iLIKE #{globalSearchString}
+	                OR
+	                	CAST (t.user_tour_id AS character varying) =  replace(#{globalSearchString}, '%', '')
+                )
+		<if test="userId!= null">
+		AND
+			t.passenger_id= #{userId}
+		</if>
+		<if test="assignedRegionList != null">
+	    AND
+	    	t.multicity_city_region_id IN
+    		<foreach item="item" index="index" collection="assignedRegionList" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+	    </if>
+        ORDER BY t.created_at DESC
+	    LIMIT  #{length}  OFFSET  #{start}   
+	    
+	</select>
+	
+	<select id="getTotalCountBySearch" parameterType="map" resultType="int">
+	
+		SELECT
+			count(*)
+		FROM 
+			invoices inv
+		INNER JOIN tours t ON t.tour_id = inv.tour_id 
+		WHERE	
+		<if test="userId!= null">
+			t.passenger_id= #{userId}
+		AND
+		</if>
+		(
+			source_address iLIKE #{globalSearchString} 
+    	OR 
+    		destination_address iLIKE #{globalSearchString}
+        )
+                
+	</select>
+	
+	<select id="getAllDriverTotalPayableAmount" resultType="int">
+	
+		SELECT
+			COALESCE(SUM(inv.driver_amount),0)
+		FROM 
+		    invoices inv
+		INNER JOIN tours t ON t.tour_id = inv.tour_id
+		<if test="userId != null">
+		WHERE
+			t.driver_id = #{userId}
+		</if> 
+		<if test="startDate != 0">
+		AND
+			inv.created_at &gt; #{startDate}
+		</if>
+		<if test="endDate != 0">
+		AND
+			inv.created_at &lt; #{endDate}
+		</if>
+		
+	</select>
+
+	<update id="setRefundedStatus" parameterType="map">
+	
+		UPDATE 
+			invoices 
+		SET 		    
+		    is_refunded = #{refunded}
+		WHERE  
+		    tour_id = #{tourId}
+		    
+	</update>
+
+	<select id="getAllRefundedTripsAmount" parameterType="map" resultType="double">
+	
+		SELECT
+			COALESCE(sum(inv.refund_amount), 0)
+		FROM 
+		    invoices inv
+		INNER JOIN tours t ON (t.tour_id = inv.tour_id) 
+		WHERE	
+			inv.is_refunded = 'true'
+		<if test="startDate != 0">
+		AND
+        	inv.created_at &gt; #{startDate}        
+        </if>
+        <if test="endDate != 0">
+		AND
+			inv.created_at &lt; #{endDate}
+		</if>
+		<if test="assignedRegionList != null">
+	    AND
+	    	t.multicity_city_region_id IN
+    		<foreach item="item" index="index" collection="assignedRegionList" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+	    </if>
+		
+	</select>
+	
+	<select id="getTotalInvoicesByDate" resultType="int">
+	
+		SELECT
+			count(inv.invoice_id)
+		FROM 
+		    invoices inv
+		INNER JOIN tours t ON t.tour_id = inv.tour_id
+		WHERE
+		   	inv.created_at &gt; #{startDatelong}
+		AND
+			inv.created_at &lt; #{endDatelong}
+		AND
+			inv.is_refunded = 'true'
+		<if test="assignedRegionList != null">
+	    AND
+	    	t.multicity_city_region_id IN
+    		<foreach item="item" index="index" collection="assignedRegionList" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+	    </if>
+		
+	</select>
+	
+	<select id="getRefundedIvoiceListBySearchAndDateReports" resultMap="invoiceResultMap">
+	
+		SELECT
+			invoice_id, t.tour_id, user_tour_id, source_address, destination_address, inv.total, is_refunded,inv.percentage,inv.driver_amount, 
+			inv.charges, base_fare, inv.promo_code_id,inv.is_promo_code_applied,inv.promo_discount,inv.used_credits, inv.payment_mode, inv.surge_fare,
+			inv.cash_collected, inv.payment_status, inv.is_cash_not_received, inv.updated_at, inv.created_at, inv.refund_amount, inv.waiting_time, 
+			inv.cash_to_be_collected, inv.static_map_img_url, inv.is_surge_price_applied, inv.surge_price_id, inv.surge_price, inv.total_with_surge,
+			inv.is_payment_paid, inv.total_tax_amount, inv.arrived_waiting_time_fare, inv.is_rental_booking, inv.rental_package_id, inv.rental_package_time,
+			inv.updated_amount_collected, inv.remark, inv.remark_by,
+			inv.fare_after_specific_km, inv.km_to_increase_fare, inv.distance_before_specific_km, inv.distance_after_specific_km, inv.distance_fare_before_specific_km,
+			inv.distance_fare_after_specific_km, 
+			concat(UI.first_name,' ',UI.last_name) AS driverFullName,
+			concat(t.p_first_name,' ',t.p_last_name) AS passengerFullName,
+			t.booking_type
+		FROM 
+		    invoices inv
+		INNER JOIN tours t ON t.tour_id = inv.tour_id
+		LEFT JOIN user_info UI  ON t.driver_id = UI.user_id    
+		WHERE	 
+		 	(
+			 		source_address iLIKE #{globalSearchString} 
+	            OR 
+	            	destination_address iLIKE #{globalSearchString}
+	            OR 
+	            	t.p_first_name iLIKE #{globalSearchString}
+	            OR 
+	            	t.p_last_name iLIKE #{globalSearchString}
+	            OR 
+	            	UI.first_name iLIKE #{globalSearchString}
+	            OR 
+	            	UI.last_name iLIKE #{globalSearchString}		
+	            OR 
+	            	CONCAT(t.p_first_name,CONCAT(' ',t.p_last_name)) iLIKE #{globalSearchString}
+				OR 
+					CONCAT(UI.first_name,CONCAT(' ',UI.last_name)) iLIKE #{globalSearchString} 	
+				OR
+					CAST (t.user_tour_id AS character varying) =  replace(#{globalSearchString}, '%', '')
+				OR
+					inv.payment_mode iLIKE #{globalSearchString}
+				OR
+					t.booking_type iLIKE #{globalSearchString}
+							
+            )
+        <if test="startDatelong != 0">
+		AND
+        	inv.created_at &gt; #{startDatelong}        
+        </if>
+        <if test="endDatelong != 0">
+		AND
+			inv.created_at &lt; #{endDatelong}
+		</if>
+		AND
+			inv.is_refunded = 'true'
+		<if test="assignedRegionList != null">
+	    AND
+	    	t.multicity_city_region_id IN
+    		<foreach item="item" index="index" collection="assignedRegionList" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+	    </if>
+        ORDER BY inv.updated_at DESC
+       	<if test="length != 0">
+	   	LIMIT  #{length}  OFFSET  #{start}   
+	    </if>
+	    
+	</select>
+	
+	<select id="getMonthlyDriverDashboardSummary" parameterType="map" resultMap="invoiceResultMap">
+	
+		SELECT 
+			EXTRACT(MONTH FROM to_timestamp(inv.created_at/1000)) AS month_only,
+			COUNT(*) AS trip_count,
+			COALESCE(SUM(inv.driver_amount), 0) total_earning,
+			COALESCE(AVG(ptr.rate), 0) AS avg_rating	
+		FROM  
+			invoices inv
+		INNER JOIN tours t ON (t.tour_id = inv.tour_id)
+		LEFT JOIN passenger_trip_ratings ptr ON (ptr.trip_id = t.tour_id )
+		WHERE
+			inv.created_at &gt; #{startDateLong}
+		AND 
+			inv.created_at &lt; #{endDateLong}
+		AND
+			t.driver_id = #{driverId}
+		GROUP BY month_only
+		ORDER BY month_only DESC
+	    OFFSET #{offset} LIMIT #{length}	
+	    
+	</select>
+	
+	<select id="getWeeklyDriverDashboardSummary" parameterType="map" resultMap="invoiceResultMap">
+	
+		SELECT 
+			EXTRACT(WEEK FROM to_timestamp(inv.created_at/1000)) AS week_only,
+			COUNT(*) AS trip_count,
+			COALESCE(SUM(inv.driver_amount), 0) total_earning,
+			COALESCE(AVG(ptr.rate), 0) AS avg_rating
+		FROM  
+			invoices inv
+		INNER JOIN tours t ON (t.tour_id = inv.tour_id)
+		LEFT JOIN passenger_trip_ratings ptr ON (ptr.trip_id = t.tour_id )
+		WHERE
+			inv.created_at &gt; #{startDateLong}
+		AND 
+			inv.created_at &lt; #{endDateLong}
+		AND
+			t.driver_id = #{driverId}
+		GROUP BY week_only
+		ORDER BY week_only DESC
+	    OFFSET #{offset} LIMIT #{length}	
+	    
+	</select>
+	
+	<select id="getDailyDriverDashboardSummary" parameterType="map" resultMap="invoiceResultMap">
+	
+		SELECT 
+			EXTRACT(DOY FROM to_timestamp(inv.created_at/1000)) AS day_only,
+			COUNT(*) AS trip_count,
+			COALESCE(SUM(inv.driver_amount), 0) total_earning,
+			COALESCE(AVG(ptr.rate), 0) AS avg_rating	
+		FROM  
+			invoices inv
+		INNER JOIN tours t ON (t.tour_id = inv.tour_id)
+		LEFT JOIN passenger_trip_ratings ptr ON (ptr.trip_id = t.tour_id )
+		WHERE
+			inv.created_at &gt; #{startDateLong}
+		AND 
+			inv.created_at &lt; #{endDateLong}
+		AND
+			t.driver_id = #{driverId}
+		GROUP BY day_only
+		ORDER BY day_only DESC
+	    OFFSET #{offset} LIMIT #{length}	
+	    
+	</select>
+	
+	<select id="getTotalAdminSettlementAmount" parameterType="map" resultType="double">
+	
+		SELECT
+			COALESCE(SUM(inv.admin_settlement_amount),0)
+		FROM 
+		    invoices inv
+		INNER JOIN  tours t ON t.tour_id = inv.tour_id
+		<if test="userId != null || startDate != 0 || endDate != 0 || assignedRegionList != null">
+		WHERE
+		</if> 
+		<if test="userId != null">
+			t.driver_id = #{userId}
+			<if test="startDate != 0 || endDate != 0">
+			AND
+			</if> 
+		</if> 
+		<if test="startDate != 0">
+			inv.created_at &gt; #{startDate}
+			<if test="endDate != 0">
+				AND
+			</if>
+		</if>
+		<if test="endDate != 0">
+			inv.created_at &lt; #{endDate}
+			<if test="assignedRegionList != null">
+				AND
+			</if>
+		</if>
+		<if test="assignedRegionList != null">
+	    	t.multicity_city_region_id IN
+	    		<foreach item="item" index="index" collection="assignedRegionList" open="(" separator="," close=")">
+					#{item}
+				</foreach>
+	    </if>
+		
+	</select>
+	
+	<update id="updateStaticMapImgUrlByTourId" parameterType="map">
+	
+		UPDATE 
+			invoices 
+		SET 		    
+		    static_map_img_url = #{staticMapImgUrl},
+		    updated_at = #{updatedAt}
+		WHERE  
+		    tour_id = #{tourId}
+		    
+	</update>
+	
+	<select id="getPendingPaymentTourByPassengerId" parameterType="map" resultMap="invoiceResultMap">
+	
+		SELECT
+			inv.invoice_id, inv.tour_id, inv.final_amount_collected, inv.is_payment_paid, 
+			t.user_tour_id, t.source_address, t.destination_address, t.created_at,
+			DU.photo_url, PU.email AS p_email, PUI.phone_no AS p_phone, PUI.phone_no_code AS p_phone_code
+		FROM 
+		    invoices inv
+		INNER JOIN tours t ON t.tour_id = inv.tour_id
+		INNER JOIN users DU ON DU.user_id = T.driver_id
+		INNER JOIN users PU ON PU.user_id = T.passenger_id
+		INNER JOIN user_info PUI ON PUI.user_id = PU.user_id
+		WHERE
+			inv.is_payment_paid = false
+		AND
+			inv.payment_mode iLike '%card%'
+		AND
+			t.passenger_id = #{passengerId}	 
+		AND
+			t.status iLIKE '%ended%'
+		LIMIT 1
+	    
+	</select>
+	
+	<update id="updatePaymentPaidStatus" parameterType="map">
+	
+		UPDATE 
+			invoices 
+		SET 		    
+		    is_payment_paid = #{paymentPaidStatus},
+		    is_pass_released_by_admin = #{isPassReleasedByAdmin},
+		    passenger_released_at = #{passengerReleasedAt},
+		    passenger_released_by = #{passengerReleasedBy},
+		    updated_at = #{updatedAt}	
+		WHERE  
+		    tour_id = #{tourId}
+		    
+	</update>
+	
+	<update id="updateUpdatedAmountCollectWithRemark" parameterType="InvoiceModel">
+	
+		UPDATE 
+			invoices 
+		SET 		    
+		    updated_amount_collected = #{updatedAmountCollected},
+		    remark = #{remark},
+		    remark_by = #{remarkBy},
+		    updated_at = #{updatedAt},
+		    updated_by = #{updatedBy}	
+		WHERE  
+		    tour_id = #{tourId}
+		    
+	</update>
+	
+	<select id="getTotalEarningsPerDay" parameterType="string" resultType="double">
+	
+		SELECT 
+			COALESCE(sum(inv.driver_amount), 0) 
+		FROM 
+			invoices inv
+
+		INNER JOIN tours t ON t.tour_id = inv.tour_id
+
+		WHERE  
+			t.driver_id = #{driverId}
+		AND	
+			inv.created_at &gt; #{startOfDay}
+		AND 
+			inv.created_at &lt; #{endOfDay}
+		    
+	</select>
+
+</mapper>

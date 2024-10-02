@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.webapp.daos.VendorAppVersionDao">
+
+	<resultMap id="VendorAppVersionResultMap" type="VendorAppVersionModel">
+	
+		<id property="vendorAppVersionId" column="vendor_app_version_id" />
+		<result property="version" column="version" />
+		<result property="releaseNote" column="release_note" />
+		<result property="removeSupportFrom" column="remove_support_from" />
+		<result property="deviceType" column="device_type" />
+		<result property="appLink" column="app_link" />
+		<result property="releaseDate" column="release_date" />
+		<result property="isMandatory" column="is_madatory" />
+	
+		<result property="createdAt" column="created_datetime" />
+		<result property="createdBy" column="created_by" />
+		<result property="updatedAt" column="updated_datetime" />
+		<result property="updatedBy" column="updated_by" />
+			
+	</resultMap>
+	
+	<sql id="VendorAppVersionSqlColumns">
+		vendor_app_version_id, version, release_note, app_link, device_type, 
+		is_madatory, remove_support_from, release_date, record_status, 
+		created_by, created_datetime, updated_by, updated_datetime
+	</sql>
+	
+	<select id="getVendorAppVersionByVersion" resultMap="VendorAppVersionResultMap">
+	
+		SELECT 
+			<include refid="VendorAppVersionSqlColumns"></include>
+		FROM 
+			vendor_app_versions 
+		WHERE
+			device_type = #{deviceType}
+		AND
+			version = #{version}
+			
+	</select>
+	
+	<select id="getLatestVendorAppVersion" resultMap="VendorAppVersionResultMap">
+		
+	    SELECT 
+			<include refid="VendorAppVersionSqlColumns"></include>
+		FROM 
+			vendor_app_versions 
+		WHERE
+			device_type = #{deviceType}
+		ORDER BY release_date DESC LIMIT 1 	
+								
+	</select>
+	
+	<select id="isMandatoryReleaseAvailableAfterThisRelease" resultType="boolean">
+		
+	    SELECT 
+			count(version) > 0
+		FROM 
+			vendor_app_versions 
+		WHERE
+			device_type = #{deviceType}
+		AND
+			release_date &gt; #{releaseDate}
+		AND 	
+			is_madatory = true	
+		LIMIT 1		
+				
+	</select>
+	
+</mapper>

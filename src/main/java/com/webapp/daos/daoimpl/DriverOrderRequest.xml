@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.webapp.daos.DriverOrderRequestDao">
+
+	<resultMap id="DriverOrderRequestResultMap" type="DriverOrderRequestModel" >
+	    
+		<result property="driverOrderRequestId" column="driver_order_request_id" />
+		<result property="orderId" column="order_id" />
+		<result property="driverId" column="driver_id" />
+		<result property="status" column="status" />
+		
+		<result property="createdAt" column="created_at" />
+		<result property="updatedAt" column="updated_at" />
+		<result property="createdBy" column="created_by" />
+		<result property="updatedBy" column="updated_by" />
+		
+	</resultMap>
+	
+	<sql id="DriverOrderRequestColumns">
+		dor.driver_order_request_id, dor.order_id, dor.driver_id, dor.status, 
+		dor.created_by, dor.created_at, dor.updated_by, dor.updated_at
+	</sql>
+
+	<insert id="createDriverOrderRequest" useGeneratedKeys="true" parameterType="DriverOrderRequestModel">
+
+		INSERT INTO driver_order_requests
+			(
+				driver_order_request_id, order_id, driver_id, status,
+				created_at, created_by, updated_at, updated_by
+			)
+		VALUES
+			(
+				#{driverOrderRequestId}, #{orderId}, #{driverId}, #{status},
+				#{createdAt}, #{createdBy}, #{updatedAt}, #{updatedBy}
+			)
+
+	</insert>
+	
+	<select id="getAllOrderRequestByDriverId" resultMap="DriverOrderRequestResultMap">
+		
+		SELECT 
+		 	<include refid="DriverOrderRequestColumns"></include>
+		FROM 
+			driver_order_requests dor 
+		WHERE 
+		 	dor.driver_id = #{driverId}
+	    
+	</select>
+	
+	<select id="getOrderRequestByDriverIdAndOrderId" parameterType="String" resultMap="DriverOrderRequestResultMap">
+		
+		SELECT 
+		 	<include refid="DriverOrderRequestColumns"></include>
+		FROM 
+			driver_order_requests dor 
+		WHERE 
+		 	dor.driver_id = #{driverId}
+		AND
+		 	dor.order_id = #{orderId}
+	    
+	</select>
+	
+	<update id="updateDriverOrderRequest" parameterType="DriverOrderRequestModel">
+	
+		UPDATE
+			driver_order_requests
+		SET
+			status = #{status}
+		WHERE
+			driver_id = #{driverId}
+		AND
+		 	order_id = #{orderId}
+	
+	</update>
+	
+</mapper> 

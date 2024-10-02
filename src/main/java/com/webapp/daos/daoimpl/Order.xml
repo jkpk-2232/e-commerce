@@ -1,0 +1,887 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.webapp.daos.OrderDao">
+
+	<resultMap id="OrderResultMap" type="OrderModel">
+	
+		<result property="orderId" column="order_id" />
+		<result property="orderShortId" column="order_short_id" />
+		<result property="orderUserId" column="order_user_id" />
+		<result property="orderReceivedAgainstVendorId" column="order_received_against_vendor_id" />
+		<result property="orderCreationTime" column="order_creation_time" />
+		<result property="orderDeliveryStatus" column="order_delivery_status" />
+		<result property="orderDeliveryAddress" column="order_delivery_address" />
+		<result property="orderDeliveryAddressGeolocation" column="order_delivery_address_geolocation" />
+		<result property="orderDeliveryLat" column="order_delivery_lat" />
+		<result property="orderDeliveryLng" column="order_delivery_lng" />
+		<result property="orderPromoCodeId" column="order_promo_code_id" />
+		<result property="orderPromoCodeDiscount" column="order_promo_code_discount" />
+		<result property="orderTotal" column="order_total" />
+		<result property="orderDeliveryCharges" column="order_delivery_charges" />
+		<result property="orderCharges" column="order_charges" />
+		<result property="orderDeliveryDistance" column="order_delivery_distance" />
+		<result property="paymentMode" column="payment_mode" />
+		<result property="paymentStatus" column="payment_status" />
+		<result property="orderNumberOfItems" column="order_number_of_items" />
+		<result property="vendorStoreId" column="vendor_store_id" />
+		<result property="isDelieveryManagedByVendorDriver" column="is_delievery_managed_by_vendor_driver" />
+		<result property="driverId" column="driver_id" />
+		<result property="multicityCityRegionId" column="multicity_city_region_id" />
+		<result property="multicityCountryId" column="multicity_country_id" />
+		<result property="carTypeId" column="car_type_id" />
+		
+		<result property="recordStatus" column="record_status" />
+		<result property="createdBy" column="created_by" />
+		<result property="createdAt" column="created_at" />
+		<result property="updatedBy" column="updated_by" />
+		<result property="updatedAt" column="updated_at" />
+		
+		<result property="serviceTypeId" column="service_type_id" />
+		<result property="isSelfDeliveryWithinXKm" column="is_self_delivery_within_x_km" />
+
+		<result property="promoCode" column="promo_code" />
+		<result property="customerName" column="customerName" />
+		<result property="customerPhoneNo" column="customerPhoneNo" />
+		<result property="customerPhoneNoCode" column="customerPhoneNoCode" />
+		<result property="vendorName" column="vendorName" />
+		<result property="storeName" column="store_name" />
+		<result property="storeAddress" column="store_address" />
+		<result property="storeAddressLat" column="store_address_lat" />
+		<result property="storeAddressLng" column="store_address_lng" />
+		<result property="orderJobCancellationTimeHours" column="order_job_cancellation_time_hours" />
+		<result property="orderNewCancellationTimeHours" column="order_new_cancellation_time_hours" />
+		
+		<result property="endOtp" column="end_otp" />
+		
+		<result property="paymentToken" column="payment_token" />
+		<result property="paymentTokenGeneratedTime" column="payment_token_generated_time" />
+		
+		<result property="vendorAddress" column="vendorAddress"/>
+		
+		<result property="orderDate" column="order_date" />
+		<result property="offlineOrderCount" column="offline_order_count" />
+		<result property="onlineOrderCount" column="online_order_count" />
+		
+		<result property="vendorPhoneNo" column="vendor_phone_no" />
+		
+		<collection property="orderItemList" javaType="ArrayList" column="order_id" ofType="OrderItemModel" resultMap="com.webapp.daos.OrderItemDao.OrderItemResultMap" />
+		
+	</resultMap>
+	
+	<resultMap id="StatsResultMap" type="StatsModel">
+		<result property="userId" column="userId" />
+		<result property="revenue" column="revenue" />
+		<result property="numberOfOrders" column="numberOfOrders" />
+	</resultMap>
+	
+	<sql id="OrderColumns">
+		DISTINCT o.order_id, o.order_short_id, o.order_user_id, o.order_received_against_vendor_id, 
+		o.order_creation_time, o.order_delivery_status, o.order_delivery_address, 
+		o.order_delivery_address_geolocation, o.order_delivery_lat, o.order_delivery_lng, 
+		o.order_promo_code_id, o.order_promo_code_discount, o.order_total, o.order_delivery_charges,
+		o.order_charges, o.order_delivery_distance, o.payment_mode, o.payment_status, o.order_number_of_items, 
+		o.record_status, o.created_by, o.created_at, o.updated_by, o.updated_at, o.vendor_store_id,
+		o.is_delievery_managed_by_vendor_driver, o.driver_id,
+		o.multicity_city_region_id, o.multicity_country_id, o.car_type_id, o.service_type_id,
+		o.is_self_delivery_within_x_km, o.end_otp, o.payment_token, o.payment_token_generated_time
+	</sql>
+	
+	<sql id="OrderItemColumns">
+		oi.order_item_id, oi.order_id, oi.number_of_items_ordered, 
+		oi.vendor_product_id, oi.vendor_id, oi.product_name, oi.product_information, 
+		oi.product_actual_price, oi.product_discounted_price, oi.product_weight, 
+		oi.product_weight_unit, oi.product_specification, oi.product_image, oi.is_paid, 
+		oi.created_by, oi.created_at, oi.updated_by, oi.updated_at, oi.product_sku,
+		oi.product_category
+	</sql>
+	
+	<sql id="VendorStoreColumns">
+		vs.store_name, vs.store_image, vs.store_address,
+		vs.store_address_lat, vs.store_address_lng
+	</sql>
+	
+	<insert id="insertOrder" useGeneratedKeys="true" parameterType="OrderModel">
+	
+		INSERT INTO orders
+			(
+				order_id, order_user_id, order_received_against_vendor_id, 
+				order_creation_time, order_delivery_status, order_delivery_address, 
+				order_delivery_address_geolocation, order_delivery_lat, order_delivery_lng, 
+				order_promo_code_id, order_promo_code_discount, order_total, order_delivery_charges,
+				order_charges, order_delivery_distance, payment_mode, payment_status, order_number_of_items, 
+				record_status, created_by, created_at, updated_by, updated_at, vendor_store_id,
+				multicity_city_region_id, multicity_country_id, car_type_id, service_type_id,
+				is_self_delivery_within_x_km, end_otp, payment_token, payment_token_generated_time
+			)
+		VALUES 
+			(
+				#{orderId}, #{orderUserId}, #{orderReceivedAgainstVendorId}, 
+				#{orderCreationTime}, #{orderDeliveryStatus}, #{orderDeliveryAddress}, 
+				${orderDeliveryAddressGeolocation}, #{orderDeliveryLat}, #{orderDeliveryLng}, 
+				#{orderPromoCodeId}, #{orderPromoCodeDiscount}, #{orderTotal}, #{orderDeliveryCharges}, 
+				#{orderCharges}, #{orderDeliveryDistance}, #{paymentMode}, #{paymentStatus}, #{orderNumberOfItems}, 
+				#{recordStatus}, #{createdBy}, #{createdAt}, #{updatedBy}, #{updatedAt}, #{vendorStoreId},
+				#{multicityCityRegionId}, #{multicityCountryId}, #{carTypeId}, #{serviceTypeId},
+				#{isSelfDeliveryWithinXKm}, #{endOtp}, #{paymentToken}, #{paymentTokenGeneratedTime}
+			);
+			
+	</insert>
+	
+	<update id="updateOrder" parameterType="OrderModel">
+	
+		UPDATE 
+			orders
+		SET 
+			order_user_id=#{orderUserId},
+			order_received_against_vendor_id=#{orderReceivedAgainstVendorId},
+			order_creation_time=#{orderCreationTime},
+			order_delivery_status=#{orderDeliveryStatus},
+			order_delivery_address=#{orderDeliveryAddress},
+			order_delivery_address_geolocation=${orderDeliveryAddressGeolocation},
+			order_delivery_lat=#{orderDeliveryLat},
+			order_delivery_lng=#{orderDeliveryLng},
+			order_promo_code_id=#{orderPromoCodeId},
+			order_promo_code_discount=#{orderPromoCodeDiscount},
+			order_total=#{orderTotal},
+			order_delivery_charges=#{orderDeliveryCharges}, 
+			order_charges=#{orderCharges}, 
+			order_delivery_distance=#{orderDeliveryDistance},
+			payment_mode=#{paymentMode},
+			payment_status=#{paymentStatus}, 
+			order_number_of_items=#{orderNumberOfItems}, 
+			record_status=#{recordStatus},
+			updated_by=#{updatedBy},
+			updated_at=#{updatedAt},
+			vendor_store_id=#{vendorStoreId},
+			multicity_country_id=#{multicityCountryId}, 
+			multicity_city_region_id=#{multicityCityRegionId}, 
+			car_type_id=#{carTypeId},
+			service_type_id=#{serviceTypeId}, 
+			is_self_delivery_within_x_km=#{isSelfDeliveryWithinXKm}, 
+			end_otp=#{endOtp},
+			payment_token=#{paymentToken}, 
+			payment_token_generated_time=#{paymentTokenGeneratedTime}
+		WHERE
+			order_id= #{orderId} 
+			
+	</update>
+	
+	<select id="getOrdersByUserId" resultMap="OrderResultMap">
+		
+		SELECT
+			<include refid="OrderColumns"></include>,
+			<include refid="OrderItemColumns"></include>,
+			<include refid="VendorStoreColumns"></include>,
+			concat(vui.first_name,' ',vui.last_name) AS vendorName,
+			concat(cui.first_name,' ',cui.last_name) AS customerName,
+			pc.promo_code
+		FROM
+			orders o
+		INNER JOIN order_items oi ON oi.order_id = o.order_id
+		INNER JOIN user_info cui ON cui.user_id = o.order_user_id
+		INNER JOIN user_info vui ON vui.user_id = o.order_received_against_vendor_id
+		INNER JOIN vendor_stores vs ON vs.vendor_store_id = o.vendor_store_id
+		LEFT JOIN promo_code pc ON pc.promo_code_id = o.order_promo_code_id
+		WHERE
+		<if test="roleId==5">
+			o.order_user_id = #{userId}
+		</if>
+		<if test="roleId==6">
+			o.driver_id = #{userId}
+		</if>
+		<if test="orderShortId!=-1">
+		AND
+			(
+				o.order_short_id = #{orderShortId}
+			)
+		</if>
+		AND
+			o.order_delivery_status NOT IN
+	    	<foreach item="status" index="index" collection="statusNotToBeConsidered" open="(" separator="," close=")">
+				#{status}
+			</foreach>
+		ORDER BY o.order_creation_time DESC
+		LIMIT #{length} OFFSET #{start}
+		
+	</select>
+	
+	<select id="getOrderDetailsByOrderId" resultMap="OrderResultMap">
+		
+		SELECT
+			<include refid="OrderColumns"></include>,
+			<include refid="VendorStoreColumns"></include>,
+			concat(vui.first_name,' ',vui.last_name) AS vendorName,
+			vui.mail_address_line_1 AS vendorAddress,
+			concat(cui.first_name,' ',cui.last_name) AS customerName,
+			cui.phone_no_code AS customerPhoneNoCode, cui.phone_no AS customerPhoneNo,
+			pc.promo_code, vui.phone_no as vendor_phone_no
+		FROM
+			orders o
+		INNER JOIN user_info cui ON cui.user_id = o.order_user_id
+		INNER JOIN user_info vui ON vui.user_id = o.order_received_against_vendor_id
+		INNER JOIN vendor_service_categories vsc ON vsc.vendor_id = o.order_received_against_vendor_id
+		INNER JOIN services s ON s.service_id = vsc.service_id
+		INNER JOIN categories c ON c.category_id = vsc.category_id
+		LEFT JOIN vendor_stores vs ON vs.vendor_store_id = o.vendor_store_id
+		LEFT JOIN promo_code pc ON pc.promo_code_id = o.order_promo_code_id
+		WHERE
+			o.order_id = #{orderId}
+		
+	</select>
+	
+	<select id="getOrderDetailsByOrderIdWithOrderItems" resultMap="OrderResultMap">
+		
+		SELECT
+			<include refid="OrderColumns"></include>,
+			<include refid="OrderItemColumns"></include>,
+			<include refid="VendorStoreColumns"></include>,
+			concat(vui.first_name,' ',vui.last_name) AS vendorName,
+			concat(cui.first_name,' ',cui.last_name) AS customerName,
+			cui.phone_no_code AS customerPhoneNoCode, cui.phone_no AS customerPhoneNo,
+			pc.promo_code
+		FROM
+			orders o
+		INNER JOIN order_items oi ON oi.order_id = o.order_id
+		INNER JOIN user_info cui ON cui.user_id = o.order_user_id
+		INNER JOIN user_info vui ON vui.user_id = o.order_received_against_vendor_id
+		INNER JOIN vendor_service_categories vsc ON vsc.vendor_id = o.order_received_against_vendor_id
+		INNER JOIN services s ON s.service_id = vsc.service_id
+		INNER JOIN categories c ON c.category_id = vsc.category_id
+		INNER JOIN vendor_stores vs ON vs.vendor_store_id = o.vendor_store_id
+		LEFT JOIN promo_code pc ON pc.promo_code_id = o.order_promo_code_id
+		WHERE
+			o.order_id = #{orderId}
+		
+	</select>
+	
+	<select id="getOrderLimitedDetailsByOrderId" resultMap="OrderResultMap">
+		
+		SELECT
+			<include refid="OrderColumns"></include>
+		FROM
+			orders o
+		WHERE
+			o.order_id = #{orderId}
+		
+	</select>
+	
+	<update id="updateOrderDeliveryStatus" parameterType="OrderModel">
+		
+		UPDATE 
+			orders
+		SET
+			order_delivery_status = #{orderDeliveryStatus},
+			updated_by = #{updatedBy},
+			updated_at = #{updatedAt}
+		WHERE
+			order_id = #{orderId}
+		
+	</update>
+	
+	<update id="updateDelieveryManagedByVendorDriver" parameterType="OrderModel">
+		
+		UPDATE 
+			orders
+		SET
+			is_delievery_managed_by_vendor_driver = #{isDelieveryManagedByVendorDriver},
+			updated_by = #{updatedBy},
+			updated_at = #{updatedAt}
+		WHERE
+			order_id = #{orderId}
+		
+	</update>
+	
+	<update id="updateDriverIdAgainstOrder" parameterType="OrderModel">
+		
+		UPDATE 
+			orders
+		SET
+			driver_id = #{driverId},
+			updated_at = #{updatedAt}
+		WHERE
+			order_id = #{orderId}
+		
+	</update>
+	
+	<update id="updateCarTypeIdAgainstOrder" parameterType="OrderModel">
+		
+		UPDATE 
+			orders
+		SET
+			car_type_id = #{carTypeId},
+			updated_at = #{updatedAt}
+		WHERE
+			order_id = #{orderId}
+		
+	</update>
+	
+	<update id="updatePaymentStatus" parameterType="OrderModel">
+		
+		UPDATE 
+			orders
+		SET
+			payment_status = #{paymentStatus},
+			updated_by = #{updatedBy},
+			updated_at = #{updatedAt}
+		WHERE
+			order_id = #{orderId}
+		
+	</update>
+	
+	<select id="getOrdersCount" resultType="int">
+	
+		SELECT
+			count(o.order_id)
+		FROM
+			orders o
+		INNER JOIN user_info cui ON cui.user_id = o.order_user_id
+		INNER JOIN user_info vui ON vui.user_id = o.order_received_against_vendor_id
+		INNER JOIN vendor_service_categories vsc ON vsc.vendor_id = o.order_received_against_vendor_id
+		INNER JOIN vendor_stores vs ON vs.vendor_store_id = o.vendor_store_id
+		INNER JOIN services s ON s.service_id = vsc.service_id
+		INNER JOIN categories c ON c.category_id = vsc.category_id
+		WHERE
+			o.order_creation_time &gt;= #{startDatelong}
+		AND
+			o.order_creation_time &lt;= #{endDatelong}
+		<if test="orderStatusFilter==null">
+		AND
+			o.order_delivery_status IN
+	    	<foreach item="status" index="index" collection="orderStatus" open="(" separator="," close=")">
+				#{status}
+			</foreach>
+		</if>
+		<if test="orderStatusFilter!=null">
+		AND
+			o.order_delivery_status = #{orderStatusFilter}
+		</if>
+		<if test="vendorId!=null">
+		AND
+			o.order_received_against_vendor_id = #{vendorId}
+		</if>
+		<if test="vendorStoreIdList!=null">
+		AND
+			o.vendor_store_id IN
+			<foreach item="item" index="index" collection="vendorStoreIdList" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+		<if test="serviceId!=null">
+		AND
+			vsc.service_id = #{serviceId}
+		</if>
+		<if test="categoryId!=null">
+		AND
+			vsc.category_id = #{categoryId}
+		</if>
+		<if test="vendorOrderManagement!=null">
+			<if test="vendorOrderManagement==1">
+			AND
+				o.is_delievery_managed_by_vendor_driver = 'true'
+			</if>
+			<if test="vendorOrderManagement==2">
+			AND
+				o.is_delievery_managed_by_vendor_driver = 'false'
+			</if>
+		</if>
+	
+	</select>
+	
+	<select id="getOrdersSearch" resultMap="OrderResultMap">
+	
+		SELECT
+			<include refid="OrderColumns"></include>,
+			<include refid="VendorStoreColumns"></include>,
+			concat(vui.first_name,' ',vui.last_name) AS vendorName,
+			concat(cui.first_name,' ',cui.last_name) AS customerName,
+			cui.phone_no_code AS customerPhoneNoCode, cui.phone_no AS customerPhoneNo
+		FROM
+			orders o
+		INNER JOIN user_info cui ON cui.user_id = o.order_user_id
+		INNER JOIN user_info vui ON vui.user_id = o.order_received_against_vendor_id
+		INNER JOIN vendor_service_categories vsc ON vsc.vendor_id = o.order_received_against_vendor_id
+		INNER JOIN vendor_stores vs ON vs.vendor_store_id = o.vendor_store_id
+		INNER JOIN services s ON s.service_id = vsc.service_id
+		INNER JOIN categories c ON c.category_id = vsc.category_id
+		WHERE
+			(
+				concat(vui.first_name,' ',vui.last_name ) ilike #{searchKey}
+			OR
+				concat(cui.first_name,' ',cui.last_name ) ilike #{searchKey}
+			<if test="orderShortIdSearch!=-1">
+			OR
+				o.order_short_id = #{orderShortIdSearch}
+			</if>
+			)
+		<if test="startDatelong>0">
+		AND
+			o.order_creation_time &gt;= #{startDatelong}
+		AND
+			o.order_creation_time &lt;= #{endDatelong}
+		</if>
+		<if test="orderStatusFilter==null">
+		AND
+			o.order_delivery_status IN
+	    	<foreach item="status" index="index" collection="orderStatus" open="(" separator="," close=")">
+				#{status}
+			</foreach>
+		</if>
+		<if test="orderStatusFilter!=null">
+		AND
+			o.order_delivery_status = #{orderStatusFilter}
+		</if>
+		<if test="vendorId!=null">
+		AND
+			o.order_received_against_vendor_id = #{vendorId}
+		</if>
+		<if test="vendorStoreIdList!=null">
+		AND
+			o.vendor_store_id IN
+			<foreach item="item" index="index" collection="vendorStoreIdList" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+		<if test="serviceId!=null">
+		AND
+			vsc.service_id = #{serviceId}
+		</if>
+		<if test="categoryId!=null">
+		AND
+			vsc.category_id = #{categoryId}
+		</if>
+		<if test="vendorOrderManagement!=null">
+			<if test="vendorOrderManagement==1">
+			AND
+				o.is_delievery_managed_by_vendor_driver = 'true'
+			</if>
+			<if test="vendorOrderManagement==2">
+			AND
+				o.is_delievery_managed_by_vendor_driver = 'false'
+			</if>
+		</if>
+		ORDER BY o.order_creation_time DESC
+		<if test="length>0">
+		LIMIT #{length} OFFSET #{start}
+		</if>
+	
+	</select>
+	
+	<select id="getOrdersSearchAPI" resultMap="OrderResultMap">
+	
+		SELECT
+			<include refid="OrderColumns"></include>,
+			<include refid="OrderItemColumns"></include>,
+			<include refid="VendorStoreColumns"></include>,
+			concat(vui.first_name,' ',vui.last_name) AS vendorName,
+			concat(cui.first_name,' ',cui.last_name) AS customerName,
+			cui.phone_no_code AS customerPhoneNoCode, cui.phone_no AS customerPhoneNo
+		FROM
+			orders o
+		INNER JOIN user_info cui ON cui.user_id = o.order_user_id
+		INNER JOIN user_info vui ON vui.user_id = o.order_received_against_vendor_id
+		INNER JOIN vendor_service_categories vsc ON vsc.vendor_id = o.order_received_against_vendor_id
+		INNER JOIN vendor_stores vs ON vs.vendor_store_id = o.vendor_store_id
+		INNER JOIN services s ON s.service_id = vsc.service_id
+		INNER JOIN categories c ON c.category_id = vsc.category_id
+		INNER JOIN order_items oi ON oi.order_id = o.order_id
+		WHERE
+			(
+				concat(vui.first_name,' ',vui.last_name ) ilike #{searchKey}
+			OR
+				concat(cui.first_name,' ',cui.last_name ) ilike #{searchKey}
+			<if test="orderShortIdSearch!=-1">
+			OR
+				o.order_short_id = #{orderShortIdSearch}
+			</if>
+			)
+		AND
+			o.order_delivery_status IN
+	    	<foreach item="status" index="index" collection="orderStatus" open="(" separator="," close=")">
+				#{status}
+			</foreach>
+		<if test="vendorId!=null">
+		AND
+			o.order_received_against_vendor_id = #{vendorId}
+		</if>
+		<if test="vendorStoreIdList!=null">
+		AND
+			o.vendor_store_id IN
+			<foreach item="item" index="index" collection="vendorStoreIdList" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+		<if test="vendorOrderManagement!=null">
+			<if test="vendorOrderManagement==1">
+			AND
+				o.is_delievery_managed_by_vendor_driver = 'true'
+			</if>
+			<if test="vendorOrderManagement==2">
+			AND
+				o.is_delievery_managed_by_vendor_driver = 'false'
+			</if>
+		</if>
+		ORDER BY o.order_creation_time DESC
+		<if test="length>0">
+		LIMIT #{length} OFFSET #{start}
+		</if>
+	
+	</select>
+	
+	<select id="getOrdersSearchCount" resultType="int">
+	
+		SELECT
+			count(o.order_id)
+		FROM
+			orders o
+		INNER JOIN user_info cui ON cui.user_id = o.order_user_id
+		INNER JOIN user_info vui ON vui.user_id = o.order_received_against_vendor_id
+		INNER JOIN vendor_service_categories vsc ON vsc.vendor_id = o.order_received_against_vendor_id
+		INNER JOIN vendor_stores vs ON vs.vendor_store_id = o.vendor_store_id
+		INNER JOIN services s ON s.service_id = vsc.service_id
+		INNER JOIN categories c ON c.category_id = vsc.category_id
+		WHERE
+			(
+				concat(vui.first_name,' ',vui.last_name ) ilike #{searchKey}
+			OR
+				concat(cui.first_name,' ',cui.last_name ) ilike #{searchKey}
+			<if test="orderShortIdSearch!=-1">
+			OR
+				o.order_short_id = #{orderShortIdSearch}
+			</if>
+			)
+		<if test="startDatelong>0">
+		AND
+			o.order_creation_time &gt;= #{startDatelong}
+		AND
+			o.order_creation_time &lt;= #{endDatelong}
+		</if>
+		<if test="orderStatusFilter==null">
+		AND
+			o.order_delivery_status IN
+	    	<foreach item="status" index="index" collection="orderStatus" open="(" separator="," close=")">
+				#{status}
+			</foreach>
+		</if>
+		<if test="orderStatusFilter!=null">
+		AND
+			o.order_delivery_status = #{orderStatusFilter}
+		</if>
+		<if test="vendorId!=null">
+		AND
+			o.order_received_against_vendor_id = #{vendorId}
+		</if>
+		<if test="vendorStoreIdList!=null">
+		AND
+			o.vendor_store_id IN
+			<foreach item="item" index="index" collection="vendorStoreIdList" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+		<if test="serviceId!=null">
+		AND
+			vsc.service_id = #{serviceId}
+		</if>
+		<if test="categoryId!=null">
+		AND
+			vsc.category_id = #{categoryId}
+		</if>
+		<if test="vendorOrderManagement!=null">
+			<if test="vendorOrderManagement==1">
+			AND
+				o.is_delievery_managed_by_vendor_driver = 'true'
+			</if>
+			<if test="vendorOrderManagement==2">
+			AND
+				o.is_delievery_managed_by_vendor_driver = 'false'
+			</if>
+		</if>
+	
+	</select>
+	
+	<select id="getOrdersForProcessingCronJob" resultMap="OrderResultMap">
+		
+		SELECT
+			<include refid="OrderColumns"></include>,
+			<include refid="VendorStoreColumns"></include>,
+			os.order_job_cancellation_time_hours, os.order_new_cancellation_time_hours
+		FROM
+			orders o
+		INNER JOIN users cu ON (cu.user_id = o.order_user_id AND cu.is_active = true)
+		INNER JOIN users vu ON (vu.user_id = o.order_received_against_vendor_id AND vu.is_active = true)
+		INNER JOIN vendor_service_categories vsc ON vsc.vendor_id = o.order_received_against_vendor_id
+		INNER JOIN vendor_stores vs ON (vs.vendor_store_id = o.vendor_store_id AND vs.is_active = true)
+		INNER JOIN services s ON (s.service_id = vsc.service_id AND s.is_active = true)
+		INNER JOIN categories c ON (c.category_id = vsc.category_id AND c.is_active = true)
+		INNER JOIN order_settings os ON os.service_id = s.service_id
+		WHERE
+			o.order_delivery_status IN
+	    	<foreach item="status" index="index" collection="orderStatus" open="(" separator="," close=")">
+				#{status}
+			</foreach>
+		ORDER BY o.order_creation_time ASC
+		LIMIT #{length} OFFSET #{start}
+			
+	</select>
+	
+	<select id="getOrderStatsByTimeForVendor" resultMap="StatsResultMap">
+		
+		SELECT
+			COALESCE(SUM(o.order_charges), 0.0) AS revenue, COALESCE(COUNT(o.order_id), 0) AS numberOfOrders
+		FROM
+			orders o
+		WHERE
+			o.order_received_against_vendor_id = #{vendorId}
+		<if test="vendorStoreIdList!=null">
+		AND
+			o.vendor_store_id IN
+			<foreach item="item" index="index" collection="vendorStoreIdList" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+		<if test="startTime>0">
+		AND
+			o.created_at &gt;= #{startTime}
+		AND
+			o.created_at &lt;= #{endTime}
+		</if>			
+	
+	</select>
+	
+	<select id="getOrderListForHighestSpendingCustomers" resultMap="StatsResultMap">
+		
+		SELECT
+			COALESCE(SUM(o.order_charges), 0.0) AS revenue, 
+			COALESCE(COUNT(o.order_id), 0) AS numberOfOrders, 
+			o.order_user_id AS userId
+		FROM
+			orders o
+		WHERE
+			o.order_received_against_vendor_id = #{vendorId}
+		<if test="vendorStoreIdList!=null">
+		AND
+			o.vendor_store_id IN
+			<foreach item="item" index="index" collection="vendorStoreIdList" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+		<if test="startTime>0">
+		AND
+			o.created_at &gt;= #{startTime}
+		AND
+			o.created_at &lt;= #{endTime}
+		</if>
+		GROUP BY o.order_user_id
+		ORDER BY revenue DESC	
+		<if test="length>0">
+		LIMIT #{length} OFFSET #{start}
+		</if>	
+	
+	</select>
+	
+	<select id="getCurrentOrderByDriverId" resultMap="OrderResultMap">
+		 
+		SELECT
+			<include refid="OrderColumns"></include>,
+			<include refid="VendorStoreColumns"></include>,
+			os.order_job_cancellation_time_hours, os.order_new_cancellation_time_hours
+		FROM
+			orders o
+		INNER JOIN users cu ON (cu.user_id = o.order_user_id AND cu.is_active = true)
+		INNER JOIN users vu ON (vu.user_id = o.order_received_against_vendor_id AND vu.is_active = true)
+		INNER JOIN vendor_service_categories vsc ON vsc.vendor_id = o.order_received_against_vendor_id
+		INNER JOIN vendor_stores vs ON (vs.vendor_store_id = o.vendor_store_id AND vs.is_active = true)
+		INNER JOIN services s ON (s.service_id = vsc.service_id AND s.is_active = true)
+		INNER JOIN categories c ON (c.category_id = vsc.category_id AND c.is_active = true)
+		INNER JOIN order_settings os ON os.service_id = s.service_id
+		WHERE
+			o.driver_id = #{driverId} 
+		AND 
+		    o.order_creation_time = (
+				    					SELECT 
+				    						MAX(order_creation_time) 
+				                      	FROM 
+				                        	orders 
+				                      	WHERE 
+				                        	driver_id = #{driverId}
+				                      	AND 
+				                        	order_delivery_status IN
+									    	<foreach item="status" index="index" collection="orderStatus" open="(" separator="," close=")">
+												#{status}
+											</foreach>
+				                    )		
+
+	</select>
+	
+	<select id="getAllOrdersDataForMigration" resultMap="OrderResultMap">
+		
+		SELECT 
+			<include refid="OrderColumns"></include>
+		FROM 
+			orders o
+		ORDER BY o.created_at ASC
+		LIMIT #{length} OFFSET #{start}
+			
+	</select>
+	
+	<select id="getDeliveredOrdersByvendorIdAndOrderDeliveryStatusAndUpdatedAt" resultMap="OrderResultMap">
+		
+		SELECT
+			<include refid="OrderColumns"></include>,
+			<include refid="OrderItemColumns"></include>,
+			<include refid="VendorStoreColumns"></include>,
+			pc.promo_code
+		FROM
+			orders o
+			INNER JOIN vendor_stores vs ON vs.vendor_store_id = o.vendor_store_id
+			INNER JOIN order_items oi ON oi.order_id = o.order_id
+			LEFT JOIN promo_code pc ON pc.promo_code_id = o.order_promo_code_id
+		WHERE
+			o.order_received_against_vendor_id = #{vendorId}
+		AND
+			O.order_delivery_status IN
+			<foreach item="orderDeliveryStatus" index="index" collection="orderDeliveryStatusList" open="(" separator="," close=")">
+				#{orderDeliveryStatus}
+			</foreach>
+		AND	
+			o.updated_at &gt;= #{startDateLong}
+		AND
+			o.updated_at &lt;= #{endDateLong}
+		
+	</select>
+	
+	<select id="getOrdersListByUserId" resultMap="OrderResultMap">
+		
+		SELECT
+			<include refid="OrderColumns"></include>,
+			<include refid="OrderItemColumns"></include>,
+			<include refid="VendorStoreColumns"></include>,
+			concat(vui.first_name,' ',vui.last_name) AS vendorName,
+			concat(cui.first_name,' ',cui.last_name) AS customerName,
+			pc.promo_code
+		FROM
+			orders o
+		INNER JOIN order_items oi ON oi.order_id = o.order_id
+		INNER JOIN user_info cui ON cui.user_id = o.order_user_id
+		INNER JOIN user_info vui ON vui.user_id = o.order_received_against_vendor_id
+		INNER JOIN vendor_stores vs ON vs.vendor_store_id = o.vendor_store_id
+		LEFT JOIN promo_code pc ON pc.promo_code_id = o.order_promo_code_id
+		WHERE
+		
+		<if test="roleId==7">
+			o.order_received_against_vendor_id = #{userId}
+		</if>
+		<if test="roleId==5">
+			o.order_user_id = #{userId}
+		</if>
+		
+		<if test="orderShortId!=-1">
+		
+		AND
+			(
+				o.order_short_id = #{orderShortId}
+			) 
+			
+		</if>
+		AND
+			o.order_delivery_status NOT IN
+	    	<foreach item="status" index="index" collection="statusNotToBeConsidered" open="(" separator="," close=")">
+				#{status}
+			</foreach>
+			
+		ORDER BY o.order_creation_time DESC
+		
+		
+	</select>
+	
+	<select id="getOrdersCountByUserId" resultType="int">
+		
+		SELECT
+			count(o.order_id)
+		FROM
+			orders o
+		
+		WHERE
+		
+		<if test="roleId==7">
+			o.order_received_against_vendor_id = #{userId}
+		</if>
+		<if test="roleId==5">
+			o.order_user_id = #{userId}
+		</if>
+		AND
+			o.order_delivery_status NOT IN
+	    	<foreach item="status" index="index" collection="statusNotToBeConsidered" open="(" separator="," close=")">
+				#{status}
+			</foreach>	
+		
+	</select>
+
+	<update id="updatePaymentAndOrderStatusForCCavenuePayment" parameterType="OrderModel">
+		
+		UPDATE 
+			orders
+		SET
+			payment_status = #{paymentStatus},
+			order_delivery_status = #{orderDeliveryStatus},
+			updated_by = #{updatedBy},
+			updated_at = #{updatedAt}
+		WHERE
+			order_id = #{orderId}
+		
+	</update>
+	
+	<update id="updatePaymentAndOrderStatusForKPMart" parameterType="OrderModel">
+		
+		UPDATE 
+			orders
+		SET
+			payment_status = #{paymentStatus},
+			order_delivery_status = #{orderDeliveryStatus},
+			payment_mode = #{paymentMode},
+			updated_by = #{updatedBy},
+			updated_at = #{updatedAt}
+		WHERE
+			order_id = #{orderId}
+		
+	</update>
+
+	<select id="getOrderDetailsByPaymentToken" resultMap="OrderResultMap">
+		
+		SELECT
+			<include refid="OrderColumns"></include>
+		FROM
+			orders o
+		WHERE
+			o.payment_token = #{paymentToken}
+		
+	</select>
+	
+	<select id="getOnlineAndOfflineSalesDashboardByBrand" resultMap="OrderResultMap">
+		
+		 SELECT 
+    TO_CHAR(order_date::DATE, 'DD-MM-YYYY') AS order_date,
+    SUM(CASE WHEN order_delivery_status = 'driver delivered' THEN order_count ELSE 0 END) AS online_order_count,
+    SUM(CASE WHEN order_delivery_status = 'offline' THEN order_count ELSE 0 END) AS offline_order_count
+FROM (
+	
+		SELECT o.order_delivery_status, count(order_delivery_status) AS order_count, TO_CHAR(TO_TIMESTAMP(order_creation_time / 1000), 'YYYY-MM-DD') AS order_date 
+		FROM vendor_products vp
+		
+		INNER JOIN product_variants pv ON pv.product_variant_id = vp.product_variant_id
+		INNER JOIN product_templates pt ON pt.product_template_id = pv.product_template_id AND pt.brand_id = #{brandId}
+		LEFT JOIN order_items oi ON oi.vendor_product_id = vp.vendor_product_id
+		LEFT JOIN orders o ON o.order_id = oi.order_id 
+			AND o.order_delivery_status in ('driver delivered','offline')
+		GROUP BY  o.order_delivery_status,order_date
+		) AS subquery
+GROUP BY 
+    order_date
+ORDER BY 
+    order_date;
+	</select>
+	
+	
+	
+	
+</mapper>

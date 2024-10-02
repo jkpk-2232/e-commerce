@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.webapp.daos.EmergencyNumbersPersonalDao">
+
+	<resultMap id="emergencyNumbersPersonalResultMap" type="EmergencyNumbersPersonalModel" >
+	
+		<result property="emergencyNumberPersonalId" column="emergency_number_personal_id" /> 
+		<result property="userId" column="user_id" />
+		<result property="name" column="name" />
+		<result property="phoneNo" column="phone_no" />
+		
+		<result property="recordStatus" column="record_status" />
+		<result property="createdAt" column="created_at" />
+		<result property="createdBy" column="created_by" />
+		<result property="updatedAt" column="updated_at" />
+		<result property="updatedBy" column="updated_by" />
+		
+	</resultMap>
+	
+	<insert id="insertEmergencyNumbersPersonalBatch" parameterType="java.util.List">
+	
+		INSERT INTO 
+			emergency_numbers_personal 
+		 		(
+					emergency_number_personal_id, user_id, name, phone_no,
+					record_status, created_at, created_by, updated_at, updated_by
+				)
+		VALUES
+				<foreach collection="emergencyNumbersPersonalModelList" item="emergencyNumbersPersonalModel"  separator=",">
+				(
+					#{emergencyNumbersPersonalModel.emergencyNumberPersonalId}, #{emergencyNumbersPersonalModel.userId},
+					#{emergencyNumbersPersonalModel.name}, #{emergencyNumbersPersonalModel.phoneNo}, #{emergencyNumbersPersonalModel.recordStatus},
+					#{emergencyNumbersPersonalModel.createdAt}, #{emergencyNumbersPersonalModel.createdBy}, #{emergencyNumbersPersonalModel.updatedAt},
+					#{emergencyNumbersPersonalModel.updatedBy}
+				)
+				</foreach>
+				
+	</insert>
+	
+	<select id="getEmergencyNumbersPersonalListById" parameterType="String"  resultMap="emergencyNumbersPersonalResultMap">
+	
+		SELECT 
+			emergency_number_personal_id, name, phone_no, created_at	
+		FROM 
+			emergency_numbers_personal		
+		WHERE 
+	    	record_status = 'A'
+	    AND
+	    	user_id = #{userId}
+	    	
+	</select>
+	
+	<update id="deleteEmergencyNumberPersonal" parameterType="EmergencyNumbersPersonalModel"  > 
+		
+		UPDATE 
+			emergency_numbers_personal 
+		SET 
+			record_status = 'D',
+			updated_at = #{updatedAt},
+			updated_by = #{updatedBy}
+		WHERE 
+			emergency_number_personal_id=#{emergencyNumberPersonalId}
+		AND
+			record_status = 'A'
+			
+	</update>
+	
+	<select id="getEmergencyNumbersPersonalDetailsById" parameterType="String" resultMap="emergencyNumbersPersonalResultMap">
+	
+		SELECT 
+			* 
+		FROM 
+			emergency_numbers_personal 
+		WHERE 
+			emergency_number_personal_id = #{emergencyNumberPersonalId}
+		AND
+			record_status = 'A'
+			
+	</select>
+	
+</mapper>

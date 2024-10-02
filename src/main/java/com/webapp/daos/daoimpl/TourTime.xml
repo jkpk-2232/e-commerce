@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.webapp.daos.TourTimeDao">
+
+	<resultMap id="tourTimeResultMap" type="TourTimeModel" >
+	    
+	    <result property="tourTimeId" column="tour_time_id" />
+	    <result property="tourId" column="tour_id" />
+	    <result property="bookingTime" column="booking_time" />
+	    <result property="acceptTime" column="accept_time" />
+		<result property="arrivedWaitingTime" column="arrived_waiting_time" />
+		<result property="startTime" column="start_time" />
+		<result property="endTime" column="end_time" />
+		<result property="createdAt" column="created_at" />
+		<result property="updatedAt" column="updated_at" />
+		
+	</resultMap>
+	
+	<insert id="createTourTime" useGeneratedKeys="true" parameterType="TourTimeModel">
+
+		INSERT INTO 
+			tour_time
+				(
+				    tour_time_id, tour_id, booking_time, accept_time, arrived_waiting_time, 
+				    start_time, end_time, created_at, updated_at 
+		  			
+				)
+		VALUES
+				(
+					#{tourTimeId}, #{tourId},#{bookingTime},#{acceptTime},#{arrivedWaitingTime},
+					#{startTime}, #{endTime}, #{createdAt}, #{updatedAt}
+				)
+				
+	</insert>
+	
+	<update id="updateTourAcceptedTime" parameterType="TourTimeModel">
+	
+		UPDATE 
+			tour_time 
+		SET 
+			accept_time = #{acceptTime},
+			updated_at = #{updatedAt}
+		WHERE  
+		    tour_id = #{tourId}
+		    
+	</update>
+	
+	<update id="updateTourArrivedWaitingTime" parameterType="TourTimeModel">
+	
+		UPDATE 
+			tour_time 
+		SET 
+			arrived_waiting_time = #{arrivedWaitingTime},
+			updated_at = #{updatedAt}
+		WHERE  
+		    tour_id = #{tourId}
+		    
+	</update>
+	
+	<update id="updateTourStartTime" parameterType="TourTimeModel">
+	
+		UPDATE 
+			tour_time 
+		SET 
+			start_time = #{startTime},
+			updated_at = #{updatedAt}
+		WHERE  
+		    tour_id = #{tourId}
+		    
+	</update>
+	
+	<update id="updateTourEndTime" parameterType="TourTimeModel">
+	
+		UPDATE 
+			tour_time 
+		SET 
+			end_time = #{endTime},
+			updated_at = #{updatedAt}
+		WHERE  
+		    tour_id = #{tourId}
+		    
+	</update>
+	
+	<select id="getTourTimesDetailsByTourId" parameterType="String" resultMap="tourTimeResultMap">
+	
+		SELECT 
+			tour_time_id, tour_id, booking_time, accept_time, arrived_waiting_time, 
+		    start_time, end_time, created_at, updated_at
+		FROM 
+			tour_time
+		WHERE 
+			tour_id = #{tourId}
+			
+   	</select>
+   	
+</mapper>

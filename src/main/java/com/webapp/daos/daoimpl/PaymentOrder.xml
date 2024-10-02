@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.webapp.daos.PaymentOrderDao">
+
+	<resultMap id="PaymentOrderResultMap" type="PaymentOrderModel">
+
+		<result property="paymentOrderId" column="payment_order_id" />
+		<result property="firstName" column="first_name" />
+		<result property="lastName" column="last_name" />
+		<result property="mobileNumber" column="mobile_number" />
+		<result property="orderType" column="order_type" />
+		<result property="paymentStatus" column="payment_status" />
+		<result property="paymentTypeId" column="payment_type_id" />
+		<result property="amount" column="amount" />
+		<result property="orderId" column="order_id" />
+		<result property="userId" column="user_id" />
+		<result property="orderRefId" column="order_ref_id" />
+		
+		<result property="createdBy" column="created_by" />
+		<result property="createdAt" column="created_at" />
+		<result property="updatedBy" column="updated_by" />
+		<result property="updatedAt" column="updated_at" />
+	</resultMap>
+	
+	<sql id="PaymentOrderColumns">
+		po.payment_order_id, po.first_name, po.last_name, po.mobile_number, po.order_type,
+		po.payment_status, po.payment_type_id, po.amount, po.order_id, po.user_id, po.order_ref_id,
+		po.created_by, po.created_at, po.updated_by, po.updated_at 
+	</sql>
+	
+	<insert id="insertPaymentOrder"  parameterType="PaymentOrderModel">
+	
+		INSERT INTO payment_orders
+			(
+				first_name, last_name, mobile_number,order_type, 
+				payment_status, payment_type_id, amount, order_id, user_id,
+				order_ref_id, created_by, created_at, updated_by, updated_at
+			)
+		VALUES 
+			(
+				#{firstName}, #{lastName}, #{mobileNumber}, #{orderType},
+				#{paymentStatus}, #{paymentTypeId}, #{amount},  #{orderId}, #{userId}, 
+				#{orderRefId}, #{createdBy}, #{createdAt}, #{updatedBy}, #{updatedAt}
+			);
+			
+	</insert>
+	
+	<select id="getPaymentDetailsByOrderId" resultMap="PaymentOrderResultMap">
+		
+		SELECT
+			<include refid="PaymentOrderColumns"></include>
+			
+		FROM
+			payment_orders po
+		
+		WHERE
+			po.order_id = #{orderId}
+		
+	</select>
+	
+	<update id="updatePaymentStatus" parameterType="PhonepePaymentModel">
+		
+		UPDATE 
+			payment_orders
+		SET 
+			payment_status = #{paymentStatus},
+			updated_at = #{updatedAt}
+			
+		WHERE 
+			payment_order_id = #{paymentOrderId}
+		
+	</update>
+	
+	<select id="isOrderIdExists" parameterType="String"	resultType="boolean">
+	
+		SELECT 
+			(count(*)>0) 
+		FROM 
+			payment_orders 
+		WHERE 
+			order_id = #{orderId} 
+			
+	</select>
+	
+</mapper>

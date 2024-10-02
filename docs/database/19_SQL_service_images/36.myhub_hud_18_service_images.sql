@@ -1,0 +1,1 @@
+ALTER TABLE services ADD service_image character varying(300);

@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.webapp.daos.SubscriptionPackageDao">
+
+	<resultMap id="SubscriptionPackageResultMap" type="SubscriptionPackageModel" >
+	    
+		<result property="subscriptionPackageId" column="subscription_package_id" />
+		<result property="packageName" column="package_name" />
+		<result property="durationDays" column="duration_days" />
+		<result property="price" column="price" />
+		<result property="carTypeId" column="car_type_id" />
+		<result property="shortSubscriptionId" column="short_subscription_id" />
+		
+		<result property="isActive" column="is_active" />
+		<result property="isDeleted" column="is_deleted" />
+		<result property="isPermanentDeleted" column="is_permanent_deleted" />
+		<result property="createdAt" column="created_at" />
+		<result property="updatedAt" column="updated_at" />
+		<result property="createdBy" column="created_by" />
+		<result property="updatedBy" column="updated_by" />
+		
+		<result property="carType" column="car_type" />
+		
+	</resultMap>
+	
+	<sql id="SubscriptionPackageColumns">
+		sp.subscription_package_id, sp.package_name, sp.duration_days, sp.price, sp.car_type_id,
+       	sp.is_active, sp.is_deleted, sp.is_permanent_deleted, sp.created_by, sp.created_at, 
+       	sp.updated_by, sp.updated_at, sp.short_subscription_id
+	</sql>
+	
+	<insert id="addSubscriptionPackage" parameterType="SubscriptionPackageModel">
+		
+		INSERT INTO subscription_packages
+			(
+	            subscription_package_id, package_name, duration_days, price, 
+	            car_type_id, is_active, is_deleted, is_permanent_deleted, 
+	            created_by, created_at, updated_by, updated_at
+	        )
+	    VALUES 
+	    	(
+	    		#{subscriptionPackageId}, #{packageName}, #{durationDays}, #{price}, 
+	            #{carTypeId}, #{isActive}, #{isDeleted}, #{isPermanentDeleted}, 
+	            #{createdBy}, #{createdAt}, #{updatedBy}, #{updatedAt}
+	        );
+		
+	</insert>
+	
+	<select id="getAllActiveSubscriptionPackagesList" parameterType="String" resultMap="SubscriptionPackageResultMap">
+		
+	    SELECT 
+	    	<include refid="SubscriptionPackageColumns"></include>
+	    FROM 
+	    	subscription_packages sp
+	    WHERE
+	    	sp.is_active = true
+	    AND
+	    	sp.is_permanent_deleted = false
+	    <if test="carTypeId != null">
+		AND
+			sp.car_type_id = #{carTypeId}
+	    </if>
+	    ORDER BY sp.package_name ASC
+	    <if test="length>0">
+	    LIMIT #{length} OFFSET #{start}
+	    </if>
+	    
+	</select>
+	
+	<select id="getAllActiveSubscriptionPackagesListDriverCarTypeWise" parameterType="String" resultMap="SubscriptionPackageResultMap">
+		
+	    SELECT 
+	    	<include refid="SubscriptionPackageColumns"></include>
+	    FROM 
+	    	subscription_packages sp
+	    INNER JOIN driver_car_types dct ON dct.car_type_id = sp.car_type_id
+	    WHERE
+	    	sp.is_active = true
+	    AND
+	    	sp.is_permanent_deleted = false
+		AND
+			dct.driver_id = #{driverId}
+	    ORDER BY sp.package_name ASC
+	    <if test="length>0">
+	    LIMIT #{length} OFFSET #{start}
+	    </if>
+	    
+	</select>
+	
+	<select id="getSubscriptionPackageCount" resultType="int">
+		
+	    SELECT 
+	    	count(sp.subscription_package_id)
+	    FROM 
+	    	subscription_packages sp
+	    INNER JOIN car_type ct ON ct.car_type_id = sp.car_type_id
+	    WHERE
+	    	sp.is_permanent_deleted = false
+	    
+	</select>
+	
+	<select id="getSubscriptionPackageListForSearch" parameterType="map" resultMap="SubscriptionPackageResultMap">
+		
+	    SELECT 
+	    	<include refid="SubscriptionPackageColumns"></include>,
+	    	ct.car_type
+	    FROM 
+	    	subscription_packages sp
+	    INNER JOIN car_type ct ON ct.car_type_id = sp.car_type_id
+	    WHERE
+	    	(
+	    		sp.package_name iLIKE #{globalSearchString}
+	    	)
+	    AND
+	    	sp.is_permanent_deleted = false
+	    ORDER BY sp.updated_at DESC
+	    LIMIT #{length} OFFSET #{start}
+	    
+	</select>
+	
+	<update id="deleteSubscriptionPackage" parameterType="SubscriptionPackageModel">
+		
+		UPDATE
+			subscription_packages
+		SET
+			is_permanent_deleted = true,
+			updated_at = #{updatedAt},
+			updated_by = #{updatedBy}
+		WHERE
+			subscription_package_id = #{subscriptionPackageId}
+			
+	</update>
+	
+	<update id="activateDeactivateSubscriptionPackage" parameterType="SubscriptionPackageModel">
+		
+		UPDATE
+			subscription_packages
+		SET
+			is_active = #{isActive},
+			is_deleted = #{isDeleted},
+			updated_at = #{updatedAt},
+			updated_by = #{updatedBy}
+		WHERE
+			subscription_package_id = #{subscriptionPackageId}
+			
+	</update>
+	
+	<select id="isSubscriptionPackageExists" resultType="boolean">
+		
+		SELECT
+			(count(*)>0)
+		FROM
+			subscription_packages
+		WHERE
+			package_name = #{packageName}
+		<if test="subscriptionPackageId!=null">
+		AND
+			subscription_package_id != #{subscriptionPackageId}
+		</if>
+		
+	</select>
+	
+	<select id="getSubscriptionPackageDetailsById" resultMap="SubscriptionPackageResultMap">
+	
+		SELECT 
+	    	<include refid="SubscriptionPackageColumns"></include>
+	    FROM 
+	    	subscription_packages sp
+	    WHERE
+	    	sp.subscription_package_id = #{subscriptionPackageId}
+	    	
+	</select>
+	
+	<update id="updateSubscriptionPackage" parameterType="SubscriptionPackageModel">
+		
+		UPDATE
+			subscription_packages
+		SET
+			package_name = #{packageName},
+			duration_days = #{durationDays},
+			price = #{price},
+			car_type_id = #{carTypeId},
+			updated_at = #{updatedAt},
+			updated_by = #{updatedBy}
+		WHERE
+			subscription_package_id = #{subscriptionPackageId}
+			
+	</update>
+	
+</mapper> 

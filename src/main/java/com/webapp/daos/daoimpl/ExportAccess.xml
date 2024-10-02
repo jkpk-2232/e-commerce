@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.webapp.daos.ExportAccessDao">
+
+	<resultMap id="exportAccessResultMap" type="ExportAccessModel" >
+	
+		<result property="exportAccessId" column="export_access_id" />
+		<result property="userId" column="user_id" />
+		
+		<result property="isBookingExport" column="is_booking_export" />
+		<result property="isPassengerExport" column="is_passenger_export" />
+		<result property="isRideLaterExport" column="is_ride_later_export" />
+		<result property="isCriticalRideLaterExport" column="is_critical_ride_later_export" />
+		<result property="isDriverIncomeReportExport" column="is_driver_income_report_export" />
+		<result property="isRefundReportExport" column="is_refund_report_export" />
+		<result property="isDriverDutyReportExport" column="is_driver_duty_report_export" />
+		<result property="isCcavenueLogReportExport" column="is_ccavenue_log_report_export" />
+		<result property="isDriverDriveReportExport" column="is_driver_drive_report_export" />
+		<result property="isDriverBenefitReportExport" column="is_driver_benefit_report_export" />
+		
+		<result property="isActive" column="is_active" />
+		<result property="recordStatus" column="record_status" />
+		<result property="createdAt" column="created_at" />
+		<result property="updatedAt" column="updated_at" />
+		<result property="createdBy" column="created_by" />
+		<result property="updatedBy" column="updated_by" />
+		
+		<result property="isDriverAccountExport" column="is_driver_account_export" />
+		<result property="isVendorAccountExport" column="is_vendor_account_export" />
+		<result property="isVendorDriverAccountExport" column="is_vendor_driver_account_export" />
+		<result property="isDriverSubscriptionExport" column="is_driver_subscription_export" />
+		<result property="isDriverTransactionHistoryExport" column="is_driver_transaction_history_export" />
+		<result property="isPhonepeLogReportExport" column="is_phonepe_log_report_export" />
+		<result property="isWarehouseExport" column="is_warehouse_export" />
+		
+	</resultMap>
+	
+	<insert id="addExportAccessDetails" parameterType="ExportAccessModel">
+
+		INSERT INTO export_accesses
+				(
+	           		export_access_id, user_id, 
+	           		is_booking_export, is_passenger_export, is_ride_later_export, is_critical_ride_later_export, is_driver_income_report_export,
+	           		is_refund_report_export, is_driver_duty_report_export, is_ccavenue_log_report_export, is_driver_drive_report_export,
+	           		is_driver_benefit_report_export, is_active, record_status, created_by, created_at, updated_by, updated_at,
+	           		is_driver_account_export, is_vendor_account_export, is_vendor_driver_account_export, is_driver_subscription_export,
+	           		is_driver_transaction_history_export, is_phonepe_log_report_export, is_warehouse_export
+	           	)
+	   	VALUES 
+				(
+					#{exportAccessId}, #{userId}, 
+					#{isBookingExport}, #{isPassengerExport}, #{isRideLaterExport}, #{isCriticalRideLaterExport}, #{isDriverIncomeReportExport},
+					#{isRefundReportExport}, #{isDriverDutyReportExport}, #{isCcavenueLogReportExport}, #{isDriverDriveReportExport},
+					#{isDriverBenefitReportExport}, #{isActive}, #{recordStatus}, #{createdBy}, #{createdAt}, #{updatedBy}, #{updatedAt},
+					#{isDriverAccountExport}, #{isVendorAccountExport}, #{isVendorDriverAccountExport}, #{isDriverSubscriptionExport},
+					#{isDriverTransactionHistoryExport}, #{isPhonepeLogReportExport}, #{isWarehouseExport} 
+				)
+				
+	</insert>
+	
+	<update id="updateExportAccessDetails" parameterType="ExportAccessModel"  > 	
+	
+		UPDATE 
+			export_accesses 
+		SET 
+			is_booking_export = #{isBookingExport},
+			is_passenger_export = #{isPassengerExport}, 
+			is_ride_later_export = #{isRideLaterExport}, 
+			is_critical_ride_later_export = #{isCriticalRideLaterExport}, 
+			is_driver_income_report_export =  #{isDriverIncomeReportExport},
+	        is_refund_report_export = #{isRefundReportExport}, 
+	        is_driver_duty_report_export = #{isDriverDutyReportExport}, 
+	        is_ccavenue_log_report_export = #{isCcavenueLogReportExport}, 
+	        is_driver_drive_report_export = #{isDriverDriveReportExport},
+	        is_driver_benefit_report_export = #{isDriverBenefitReportExport},
+	        is_driver_account_export = #{isDriverAccountExport},
+	        is_vendor_account_export = #{isVendorAccountExport},
+	        is_vendor_driver_account_export = #{isVendorDriverAccountExport},
+	        is_driver_subscription_export = #{isDriverSubscriptionExport},
+	        is_driver_transaction_history_export = #{isDriverTransactionHistoryExport},
+	        is_phonepe_log_report_export = #{isPhonepeLogReportExport},
+	        is_warehouse_export = #{isWarehouseExport},
+			updated_at = #{updatedAt},
+			updated_by = #{updatedBy}
+		WHERE
+			user_id = #{userId}
+			
+	</update>
+	
+	<select id="getExportAccessDetailsByUserId" parameterType="map" resultMap="exportAccessResultMap"> 		
+		
+	   	SELECT     
+			export_access_id, user_id, 
+	        is_booking_export, is_passenger_export, is_ride_later_export, is_critical_ride_later_export, is_driver_income_report_export,
+	        is_refund_report_export, is_driver_duty_report_export, is_ccavenue_log_report_export, is_driver_drive_report_export,
+	        is_driver_benefit_report_export, is_active, record_status, created_by, created_at, updated_by, updated_at,
+	        is_driver_account_export, is_vendor_account_export, is_vendor_driver_account_export, is_driver_subscription_export,
+	        is_driver_transaction_history_export, is_phonepe_log_report_export, is_warehouse_export
+		FROM 
+			export_accesses
+ 		WHERE  
+          	user_id = #{userId}
+        AND
+        	is_active = true
+				
+	</select>
+	
+</mapper>

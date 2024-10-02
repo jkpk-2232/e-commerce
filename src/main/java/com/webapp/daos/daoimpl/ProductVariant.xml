@@ -1,0 +1,244 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.webapp.daos.ProductVariantDao">
+
+	<resultMap id="ProductVariantResultMap" type="ProductVariantModel">
+	
+		<result property="productVariantId" column="product_variant_id" />
+		<result property="productVariantName" column="product_variant_name" />
+		<result property="productVariantDescription" column="product_variant_description" />
+		<result property="productVariantPrice" column="product_variant_price" />
+		<result property="weight" column="weight" />
+		<result property="color" column="color" />
+		<result property="productVariantSku" column="product_variant_sku" />
+		<result property="productTemplateId" column="product_template_id" />
+		<result property="isActive" column="is_active" />
+		<result property="isDeleted" column="is_deleted" />
+		<result property="barcode" column="barcode"/>
+		<result property="productQuantityType" column="product_quantity_type" />
+		<result property="isNonVeg" column="is_non_veg" />
+		
+		<result property="createdBy" column="created_by" />
+		<result property="createdAt" column="created_at" />
+		<result property="updatedBy" column="updated_by" />
+		<result property="updatedAt" column="updated_at" />
+	
+	</resultMap>
+	
+	<sql id="ProductVariantColumns">
+		pv.product_variant_id, pv.product_variant_name, pv.product_variant_description, pv.product_variant_price, 
+		pv.weight, pv.color, pv.product_variant_sku, pv.product_template_id, pv.is_active, 
+		pv.is_deleted, pv.created_by, pv.created_at, pv.updated_by, pv.updated_at, pv.barcode,
+		pv.product_quantity_type, pv.is_non_veg
+	</sql>
+	
+	<insert id="insertProductVariant" parameterType="ProductVariantModel">
+	
+		INSERT INTO product_variants
+			(
+				product_variant_id, product_variant_name, product_variant_description, product_variant_price, 
+				weight, color, product_variant_sku, product_template_id , is_active, 
+				is_deleted, created_by, created_at, updated_by, updated_at, barcode,
+				product_quantity_type, is_non_veg
+			)
+		VALUES 
+			(
+				#{productVariantId}, #{productVariantName}, #{productVariantDescription}, #{productVariantPrice}, 
+				#{weight}, #{color}, #{productVariantSku}, #{productTemplateId}, #{isActive}, 
+				#{isDeleted}, #{createdBy}, #{createdAt}, #{updatedBy}, #{updatedAt}, #{barcode},
+				#{productQuantityType}, #{isNonVeg}
+			);
+	
+	</insert>
+	
+	<select id="getProductVariantDetailsByProductVariantId" resultMap="ProductVariantResultMap">
+		
+		SELECT
+			<include refid="ProductVariantColumns"></include>
+		FROM
+			product_variants pv
+		WHERE
+			pv.product_variant_id = #{productVariantId}
+		
+	</select>
+	
+	<update id="updateProductVariant" parameterType="ProductVariantModel">
+		
+		UPDATE 
+			product_variants
+		SET 
+			product_variant_name = #{productVariantName}, 
+			product_variant_description = #{productVariantDescription},
+			product_variant_price = #{productVariantPrice},
+			weight = #{weight},
+			color = #{color},
+			product_variant_sku = #{productVariantSku},
+			product_template_id = #{productTemplateId},
+			barcode = #{barcode},
+			updated_by = #{updatedBy}, 
+			updated_at = #{updatedAt},
+			product_quantity_type = #{productQuantityType},
+			is_non_veg = #{isNonVeg}
+		WHERE 
+			product_variant_id = #{productVariantId}
+		
+	</update>
+	
+	<select id="getProductVariantsCount" resultType="int">
+	
+		SELECT
+			count(pv.product_variant_id)
+		FROM
+			product_variants pv
+		WHERE
+			pv.created_at &gt;= #{startDatelong}
+		AND
+			pv.created_at &lt;= #{endDatelong}
+		<if test="userIdList!=null">
+		AND	
+			pv.created_by IN
+				<foreach item="item" index="index" collection="userIdList" open="(" separator="," close=")">
+					#{item}
+				</foreach>
+		</if>
+		
+	</select>
+	
+	<select id="getProductVariantSearch" resultMap="ProductVariantResultMap">
+	
+		SELECT
+			<include refid="ProductVariantColumns"></include>,
+			b.brand_name as brandName,pc.product_category_name as productCategory,
+			uom.uom_name as uomName,pt.product_name as productName
+		FROM
+			product_variants pv
+		INNER JOIN product_templates pt ON pt.product_template_id = pv.product_template_id
+		INNER JOIN brands b ON b.brand_id = pt.brand_id
+		INNER JOIN product_category pc ON  pc.product_category_id = pt.product_category_id 
+		INNER JOIN unit_of_measures uom ON uom.uom_id = pt.uom_id	
+		WHERE
+			(
+				pv.product_variant_name ilike #{searchKey}
+			OR
+				pv.product_variant_description ilike #{searchKey}
+			OR
+				pt.product_name ilike #{searchKey}
+			OR
+				pt.product_information ilike #{searchKey}
+			OR	
+				b.brand_name ilike #{searchKey}
+			OR
+				b.brand_description ilike #{searchKey}	
+			)
+		<if test="startDatelong>0">
+		AND
+			pv.created_at &gt;= #{startDatelong}
+		AND
+			pv.created_at &lt;= #{endDatelong}
+		</if>
+		
+		<if test="userIdList!=null">
+		AND	
+			pv.created_by IN
+				<foreach item="item" index="index" collection="userIdList" open="(" separator="," close=")">
+					#{item}
+				</foreach>
+		</if>
+		
+		<if test="length>0">
+		ORDER BY pv.updated_at DESC
+		LIMIT #{length} OFFSET #{start}
+		</if>
+		
+		<if test="length==0">
+		ORDER BY pv.product_variant_name ASC
+		</if>
+
+	</select>
+	
+	<select id="getProductVariantSearchCount" resultType="int">
+	
+		SELECT
+			count(pv.product_variant_id)
+		FROM
+			product_variants pv
+		INNER JOIN product_templates pt ON pt.product_template_id = pv.product_template_id
+		INNER JOIN brands b ON b.brand_id = pt.brand_id
+		INNER JOIN product_category pc ON  pc.product_category_id = pt.product_category_id 
+		INNER JOIN unit_of_measures uom ON uom.uom_id = pt.uom_id	
+		WHERE
+			(
+				pv.product_variant_name ilike #{searchKey}
+			OR
+				pv.product_variant_description ilike #{searchKey}
+			OR
+				pt.product_name ilike #{searchKey}
+			OR
+				pt.product_information ilike #{searchKey}
+			OR	
+				b.brand_name ilike #{searchKey}
+			OR
+				b.brand_description ilike #{searchKey}	
+			)
+		<if test="startDatelong>0">
+		AND
+			pv.created_at &gt;= #{startDatelong}
+		AND
+			pv.created_at &lt;= #{endDatelong}
+		</if>
+		<if test="userIdList!=null">
+		AND	
+			pv.created_by IN
+				<foreach item="item" index="index" collection="userIdList" open="(" separator="," close=")">
+					#{item}
+				</foreach>
+		</if>
+	
+	</select>
+	
+	<update id="updateProductVariantStatus" parameterType="ProductVariantModel">
+	
+		UPDATE 
+			product_variants
+		SET
+			is_active = #{isActive},
+			is_deleted = #{isDeleted}
+		WHERE
+			product_variant_id = #{productVariantId}
+	
+	</update>
+	
+	<select id="getProductVariantList" resultMap="ProductVariantResultMap">
+	
+		SELECT
+			<include refid="ProductVariantColumns"></include>,
+			b.brand_name as brandName,pc.product_category_name as productCategory,
+			uom.uom_name as uomName,pt.product_name as productName
+		FROM
+			product_variants pv
+		INNER JOIN product_templates pt ON pt.product_template_id = pv.product_template_id
+		INNER JOIN brands b ON b.brand_id = pt.brand_id
+		INNER JOIN product_category pc ON  pc.product_category_id = pt.product_category_id 
+		INNER JOIN unit_of_measures uom ON uom.uom_id = pt.uom_id	
+		WHERE
+			pv.is_active = true
+		AND
+			pv.is_deleted = false
+		
+		<if test="userIdList!=null">
+		AND	
+			pv.created_by IN
+				<foreach item="item" index="index" collection="userIdList" open="(" separator="," close=")">
+					#{item}
+				</foreach>
+		</if>
+		
+		<if test="productTemplateId!=null">
+		AND
+			pv.product_template_id = #{productTemplateId}
+		</if>
+		ORDER BY pv.product_variant_name ASC
+	</select>
+	
+</mapper>

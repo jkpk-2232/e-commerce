@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.webapp.daos.DriverWalletSettingsDao">
+	
+	<resultMap id="driverWalletSettingsResultMap" type="DriverWalletSettingsModel">
+  
+		<result property="driverWalletSettingId" column="driver_wallet_setting_id" />
+		<result property="minimumAmount" column="minimum_amount" />
+		<result property="notifyAmount" column="notify_amount" />
+		
+		<result property="isActive" column="is_active" />
+		<result property="recordStatus" column="record_status" />
+		<result property="createdAt" column="created_at" />
+		<result property="createdBy" column="created_by" />
+		<result property="updatedAt" column="updated_at" />
+		<result property="updatedBy" column="updated_by" />
+		
+	</resultMap>
+	
+	<update id="updateDriverWalletSettings" parameterType="DriverWalletSettingsModel">
+	
+		UPDATE 
+			driver_wallet_settings 
+		SET 
+			minimum_amount = #{minimumAmount}, 
+			notify_amount = #{notifyAmount},
+			updated_at = #{updatedAt},
+			updated_by = #{updatedBy}
+		WHERE  
+			driver_wallet_setting_id = #{driverWalletSettingId}
+		AND 
+			is_active = true 
+		AND 
+			record_status = 'A' 
+			
+	</update>
+	
+	<select id="getDriverWalletSettings" resultMap="driverWalletSettingsResultMap">
+		
+	    SELECT 
+	    	driver_wallet_setting_id, minimum_amount, notify_amount, 
+			is_active, record_status, created_at, created_by, updated_at, updated_by
+		FROM 
+			driver_wallet_settings 
+		WHERE 
+			is_active = true 
+		AND 
+			record_status = 'A' 
+		LIMIT 1
+		
+ 	</select>
+	
+</mapper>

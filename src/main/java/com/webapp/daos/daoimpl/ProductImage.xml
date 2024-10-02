@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.webapp.daos.ProductImageDao">
+
+	<resultMap id="ProductImageResultMap" type="ProductImageModel">
+	
+		<result property="productImageId" column="product_image_id" />
+		<result property="productImageUrl" column="product_image_url" />
+		<result property="productVariantId" column="product_variant_id" />
+		<result property="isActive" column="is_active" />
+		<result property="isDeleted" column="is_deleted" />
+		
+		<result property="createdBy" column="created_by" />
+		<result property="createdAt" column="created_at" />
+		<result property="updatedBy" column="updated_by" />
+		<result property="updatedAt" column="updated_at" />
+		
+		<result property="brandName" column="brnadName" />
+		<result property="productName" column="productName" />
+		<result property="productVariantName" column="productVariantName"/>
+		<result property="weight" column="weight"/>
+		<result property="uomName" column="uomName"/>
+	
+	</resultMap>
+	
+	<sql id="ProductImageColumns">
+		pi.product_image_id, pi.product_image_url, pi.product_variant_id, pi.is_active, 
+		pi.is_deleted, pi.created_by, pi.created_at, pi.updated_by, pi.updated_at
+	</sql>
+	
+	<insert id="insertProductImage" parameterType="ProductImageModel">
+	
+		INSERT INTO product_images
+			(
+				product_image_id, product_image_url, product_variant_id, is_active, 
+				is_deleted, created_by, created_at, updated_by, updated_at
+			)
+		VALUES 
+			(
+				#{productImageId}, #{productImageUrl}, #{productVariantId}, #{isActive}, 
+				#{isDeleted}, #{createdBy}, #{createdAt}, #{updatedBy}, #{updatedAt}
+			);
+	
+	</insert>
+	
+	<select id="getProductImageDetailsByProductImageId" resultMap="ProductImageResultMap">
+		
+		SELECT
+			<include refid="ProductImageColumns"></include>
+		FROM
+			product_images pi
+		WHERE
+			pi.product_image_id = #{productImageId}
+		
+	</select>
+	
+	<update id="updateProductImage" parameterType="ProductImageModel">
+		
+		UPDATE 
+			product_images
+		SET 
+			product_image_url = #{productImageUrl}, 
+			product_variant_id = #{productVariantId},
+			updated_by = #{updatedBy}, 
+			updated_at = #{updatedAt}
+		WHERE 
+			product_image_id = #{productImageId}
+		
+	</update>
+	
+	<select id="getProductImageCount" resultType="int">
+	
+		SELECT
+			count(pi.product_image_id)
+		FROM
+			product_images pi
+		WHERE
+			pi.created_at &gt;= #{startDatelong}
+		AND
+			pi.created_at &lt;= #{endDatelong}
+			
+		<if test="userIdList!=null">
+		AND	
+			pi.created_by IN
+				<foreach item="item" index="index" collection="userIdList" open="(" separator="," close=")">
+					#{item}
+				</foreach>
+		</if>
+		
+	</select>
+	
+	<select id="getProductImageSearch" resultMap="ProductImageResultMap">
+	
+		SELECT
+			<include refid="ProductImageColumns"></include>,
+			b.brand_name as brandName, pt.product_name as productName, 
+			pv.product_variant_name as productVariantName,pv.weight as weight, uom.uom_name as uomName
+		FROM
+			product_images pi
+		INNER JOIN product_variants pv ON  pv.product_variant_id =  pi.product_variant_id
+		INNER JOIN product_templates pt ON pt.product_template_id = pv.product_template_id
+		INNER JOIN unit_of_measures uom ON uom.uom_id = pt.uom_id
+		INNER JOIN brands  b ON b.brand_id = pt.brand_id
+		
+		WHERE
+			(
+				pv.product_variant_name ilike #{searchKey}
+			OR
+				pv.product_variant_description ilike #{searchKey}
+			OR
+				pt.product_name ilike #{searchKey}
+			OR
+				pt.product_information ilike #{searchKey}
+			OR	
+				b.brand_name ilike #{searchKey}
+			OR
+				b.brand_description ilike #{searchKey}	
+			)	
+		
+		<if test="startDatelong>0">
+		AND
+			pi.created_at &gt;= #{startDatelong}
+		AND
+			pi.created_at &lt;= #{endDatelong}
+		</if>
+		
+		<if test="userIdList!=null">
+		AND	
+			pi.created_by IN
+				<foreach item="item" index="index" collection="userIdList" open="(" separator="," close=")">
+					#{item}
+				</foreach>
+		</if>
+		
+		<if test="length>0">
+		ORDER BY pi.updated_at DESC
+		LIMIT #{length} OFFSET #{start}
+		</if>
+		
+
+	</select>
+	
+	<select id="getProductImageSearchCount" resultType="int">
+	
+		SELECT
+			count(pi.product_image_id)
+		FROM
+			product_images pi
+		INNER JOIN product_variants pv ON  pv.product_variant_id =  pi.product_variant_id
+		INNER JOIN product_templates pt ON pt.product_template_id = pv.product_template_id
+		INNER JOIN unit_of_measures uom ON uom.uom_id = pt.uom_id
+		INNER JOIN brands  b ON b.brand_id = pt.brand_id
+		
+		WHERE
+			(
+				pv.product_variant_name ilike #{searchKey}
+			OR
+				pv.product_variant_description ilike #{searchKey}
+			OR
+				pt.product_name ilike #{searchKey}
+			OR
+				pt.product_information ilike #{searchKey}
+			OR	
+				b.brand_name ilike #{searchKey}
+			OR
+				b.brand_description ilike #{searchKey}	
+			)	
+			
+		<if test="startDatelong>0">
+		AND
+			pi.created_at &gt;= #{startDatelong}
+		AND
+			pi.created_at &lt;= #{endDatelong}
+		</if>
+		
+		<if test="userIdList!=null">
+		AND	
+			pi.created_by IN
+				<foreach item="item" index="index" collection="userIdList" open="(" separator="," close=")">
+					#{item}
+				</foreach>
+		</if>
+	
+	</select>
+	
+	<update id="updateProductImageStatus" parameterType="ProductImageModel">
+	
+		UPDATE 
+			product_images pi
+		SET
+			is_active = #{isActive},
+			is_deleted = #{isDeleted}
+		WHERE
+			product_image_id = #{productImageId}
+	
+	</update>
+	
+	<select id="getProductImageListByProductVariant" resultMap="ProductImageResultMap">
+		
+		SELECT
+			<include refid="ProductImageColumns"></include>
+		FROM
+			product_images pi
+		WHERE
+			pi.product_variant_id = #{productVariantId}
+		AND
+			pi.is_deleted = false	
+		ORDER BY
+			updated_at desc	
+		
+	</select>
+
+</mapper>

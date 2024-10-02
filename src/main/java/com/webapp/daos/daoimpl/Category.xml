@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.webapp.daos.CategoryDao">
+
+	<resultMap id="CategoryResultMap" type="CategoryModel">
+	
+		<result property="categoryId" column="category_id" />
+		<result property="serviceId" column="service_id" />
+		<result property="categoryName" column="category_name" />
+		<result property="categoryDescription" column="category_description" />
+		<result property="isActive" column="is_active" />
+		<result property="isDeleted" column="is_deleted" />
+		
+		<result property="createdBy" column="created_by" />
+		<result property="createdAt" column="created_at" />
+		<result property="updatedBy" column="updated_by" />
+		<result property="updatedAt" column="updated_at" />
+		
+		<result property="serviceName" column="service_name" />
+		
+	</resultMap>
+	
+	<sql id="CategoryColumns">
+		c.category_id, c.service_id, c.category_name, c.category_description, 
+		c.is_active, c.is_deleted, c.created_by, c.created_at, c.updated_by, c.updated_at
+	</sql>
+	
+	<insert id="insertCategory" parameterType="CategoryModel">
+	
+		INSERT INTO categories
+			(
+				category_id, service_id, category_name, category_description, 
+				is_active, is_deleted, created_by, created_at, updated_by, updated_at
+			)
+		VALUES 
+			(
+				#{categoryId}, #{serviceId}, #{categoryName}, #{categoryDescription}, 
+				#{isActive}, #{isDeleted}, #{createdBy}, #{createdAt}, #{updatedBy}, #{updatedAt}
+			);
+	
+	</insert>
+	
+	<update id="updateCategory" parameterType="CategoryModel">
+		
+		UPDATE 
+			categories
+		SET 
+			service_id = #{serviceId}, 
+			category_name = #{categoryName}, 
+			category_description = #{categoryDescription}, 
+			updated_by = #{updatedBy}, 
+			updated_at = #{updatedAt}
+		WHERE 
+			category_id = #{categoryId}
+		
+	</update>
+	
+	<select id="getCategoryCount" resultType="int">
+	
+		SELECT
+			count(*)
+		FROM
+			categories
+		WHERE
+			created_at &gt;= #{startDatelong}
+		AND
+			created_at &lt;= #{endDatelong}
+		<if test="serviceId!=null">
+		AND
+			service_id = #{serviceId}
+		</if>
+	
+	</select>
+	
+	<select id="getCategorySearch" resultMap="CategoryResultMap">
+	
+		SELECT
+			<include refid="CategoryColumns"></include>,
+			s.service_name
+		FROM
+			categories c
+		INNER JOIN services s ON s.service_id = c.service_id
+		WHERE
+			(
+				c.category_name ilike #{searchKey}
+			OR
+				c.category_description ilike #{searchKey}
+			OR
+				s.service_name ilike #{searchKey}
+			OR
+				s.service_description ilike #{searchKey}
+			)
+		<if test="startDatelong>0">
+		AND
+			c.created_at &gt;= #{startDatelong}
+		AND
+			c.created_at &lt;= #{endDatelong}
+		</if>
+		<if test="serviceId!=null">
+		AND
+			c.service_id = #{serviceId}
+		</if>
+		<if test="displayType==1">
+		AND
+			c.is_active = true
+		AND
+			c.is_deleted = false
+		</if>
+		<if test="length>0">
+		ORDER BY c.updated_at DESC
+		LIMIT #{length} OFFSET #{start}
+		</if>
+		<if test="length==0">
+		ORDER BY c.category_name ASC
+		</if>
+
+	</select>
+	
+	<select id="getCategorySearchCount" resultType="int">
+	
+		SELECT
+			count(*)
+		FROM
+			categories c
+		INNER JOIN services s ON s.service_id = c.service_id
+		WHERE
+			(
+				c.category_name ilike #{searchKey}
+			OR
+				c.category_description ilike #{searchKey}
+			OR
+				s.service_name ilike #{searchKey}
+			OR
+				s.service_description ilike #{searchKey}
+			)
+		<if test="startDatelong>0">
+		AND
+			c.created_at &gt;= #{startDatelong}
+		AND
+			c.created_at &lt;= #{endDatelong}
+		</if>
+		<if test="serviceId!=null">
+		AND
+			c.service_id = #{serviceId}
+		</if>
+	
+	</select>
+	
+	<update id="updateCategoryStatus" parameterType="CategoryModel">
+	
+		UPDATE 
+			categories
+		SET
+			is_active = #{isActive},
+			is_deleted = #{isDeleted}
+		WHERE
+			category_id = #{categoryId}
+	
+	</update>
+	
+	<select id="isCategoryNameExists" resultType="boolean">
+		
+		SELECT
+			(count(*)>0)
+		FROM
+			categories c
+		WHERE
+			c.category_name = #{categoryName}
+		<if test="categoryId!=null">
+		AND
+			c.category_id != #{categoryId}
+		</if>
+		
+	</select>
+	
+	<select id="getCategoryDetailsByCategoryId" resultMap="CategoryResultMap">
+		
+		SELECT
+			<include refid="CategoryColumns"></include>,
+			s.service_name
+		FROM
+			categories c
+		INNER JOIN services s ON s.service_id = c.service_id
+		WHERE
+			c.category_id = #{categoryId}
+		
+	</select>
+	
+</mapper>

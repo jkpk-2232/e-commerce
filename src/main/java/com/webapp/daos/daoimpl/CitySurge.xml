@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.webapp.daos.CitySurgeDao">
+
+	<resultMap id="citySurgeResultMap" type="CitySurgeModel" >
+  
+		<result property="citySurgeId" column="city_surge_id" />
+		<result property="multicityCityRegionId" column="multicity_city_region_id" />
+		<result property="cityName" column="city_name" />
+		<result property="radius" column="radius" />
+		<result property="surgeRate" column="surge_rate" />
+		<result property="isActive" column="is_active" />
+		<result property="recordStatus" column="record_status" />
+		<result property="createdAt" column="created_at" />
+		<result property="updatedAt" column="updated_at" />
+		<result property="createdBy" column="created_by" />
+		<result property="updatedBy" column="updated_by" />
+		
+	</resultMap>
+	
+	<sql id="citySurgeTableColsWithOutTypeAlias">
+		city_surge_id, multicity_city_region_id, city_name, radius, surge_rate, 
+		is_active, record_status, created_by, created_at, updated_by, updated_at
+	</sql>
+	
+	<sql id="addCitySurgeTableColsWithOutTypeAlias">
+		#{citySurgeId}, #{multicityCityRegionId}, #{cityName}, #{radius}, #{surgeRate},
+		#{isActive}, 'A', #{createdBy}, #{createdAt}, #{updatedBy}, #{updatedAt}
+	</sql>
+	
+	<insert id="addCitySurge" parameterType="CitySurgeModel">
+		
+		INSERT INTO
+			city_surge 
+				(<include refid="citySurgeTableColsWithOutTypeAlias" />)
+    	VALUES 
+    			(<include refid="addCitySurgeTableColsWithOutTypeAlias" />)
+    	
+	</insert>
+	
+	<select id="getAllCitySurgeByRegionyIds" resultMap="citySurgeResultMap">
+		
+	    SELECT 
+	    	*
+		FROM 
+			city_surge
+		WHERE 
+			record_status = 'A'
+			
+		<if test="regionIds != null">
+		AND
+			multicity_city_region_id IN
+			<foreach item="item" index="index" collection="regionIds" open="(" separator="," close=")">
+				#{item}
+			</foreach> 
+	    </if>
+	    
+	    ORDER BY city_name, surge_rate DESC 
+	    
+       	LIMIT #{length} OFFSET #{start}
+       	
+	</select>
+	
+	<select id="getAllCitySurgeCount" resultType="int">
+		
+	    SELECT 
+	    	count(*)
+		FROM 
+			city_surge
+		WHERE 
+			record_status = 'A'
+			
+		<if test="regionIds != null">
+		AND
+			multicity_city_region_id IN
+			<foreach item="item" index="index" collection="regionIds" open="(" separator="," close=")">
+				#{item}
+			</foreach> 
+	    </if>
+       	
+	</select>
+	
+	<update id="updateCitySurge" parameterType="CitySurgeModel"  > 	
+	
+		UPDATE 
+			city_surge 
+		SET 
+			radius = #{radius},
+			surge_rate = #{surgeRate},
+			updated_at = #{updatedAt},
+			updated_by = #{updatedBy}
+		WHERE
+			city_surge_id = #{citySurgeId}
+			
+	</update>
+	
+	<update id="activateDeactivateCitySurge" parameterType="CitySurgeModel"  > 	
+	
+		UPDATE 
+			city_surge 
+		SET 
+			is_active = #{isActive},
+			updated_at = #{updatedAt},
+			updated_by = #{updatedBy}
+		WHERE
+			city_surge_id = #{citySurgeId}
+			
+	</update>
+	
+	<update id="deleteCitySurge" parameterType="CitySurgeModel"  > 	
+	
+		UPDATE 
+			city_surge 
+		SET 
+			is_active = #{isActive},
+			record_status = #{recordStatus},
+			updated_at = #{updatedAt},
+			updated_by = #{updatedBy}
+		WHERE
+			city_surge_id = #{citySurgeId}
+			
+	</update>
+	
+	<select id="getCitySurgeByCitySurgeId" resultMap="citySurgeResultMap">
+		
+	    SELECT 
+	    	*
+		FROM 
+			city_surge
+		WHERE 
+			record_status = 'A'
+		AND
+			is_active = true
+		AND
+			city_surge_id = #{citySurgeId}
+       	
+	</select>
+	
+	<select id="getActiveDeactiveDeletedNonDeletedCitySurgeByCitySurgeId" resultMap="citySurgeResultMap">
+		
+	    SELECT 
+	    	*
+		FROM 
+			city_surge
+		WHERE 
+			city_surge_id = #{citySurgeId}
+       	
+	</select>
+	
+	<select id="getMaxRadiusCitySurgeByRegionId" resultMap="citySurgeResultMap">
+		
+	    SELECT 
+	    	*
+		FROM 
+			city_surge
+		WHERE 
+			record_status = 'A'
+		AND
+			is_active = true
+		AND
+			multicity_city_region_id = #{multicityCityRegionId}
+			
+		ORDER BY radius DESC
+		
+		LIMIT 1
+       	
+	</select>
+	
+	<select id="getCitySurgeByRadiusAndRegionId" resultMap="citySurgeResultMap">
+		
+	    SELECT 
+	    	*
+		FROM 
+			city_surge
+		WHERE 
+			record_status = 'A'
+		AND
+			is_active = true
+		AND
+			multicity_city_region_id = #{multicityCityRegionId}
+		AND
+			radius = #{radius}
+			
+		<if test="citySurgeId != null">
+		AND 
+			city_surge_id != #{citySurgeId}
+       	</if>
+       	
+	</select>
+	
+	<select id="getCitySurgeByRegionIdAndRadiusOrder" resultMap="citySurgeResultMap">
+		
+	    SELECT 
+	    	*
+		FROM 
+			city_surge
+		WHERE 
+			record_status = 'A'
+		AND
+			is_active = true
+		AND
+			multicity_city_region_id = #{multicityCityRegionId}
+	    ORDER BY radius ${order} 
+       	
+	</select>
+	
+</mapper>

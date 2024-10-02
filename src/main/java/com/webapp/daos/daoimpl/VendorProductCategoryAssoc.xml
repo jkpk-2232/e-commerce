@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.webapp.daos.VendorProductCategoryAssocDao">
+
+	<resultMap id="VendorProductCategoryAssocResultMap" type="VendorProductCategoryAssocModel">
+	
+		<result property="vendorProductCategoryAssocId" column="vendor_product_category_assoc_id" />
+		<result property="vendorId" column="vendor_id" />
+		<result property="productCategoryId" column="product_category_id" />
+		
+		<result property="createdBy" column="created_by" />
+		<result property="createdAt" column="created_at" />
+		<result property="updatedBy" column="updated_by" />
+		<result property="updatedAt" column="updated_at" />
+	
+	</resultMap>
+	
+	
+	<delete id="deleteVendorProductCategoryAssocByUser" parameterType="String">
+		DELETE FROM vendor_product_category_assoc WHERE vendor_id = #{userId}
+	</delete>
+	
+	<insert id="addVendorProductCategoryAssoc"  parameterType="VendorProductCategoryAssocModel">
+
+		INSERT INTO 
+			vendor_product_category_assoc
+				(
+					vendor_product_category_assoc_id, vendor_id, product_category_id, created_by, created_at,
+					updated_by, updated_at
+				)
+		VALUES
+				(
+					#{vendorProductCategoryAssocId},#{vendorId},#{productCategoryId},#{createdBy},#{createdAt},#{updatedBy},#{updatedAt}
+				)
+		
+	</insert>
+	
+	<select id="getVendorProductCategoryAssocByVendorId" parameterType="String" resultMap="VendorProductCategoryAssocResultMap">
+		
+		
+		SELECT
+			vendor_id, product_category_id
+		FROM
+			vendor_product_category_assoc vpca
+		INNER JOIN users u ON u.user_id = vpca.vendor_id	
+		WHERE	
+			vpca.vendor_id = #{vendorId}
+		
+	</select>
+	
+	<select id="getVendorProductCategoryAssocByVendorIdAndProductCategoryId" parameterType="String" resultMap="VendorProductCategoryAssocResultMap">
+		
+		
+		SELECT
+			vendor_id, product_category_id
+		FROM
+			vendor_product_category_assoc vpca
+		INNER JOIN users u ON u.user_id = vpca.vendor_id	
+		WHERE	
+			vpca.vendor_id = #{vendorId}
+		AND
+			vpca.product_category_id = #{productCategoryId}	
+		
+	</select>
+	
+</mapper>

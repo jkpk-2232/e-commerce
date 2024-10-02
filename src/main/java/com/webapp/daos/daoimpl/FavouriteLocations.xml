@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.webapp.daos.FavouriteLocationsDao">
+
+	<resultMap id="favouriteLocationsResultMap" type="FavouriteLocationsModel" >
+	    
+		<result property="favouriteLocationsId" column="favourite_locations_id" />
+		<result property="userId" column="user_id" />
+		<result property="favouriteNickname" column="favourite_nickname" />
+		<result property="favouriteLatitude" column="favourite_latitude" />
+		<result property="favouriteLongitude" column="favourite_longitude" />
+		<result property="favouriteAddress" column="favourite_address" />
+		<result property="favouritePlaceId" column="favourite_place_id" />
+		<result property="favouriteGeolocation" column="favourite_geolocation" />
+		<result property="isSource" column="is_source" />
+		
+		<result property="recordStatus" column="record_status" />
+		<result property="createdAt" column="created_at" />
+		<result property="updatedAt" column="updated_at" />
+		<result property="createdBy" column="created_by" />
+		<result property="updatedBy" column="updated_by" />
+		
+	</resultMap>
+
+	<insert id="addFavouriteLocations" parameterType="FavouriteLocationsModel" useGeneratedKeys="true">
+	
+		INSERT INTO 
+			favourite_locations
+				(
+		            favourite_locations_id, user_id, favourite_nickname, favourite_latitude, 
+		            favourite_longitude, favourite_address, favourite_place_id, favourite_geolocation, 
+		            record_status, created_by, created_at, updated_by, updated_at, is_source
+		        )
+	    VALUES 
+	    		(
+	    			#{favouriteLocationsId}, #{userId}, #{favouriteNickname}, #{favouriteLatitude},
+	    			#{favouriteLongitude}, #{favouriteAddress}, #{favouritePlaceId}, ${favouriteGeolocation},
+	    			'A', #{createdBy}, #{createdAt}, #{updatedBy}, #{updatedAt}, #{isSource}
+	    		)
+	
+	</insert>
+	
+	<select id="isFavouriteNicknameExists" parameterType="String" resultType="boolean">
+	
+		SELECT
+			(count(*)>0)
+			
+		FROM
+			favourite_locations
+			
+		WHERE
+			favourite_nickname ilike #{favouriteNickname}
+		AND
+			record_status = 'A'
+			
+		<if test="favouriteLocationsId != null">
+		AND
+			favourite_locations_id != #{favouriteLocationsId}
+		</if>
+		
+		<if test="userId != null">
+		AND
+			user_id = #{userId}
+		</if>
+		
+	</select>
+	
+	<update id="deletefavouriteLocation" parameterType="FavouriteLocationsModel">
+	
+		UPDATE
+			favourite_locations
+			
+		SET
+			record_status = 'D'
+			
+		WHERE
+			favourite_locations_id = #{favouriteLocationsId}
+		AND
+			user_id = #{userId}
+			
+	</update>
+	
+	<select id="getFavouriteLocationsList" parameterType="String" resultMap="favouriteLocationsResultMap">
+	
+		SELECT
+			*
+			
+		FROM
+			favourite_locations
+			
+		WHERE
+			(
+				favourite_nickname ilike #{searchText}
+				OR
+				favourite_address ilike #{searchText}
+			)
+		AND
+			record_status = 'A'
+		AND
+			user_id = #{userId}
+<!-- 		AND -->
+<!-- 			is_source = #{isSource} -->
+			
+		ORDER BY created_at DESC
+		
+		LIMIT #{length} OFFSET #{start} 
+		
+	</select>
+	
+	<update id="updateFavouriteLocations" parameterType="FavouriteLocationsModel">
+	
+		UPDATE
+			favourite_locations
+			
+		SET
+			favourite_nickname = #{favouriteNickname},
+			favourite_latitude = #{favouriteLatitude},
+			favourite_longitude = #{favouriteLongitude},
+			favourite_address = #{favouriteAddress},
+			favourite_place_id = #{favouritePlaceId},
+			favourite_geolocation = ${favouriteGeolocation}
+			
+		WHERE
+			favourite_locations_id = #{favouriteLocationsId}
+		AND
+			user_id = #{userId}
+		AND
+			record_status = 'A'
+			
+	</update>
+	
+	<select id="getFavouriteLocationsDetailsById" parameterType="String" resultMap="favouriteLocationsResultMap">
+	
+		SELECT
+			*
+			
+		FROM
+			favourite_locations
+			
+		WHERE
+			favourite_locations_id = #{favouriteLocationsId}
+		AND
+			record_status = 'A'
+		
+	</select>
+	
+</mapper> 

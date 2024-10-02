@@ -1,0 +1,462 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.webapp.daos.UserAccountDao">
+	
+	<resultMap id="userAccountResultMap" type="UserAccountModel">
+
+		<result property="userAccountId" column="user_account_id" />
+		<result property="userId" column="user_id" />
+		<result property="currentBalance" column="current_balance" />
+		<result property="holdBalance" column="hold_balance" />
+		<result property="approvedBalance" column="approved_balance" />
+		<result property="totalBalance" column="total_balance" />
+		
+		<result property="isActive" column="is_active" />
+		<result property="recordStatus" column="record_status" />
+		<result property="createdAt" column="created_at" />
+		<result property="createdBy" column="created_by" />
+		<result property="updatedAt" column="updated_at" />
+		<result property="updatedBy" column="updated_by" />
+		
+		<result property="firstName" column="first_name" />
+		<result property="lastName" column="last_name" />
+		<result property="phoneNoCode" column="phone_no_code" />
+		<result property="phoneNo" column="phone_no" />
+		<result property="email" column="email" />
+		
+		<result property="isVendorDriverSubscriptionAppliedInBookingFlow" column="is_vendor_driver_subscription_applied_in_booking_flow" />
+		
+	</resultMap>
+	
+	<insert id="insertAccountBalanceDetails" parameterType="UserAccountModel">
+
+		INSERT INTO 
+			user_account
+				(
+					user_account_id, user_id, current_balance, hold_balance, approved_balance, total_balance,  
+					is_active, record_status, created_at, created_by, updated_at, updated_by
+				)
+		VALUES
+				(
+					#{userAccountId}, #{userId}, #{currentBalance}, #{holdBalance}, #{approvedBalance}, #{totalBalance},
+					#{isActive}, #{recordStatus}, #{createdAt}, #{createdBy}, #{updatedAt}, #{updatedBy}
+				)
+				
+	</insert>
+	
+	<insert id="insertAccountBalanceDetailsBatch" parameterType="java.util.List">
+	
+		INSERT INTO 
+			user_account 
+		 		(
+					user_account_id, user_id, current_balance, hold_balance, approved_balance, total_balance,  
+					is_active, record_status, created_at, created_by, updated_at, updated_by
+				)
+		VALUES
+				<foreach collection="userAccountModelList" item="userAccountModel"  separator=",">
+				(
+					#{userAccountModel.userAccountId}, #{userAccountModel.userId}, #{userAccountModel.currentBalance}, 
+					#{userAccountModel.holdBalance}, #{userAccountModel.approvedBalance}, #{userAccountModel.totalBalance}, 
+					#{userAccountModel.isActive}, #{userAccountModel.recordStatus}, #{userAccountModel.createdAt}, 
+					#{userAccountModel.createdBy}, #{userAccountModel.updatedAt}, #{userAccountModel.updatedBy}
+				)
+				</foreach>
+				
+	</insert>
+	
+	<update id="updateAccountBalanceDetails" parameterType="UserAccountModel">
+	
+		UPDATE 
+			user_account 
+		SET 
+			current_balance = #{currentBalance}, 
+			hold_balance = #{holdBalance}, 
+			approved_balance = #{approvedBalance}, 
+			total_balance = #{totalBalance},
+			updated_at = #{updatedAt},
+			updated_by = #{updatedBy}
+		WHERE  
+			user_account_id = #{userAccountId}
+		AND 
+			is_active = true 
+		AND 
+			record_status = 'A' 
+			
+	</update>
+	
+	<select id="getAccountBalanceDetailsById" parameterType="String" resultMap="userAccountResultMap">
+		
+	    SELECT 
+	    	user_account_id, user_id, current_balance, hold_balance, approved_balance, total_balance,  
+			is_active, record_status, created_at, created_by, updated_at, updated_by
+		FROM 
+			user_account 
+		WHERE 
+			user_account_id = #{userAccountId} 
+		AND 
+			is_active = true 
+		AND 
+			record_status = 'A' 
+		
+ 	</select>
+ 	
+ 	<select id="getAccountBalanceDetailsByUserId" parameterType="String" resultMap="userAccountResultMap">
+		
+	    SELECT
+	    	user_account_id, user_id, current_balance, hold_balance, approved_balance, total_balance,  
+			is_active, record_status, created_at, created_by, updated_at, updated_by
+		FROM 
+			user_account
+		WHERE 
+			user_id = #{userId} 
+		AND 
+			is_active = true 
+		AND 
+			record_status = 'A' 
+		
+ 	</select>
+ 	
+ 	<select id="getTotalUserAccountCount" parameterType="map" resultType="int"> 		
+		
+	    SELECT 
+			count(DISTINCT U.user_id)
+		FROM 
+			users U
+			
+		INNER JOIN user_info UI ON UI.user_id = U.user_id
+		
+		<if test="assignedRegionList != null">	
+			INNER JOIN multicity_user_region MUR ON MUR.user_id = U.user_id
+		</if>
+		
+		LEFT JOIN user_account UA ON UA.user_id = U.user_id
+		
+		WHERE 	
+			U.role_id = #{roleId}
+		AND
+			U.is_active = true
+		AND
+			U.is_deleted = false
+		<if test="assignedRegionList != null">
+		AND
+	    	MUR.multicity_city_region_id IN
+	    		<foreach item="item" index="index" collection="assignedRegionList" open="(" separator="," close=")">
+					#{item}
+				</foreach>
+	    </if>
+		
+	</select>
+	
+	<select id="getUserAccountListForSearch"  parameterType="map"  resultMap="userAccountResultMap">
+	
+		SELECT 
+			DISTINCT U.user_id, U.email,
+			UI.first_name, UI.last_name, UI.phone_no, UI.phone_no_code, U.is_vendor_driver_subscription_applied_in_booking_flow,
+			UA.user_account_id, UA.current_balance, UA.hold_balance, UA.approved_balance, UA.total_balance
+		FROM 
+			users U
+			
+		INNER JOIN user_info UI ON UI.user_id = U.user_id
+		
+		<if test="assignedRegionList != null">	
+			INNER JOIN multicity_user_region MUR ON MUR.user_id = U.user_id
+		</if>
+		
+		LEFT JOIN user_account UA ON UA.user_id = U.user_id
+		
+        WHERE
+        	U.role_id = #{roleId}
+		AND
+			U.is_active = true
+		AND
+			U.is_deleted = false
+		AND
+			(
+					U.email iLIKE #{globalSearchString}	
+				OR
+					UI.first_name iLIKE #{globalSearchString} 
+			 	OR 
+			 		UI.last_name iLIKE #{globalSearchString}
+			 	OR 
+			 		UI.phone_no iLIKE #{globalSearchString}
+			 	OR 
+			 		UI.phone_no iLIKE #{globalSearchString}
+			 	OR 
+			 		CONCAT(UI.first_name, CONCAT(' ', UI.last_name)) iLIKE #{globalSearchString}
+			 	OR 
+			 		CONCAT(UI.first_name, CONCAT(' ', UI.last_name)) iLIKE #{globalSearchString}
+			)
+		<if test="assignedRegionList != null">
+	    AND
+	    	MUR.multicity_city_region_id IN
+	    		
+	    		<foreach item="item" index="index" collection="assignedRegionList" open="(" separator="," close=")">
+					#{item}
+				</foreach>
+	    </if>
+	    
+	    ORDER BY UI.first_name DESC
+        LIMIT  #{length}  OFFSET  #{start}  
+        
+	</select>
+	
+	<select id="getFilteredUserAccountCount" parameterType="map" resultType="int"> 		
+		
+	    SELECT 
+			count(DISTINCT u.user_id)
+		FROM 
+			users U
+			
+		INNER JOIN user_info UI ON UI.user_id = U.user_id
+		
+		<if test="assignedRegionList != null">	
+			INNER JOIN multicity_user_region MUR ON MUR.user_id = U.user_id
+		</if>
+		
+		LEFT JOIN user_account UA ON UA.user_id = U.user_id
+		
+        WHERE
+        	U.role_id = #{roleId}
+		AND
+			U.is_active = true
+		AND
+			U.is_deleted = false
+		AND
+			(
+					U.email iLIKE #{globalSearchString}	
+				OR
+					UI.first_name iLIKE #{globalSearchString} 
+			 	OR 
+			 		UI.last_name iLIKE #{globalSearchString}
+			 	OR 
+			 		UI.phone_no iLIKE #{globalSearchString}
+			 	OR 
+			 		UI.phone_no iLIKE #{globalSearchString}
+			 	OR 
+			 		CONCAT(UI.first_name, CONCAT(' ', UI.last_name)) iLIKE #{globalSearchString}
+			 	OR 
+			 		CONCAT(UI.first_name, CONCAT(' ', UI.last_name)) iLIKE #{globalSearchString}
+			)
+		<if test="assignedRegionList != null">
+	    AND
+	    	MUR.multicity_city_region_id IN
+	    		
+	    		<foreach item="item" index="index" collection="assignedRegionList" open="(" separator="," close=")">
+					#{item}
+				</foreach>
+	    </if>
+	    
+	</select>
+	
+	<select id="getUserWithAccountDetails"  parameterType="map"  resultMap="userAccountResultMap">
+	
+		SELECT 
+			DISTINCT U.user_id, U.email,
+			UI.first_name, UI.last_name, UI.phone_no, UI.phone_no_code,
+			UA.user_account_id, UA.current_balance, UA.hold_balance, UA.approved_balance, UA.total_balance
+		FROM 
+			users U
+			
+		INNER JOIN user_info UI ON UI.user_id = U.user_id
+		LEFT JOIN user_account UA ON UA.user_id = U.user_id
+		
+        WHERE
+        	U.user_id = #{userId}
+		AND
+			U.is_active = true
+		AND
+			U.is_deleted = false
+			
+	</select>
+	
+	<select id="getTotalVendorUserAccountCount" parameterType="map" resultType="int"> 		
+		
+	    SELECT 
+			count(DISTINCT U.user_id)
+		FROM 
+			users U
+			
+		INNER JOIN user_info UI ON UI.user_id = U.user_id
+		
+		<if test="assignedRegionList != null">	
+			INNER JOIN multicity_user_region MUR ON MUR.user_id = U.user_id
+		</if>
+		
+		INNER JOIN driver_vendors DV ON (DV.driver_id = U.user_id AND DV.vendor_id = #{vendorId})
+		LEFT JOIN user_account UA ON UA.user_id = U.user_id
+		
+		WHERE 	
+			U.role_id = #{roleId}
+		AND
+			U.is_active = true
+		AND
+			U.is_deleted = false
+		<if test="assignedRegionList != null">
+		AND
+	    	MUR.multicity_city_region_id IN
+	    		<foreach item="item" index="index" collection="assignedRegionList" open="(" separator="," close=")">
+					#{item}
+				</foreach>
+	    </if>
+		
+	</select>
+	
+	<select id="getVendorUserAccountListForSearch"  parameterType="map"  resultMap="userAccountResultMap">
+	
+		SELECT 
+			DISTINCT U.user_id, U.email,
+			UI.first_name, UI.last_name, UI.phone_no, UI.phone_no_code,
+			UA.user_account_id, UA.current_balance, UA.hold_balance, UA.approved_balance, UA.total_balance
+		FROM 
+			users U
+			
+		INNER JOIN user_info UI ON UI.user_id = U.user_id
+		
+		<if test="assignedRegionList != null">	
+			INNER JOIN multicity_user_region MUR ON MUR.user_id = U.user_id
+		</if>
+		
+		INNER JOIN driver_vendors DV ON (DV.driver_id = U.user_id AND DV.vendor_id = #{vendorId})
+		LEFT JOIN user_account UA ON UA.user_id = U.user_id
+		
+        WHERE
+        	U.role_id = #{roleId}
+		AND
+			U.is_active = true
+		AND
+			U.is_deleted = false
+		AND
+			(
+					U.email iLIKE #{globalSearchString}	
+				OR
+					UI.first_name iLIKE #{globalSearchString} 
+			 	OR 
+			 		UI.last_name iLIKE #{globalSearchString}
+			 	OR 
+			 		UI.phone_no iLIKE #{globalSearchString}
+			 	OR 
+			 		UI.phone_no iLIKE #{globalSearchString}
+			 	OR 
+			 		CONCAT(UI.first_name, CONCAT(' ', UI.last_name)) iLIKE #{globalSearchString}
+			 	OR 
+			 		CONCAT(UI.first_name, CONCAT(' ', UI.last_name)) iLIKE #{globalSearchString}
+			)
+		<if test="assignedRegionList != null">
+	    AND
+	    	MUR.multicity_city_region_id IN
+	    		
+	    		<foreach item="item" index="index" collection="assignedRegionList" open="(" separator="," close=")">
+					#{item}
+				</foreach>
+	    </if>
+	    
+	    ORDER BY UI.first_name DESC
+        LIMIT  #{length}  OFFSET  #{start}  
+        
+	</select>
+	
+	<select id="getFilteredVendorUserAccountCount" parameterType="map" resultType="int"> 		
+		
+	    SELECT 
+			count(DISTINCT u.user_id)
+		FROM 
+			users U
+			
+		INNER JOIN user_info UI ON UI.user_id = U.user_id
+		
+		<if test="assignedRegionList != null">	
+			INNER JOIN multicity_user_region MUR ON MUR.user_id = U.user_id
+		</if>
+		
+		INNER JOIN driver_vendors DV ON (DV.driver_id = U.user_id AND DV.vendor_id = #{vendorId})
+		LEFT JOIN user_account UA ON UA.user_id = U.user_id
+		
+        WHERE
+        	U.role_id = #{roleId}
+		AND
+			U.is_active = true
+		AND
+			U.is_deleted = false
+		AND
+			(
+					U.email iLIKE #{globalSearchString}	
+				OR
+					UI.first_name iLIKE #{globalSearchString} 
+			 	OR 
+			 		UI.last_name iLIKE #{globalSearchString}
+			 	OR 
+			 		UI.phone_no iLIKE #{globalSearchString}
+			 	OR 
+			 		UI.phone_no iLIKE #{globalSearchString}
+			 	OR 
+			 		CONCAT(UI.first_name, CONCAT(' ', UI.last_name)) iLIKE #{globalSearchString}
+			 	OR 
+			 		CONCAT(UI.first_name, CONCAT(' ', UI.last_name)) iLIKE #{globalSearchString}
+			)
+		<if test="assignedRegionList != null">
+	    AND
+	    	MUR.multicity_city_region_id IN
+	    		
+	    		<foreach item="item" index="index" collection="assignedRegionList" open="(" separator="," close=")">
+					#{item}
+				</foreach>
+	    </if>
+	    
+	</select>
+	
+	<select id="getUserAccountDetailsListForExport"  parameterType="map"  resultMap="userAccountResultMap">
+	
+		SELECT 
+			DISTINCT U.user_id, U.email,
+			UI.first_name, UI.last_name, UI.phone_no, UI.phone_no_code,
+			UA.user_account_id, UA.current_balance, UA.hold_balance, UA.approved_balance, UA.total_balance
+		FROM 
+			users U
+			
+		INNER JOIN user_info UI ON UI.user_id = U.user_id
+		
+		<if test="assignedRegionList != null">	
+			INNER JOIN multicity_user_region MUR ON MUR.user_id = U.user_id
+		</if>
+		
+		<if test="vendorId != null">
+			INNER JOIN driver_vendors DV ON (DV.driver_id = U.user_id AND DV.vendor_id = #{vendorId})
+		</if>
+		
+		LEFT JOIN user_account UA ON UA.user_id = U.user_id
+		
+        WHERE
+        	U.role_id = #{roleId}
+		AND
+			U.is_active = true
+		AND
+			U.is_deleted = false
+		AND
+			(
+					U.email iLIKE #{searchString}	
+				OR
+					UI.first_name iLIKE #{searchString} 
+			 	OR 
+			 		UI.last_name iLIKE #{searchString}
+			 	OR 
+			 		UI.phone_no iLIKE #{searchString}
+			 	OR 
+			 		UI.phone_no iLIKE #{searchString}
+			 	OR 
+			 		CONCAT(UI.first_name, CONCAT(' ', UI.last_name)) iLIKE #{searchString}
+			 	OR 
+			 		CONCAT(UI.first_name, CONCAT(' ', UI.last_name)) iLIKE #{searchString}
+			)
+		<if test="assignedRegionList != null">
+	    AND
+	    	MUR.multicity_city_region_id IN
+	    		
+	    		<foreach item="item" index="index" collection="assignedRegionList" open="(" separator="," close=")">
+					#{item}
+				</foreach>
+	    </if>
+        
+	</select>
+	
+</mapper>

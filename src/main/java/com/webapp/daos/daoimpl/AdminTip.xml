@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.webapp.daos.AdminTipDao">
+
+	<resultMap id="adminTipResultMap" type="AdminTipModel" >
+	    
+		<result property="adminTipId" column="admin_tip_id" />
+		<result property="adminId" column="admin_id" />
+		<result property="tip" column="tip" />
+		
+		<result property="createdAt" column="created_at" />
+		<result property="updatedAt" column="updated_at" />
+		<result property="createdBy" column="created_by" />
+		<result property="updatedBy" column="updated_by" />
+		
+	</resultMap>
+	
+	<update id="updateAdminTip" parameterType="AdminTipModel"  > 
+        	
+		UPDATE 
+			admin_tip 
+		SET 
+			tip = #{tip},
+			updated_by = #{updatedBy},
+			updated_at = #{updatedAt}
+		WHERE 
+			admin_id = #{adminId}
+			
+	</update>
+
+	<select id="getAdminTipByAdminId" parameterType="String" resultMap="adminTipResultMap">
+	    
+		SELECT 
+			admin_tip_id,admin_id,tip,
+			created_at,updated_at,created_by,updated_by
+		FROM 
+			admin_tip 
+		WHERE 
+			admin_id = #{adminId}
+			
+ 	</select>
+ 	
+	<select id="getAdminTip" parameterType="String" resultMap="adminTipResultMap">
+	    
+		SELECT 
+			admin_tip_id,admin_id,tip,
+			created_at,updated_at,created_by,updated_by
+		FROM 
+			admin_tip 
+		
+ 	</select>
+	
+</mapper> 

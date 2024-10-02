@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.webapp.daos.UserRolesDao">
+
+	<resultMap id="userRolesResultMap" type="UserRolesModel" >
+	
+		<id property="userRoleId" column="user_role_id" />
+		<result property="userId" column="user_id" />
+		<result property="roleId" column="role_id" />
+		
+	</resultMap>
+	
+	<select id="isUserRole" parameterType="map"	resultType="boolean">
+	
+		SELECT 
+			count(*) 
+		FROM 
+			user_roles 
+		WHERE
+		 	user_id = #{userId} 
+		AND 
+			role_id = #{roleId} 
+		AND 
+			record_status = 'A'
+		
+	</select>
+	
+	<select id="getUserRoleIds" parameterType="String"	resultMap="userRolesResultMap">
+	
+		SELECT 
+			* 
+		FROM 
+			user_roles 
+		WHERE 
+			user_id = #{userId} 
+		AND 
+			record_status = 'A'
+		
+	</select>
+	
+	<update id="deleteUserRoles" parameterType="UserRolesModel">
+		
+		UPDATE 
+			user_roles 
+		SET 
+			record_status = 'D', 
+			updated_by = #{updatedBy}, 
+			updated_at = #{updatedAt}
+		WHERE 
+			user_id = #{userId} 
+		
+	</update>
+	
+	<delete id="deleteUserRolesByUserId" parameterType="String" >
+	
+		DELETE 
+			* 
+		FROM 
+			user_roles 
+		WHERE 
+			user_id = #{userId}
+			
+	</delete>
+	
+	<update id="updateUserRoles" parameterType="UserRolesModel">
+		
+		UPDATE 
+			user_roles 
+		SET  
+			user_id = #{userId}, 
+			role_id = #{roleId}, 
+			updated_at = #{updatedAt}
+		WHERE 
+			user_id = #{userId} 
+		
+	</update>
+	
+	<insert id="addUserRole" keyColumn="user_role_id" useGeneratedKeys="true" parameterType="UserRolesModel">
+
+		INSERT INTO 
+			user_role 
+				(
+					user_role_id, user_id, role_id, updated_at, created_at
+				)
+		VALUES 
+				( 
+					#{userRoleId}, #{userId}, #{roleId}, #{updatedAt}, #{createdAt}
+				)
+				
+	</insert>
+	
+	<select id="isRoleAssignToSomeOne" parameterType="String" resultType="boolean">
+	
+		SELECT 
+			count(*) 
+		FROM 
+			user_roles 
+		WHERE  
+			role_id = #{roleId} 
+		AND 
+			record_status = 'A'
+		
+	</select>
+			
+</mapper> 

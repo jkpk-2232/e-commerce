@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="com.webapp.daos.FeedSettingsDao">
+
+	<resultMap id="feedSettingsResultMap" type="FeedSettingsModel" >
+  
+		<result property="feedSettingsId" column="feed_settings_id" /> 
+		<result property="multicityCityRegionId" column="multicity_city_region_id" />
+		
+		<result property="createdAt" column="created_at" />
+		<result property="updatedAt" column="updated_at" />
+		<result property="createdBy" column="created_by" />
+		<result property="updatedBy" column="updated_by" />
+		
+		<result property="regionName" column="region_name" /> 
+		<result property="vendorId" column="vendor_id" /> 
+		
+	</resultMap>
+	
+	<sql id="FeedSettingsColumns">
+		fs.feed_settings_id, fs.multicity_city_region_id, fs.created_at, 
+		fs.created_by, fs.updated_at, fs.updated_by
+	</sql>
+
+	<insert id="addFeedSettings" parameterType="FeedSettingsModel">
+
+		INSERT INTO feed_settings
+				(
+	            	feed_settings_id, multicity_city_region_id, created_by, created_at, updated_by, updated_at
+	            )
+	   	VALUES 
+				(
+					#{feedSettingsId}, #{multicityCityRegionId}, #{createdBy}, #{createdAt}, #{updatedBy}, #{updatedAt}
+				)
+				
+	</insert>
+	
+	
+	<select id="getFeedSettingsCountByUser" resultType="int">
+	
+		SELECT 
+			count(fs.feed_settings_id)
+		FROM 
+			feed_settings fs 
+		INNER JOIN multicity_city_region MCR ON MCR.multicity_city_region_id = fs.multicity_city_region_id
+ 		WHERE 
+ 			fs.created_by = '1'
+	
+	</select>
+	
+	<select id="getFeedSettingsListForSearch" parameterType="map" resultMap="feedSettingsResultMap">
+		
+		SELECT     
+			fs.feed_settings_id, fs.multicity_city_region_id, fs.created_by, fs.created_at, fs.updated_by, fs.updated_at,
+	        MCR.city_display_name AS region_name
+		FROM 
+			feed_settings fs
+		INNER JOIN multicity_city_region MCR ON MCR.multicity_city_region_id = fs.multicity_city_region_id
+ 		
+		ORDER BY fs.updated_at DESC
+		LIMIT  #{length}  OFFSET  #{start}         
+        
+	</select>
+	
+	<select id="getFeedSettingsDetailsById" parameterType="map" resultMap="feedSettingsResultMap"> 		
+		
+	   	SELECT     
+			feed_settings_id, multicity_city_region_id, created_by, created_at, updated_by, updated_at
+		FROM 
+			feed_settings
+ 		WHERE  
+          	feed_settings_id = #{feedSettingsId}
+	</select>
+	
+	<update id="updateFeedSettings" parameterType="FeedSettingsModel"  > 	
+	
+		UPDATE 
+			feed_settings 
+		SET 
+			multicity_city_region_id = #{multicityCityRegionId}, 
+			updated_at = #{updatedAt},
+			updated_by = #{updatedBy}
+		WHERE
+			feed_settings_id = #{feedSettingsId}
+			
+	</update>
+	
+	<select id="getfeedSettingsByMultiCityRegionId"  resultMap="feedSettingsResultMap" > 	
+	
+		SELECT 
+			<include refid="FeedSettingsColumns"></include>
+		FROM 
+			feed_settings fs 
+		WHERE  
+			fs.multicity_city_region_id = #{multicityCityRegionId}
+			
+	</select>
+	
+	<select id="isMultiCityRegionIdExists" resultType="boolean"> 		
+		
+	   	SELECT     
+			(count(*)>0)
+		FROM 
+			feed_settings fs
+ 		WHERE  
+          	fs.multicity_city_region_id = #{regionId}
+				
+	</select>
+	
+</mapper>
+
+	

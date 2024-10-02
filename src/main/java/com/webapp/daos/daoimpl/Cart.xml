@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.webapp.daos.CartDao">
+
+	<resultMap type="CartModel" id="cartResultMap">
+		
+		<result property="cartId" column="cart_id" />
+		<result property="vendorId" column="vendor_id" />
+		<result property="vendorStoreId" column="vendor_store_id" />
+		<result property="quantity" column="quantity" />
+		<result property="userId" column="user_id" />
+		<result property="vendorProductId" column="vendor_product_id" />
+		
+		
+		
+		<result property="createdAt" column="created_at" />
+		<result property="updatedAt" column="updated_at" />
+		<result property="createdBy" column="created_by" />
+		<result property="updatedBy" column="updated_by" />
+		
+		<result property="isActive" column="is_active" />
+		<result property="totalCost" column="total_cost" />
+		<result property="productName" column="product_name" />
+		<result property="productImage" column="product_image" />
+		<result property="productWeight" column="product_weight" />
+		<result property="productWeightUnit" column="product_weight_unit" />
+		<result property="productActualPrice" column="product_actual_price" />
+		<result property="productDiscountedPrice" column="product_discounted_price" />
+		<result property="productInventoryCount" column="product_inventory_count" />
+	
+	</resultMap>
+	
+	<sql id="CartColumns">
+		c.cart_id,c.vendor_id,c.vendor_store_id,c.quantity,
+		c.user_id,c.created_at,c.updated_at,c.created_by,
+		c.updated_by, c.vendor_product_id
+	</sql>
+	
+	<select id="getCartDetailsByUser"  resultMap="cartResultMap">
+	    	
+	    SELECT 
+	    	<include refid="CartColumns"></include>,
+	    	vp.is_active,(vp.product_discounted_price * c.quantity ) as total_cost,
+	    	vp.product_name, vp.product_image, vp.product_weight, vp.product_weight_unit,
+	    	vp.product_actual_price, vp.product_discounted_price, vp.product_inventory_count
+	    
+	    FROM  cart c
+
+		INNER JOIN user_info ui on ui.user_id = c.user_id
+		INNER JOIN users u ON u.user_id = c.user_id AND u.is_active = true
+		INNER JOIN vendor_stores vs ON vs.vendor_store_id = c.vendor_store_id AND vs.is_active = true
+		INNER JOIN vendor_products vp ON vp.vendor_product_id = c.vendor_product_id
+ 		WHERE
+	    	c.user_id = #{loggedInuserId}
+	    
+	</select>
+	
+	
+	<insert id="addCart" parameterType="cartModel">
+	
+		INSERT INTO cart
+			(
+	            cart_id, vendor_id, vendor_store_id, vendor_product_id, quantity,
+	            user_id, created_by, created_at, updated_by, updated_at
+	        )
+    	VALUES 
+    		(
+    			#{cartId}, #{vendorId}, #{vendorStoreId}, #{vendorProductId}, #{quantity},
+    			#{userId}, #{createdBy}, #{createdAt}, #{updatedBy}, #{updatedAt}
+            );
+		
+	</insert>
+	
+	<insert id="addMultipleCartItems" parameterType="cartModel">
+	
+		INSERT INTO cart
+			(
+				cart_id, vendor_id, vendor_store_id, vendor_product_id, quantity,
+	            user_id, created_by, created_at, updated_by, updated_at
+			)
+		VALUES 
+		<foreach collection="cartModelList" item="model" separator=","> 
+			(
+				#{model.cartId}, #{model.vendorId}, #{model.vendorStoreId}, #{model.vendorProductId}, #{model.quantity},
+    			#{model.userId}, #{model.createdBy}, #{model.createdAt}, #{model.updatedBy}, #{model.updatedAt}
+			)
+		</foreach>
+	
+	</insert>
+	
+	<update id="updateCart" parameterType="cartModel">
+		
+		UPDATE 
+			cart
+		SET 
+			quantity = #{quantity},
+			updated_by = #{updatedBy}, 
+			updated_at = #{updatedAt}
+			
+		WHERE 
+			cart_id = #{cartId}
+		
+	</update>
+	
+	<delete id="deleteCartItemByCartId" parameterType="String">
+		
+		DELETE FROM cart 
+		WHERE cart_id = #{cartId}
+		
+	</delete>
+	
+	<delete id="deleteTotalCartItemsByVendorAndStoreAndUser" parameterType="String">
+		
+		DELETE FROM cart 
+		WHERE 
+			vendor_id = #{vendorId}
+		AND
+			vendor_store_id = #{vendorStoreId}
+		AND		
+			user_id = #{loggedInUserId}
+		
+	</delete>
+	
+	<select id="getNewCartDetailsByUser"  resultMap="cartResultMap">
+	    	
+	    SELECT 
+	    	<include refid="CartColumns"></include>,
+	    	vp.is_active,(vp.product_discounted_price * c.quantity ) as total_cost,
+	    	product_variant_name as product_name, (select product_image_url from product_images pi where pi.product_variant_id = pv.product_variant_id limit 1) as product_image ,
+			weight as product_weight, uom.uom_id as product_weight_unit, uom.uom_name as weight_unit,
+	  		vp.product_actual_price, vp.product_discounted_price, vp.product_inventory_count
+	    
+	    FROM  cart c
+
+		INNER JOIN user_info ui on ui.user_id = c.user_id
+		INNER JOIN users u ON u.user_id = c.user_id AND u.is_active = true
+		INNER JOIN vendor_stores vs ON vs.vendor_store_id = c.vendor_store_id AND vs.is_active = true
+		INNER JOIN vendor_products vp ON vp.vendor_product_id = c.vendor_product_id
+		INNER JOIN product_variants pv ON pv.product_variant_id = vp.product_variant_id
+		INNER JOIN product_templates pt ON pv.product_template_id = pt.product_template_id
+		INNER JOIN unit_of_measures uom ON uom.uom_id = pt.uom_id
+ 		WHERE
+	    	c.user_id = #{loggedInuserId}
+	    
+	</select>
+	
+	
+	
+</mapper>

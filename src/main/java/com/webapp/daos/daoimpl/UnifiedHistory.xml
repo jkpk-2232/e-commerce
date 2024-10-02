@@ -1,0 +1,431 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.webapp.daos.UnifiedHistoryDao">
+
+	<resultMap id="UnifiedHistoryResultMap" type="UnifiedHistoryModel">
+	
+		<result property="vendorName" column="vendorName" />
+		<result property="customerName" column="customerName" />
+		<result property="storeName" column="storeName" />
+		<result property="driverName" column="driverName" />
+		
+		<result property="unifiedHistoryId" column="unified_history_id" />
+		<result property="historyId" column="history_id" />
+		<result property="shortId" column="short_id" />
+		<result property="passengerId" column="passenger_id" />
+		<result property="passengerVendorId" column="passenger_vendor_id" />
+		<result property="carTypeId" column="car_type_id" />
+		<result property="serviceTypeId" column="service_type_id" />
+		<result property="multicityCountryId" column="multicity_country_id" />
+		<result property="multicityCityRegionId" column="multicity_city_region_id" />
+		
+		<result property="sourceAddress" column="source_address" />
+		<result property="destinationAddress" column="destination_address" />
+		<result property="pFirstName" column="p_first_name" />
+		<result property="pLastName" column="p_last_name" />
+		<result property="pEmail" column="p_email" />
+		<result property="pPhone" column="p_phone" />
+		<result property="pPhoneCode" column="p_phone_code" />
+		<result property="pPhotoUrl" column="p_photo_url" />
+		
+		<result property="tourBookedBy" column="tour_booked_by" />
+		<result property="bookingType" column="booking_type" />
+		<result property="rideLaterPickupTime" column="ride_later_pickup_time" />
+		<result property="isRideLater" column="is_ride_later" />
+		
+		<result property="orderNumberOfItems" column="order_number_of_items" />
+		<result property="orderDeliveryAddress" column="order_delivery_address" />
+		<result property="orderDeliveryCharges" column="order_delivery_charges" />
+		<result property="orderCreationTime" column="order_creation_time" />
+		<result property="vendorStoreId" column="vendor_store_id" />
+		<result property="orderReceivedAgainstVendorId" column="order_received_against_vendor_id" />
+		
+		<result property="courierPickupAddress" column="courier_pickup_address" />
+		<result property="courierContactPersonName" column="courier_contact_person_name" />
+		<result property="courierContactPhoneNo" column="courier_contact_phone_no" />
+		<result property="courierDropAddress" column="courier_drop_address" />
+		<result property="courierDropContactPersonName" column="courier_drop_contact_person_name" />
+		<result property="courierDropContactPhoneNo" column="courier_drop_contact_phone_no" />
+		<result property="courierDetails" column="courier_details" />
+		
+		<result property="driverId" column="driver_id" />
+		<result property="driverVendorId" column="driver_vendor_id" />
+		<result property="carId" column="car_id" />
+		<result property="isDelieveryManagedByVendorDriver" column="is_delievery_managed_by_vendor_driver" />
+		<result property="total" column="total" />
+		<result property="charges" column="charges" />
+		<result property="status" column="status" />
+		<result property="promoCodeId" column="promo_code_id" />
+		<result property="isPromoCodeApplied" column="is_promo_code_applied" />
+		<result property="isTourRideLater" column="is_tour_ride_later" />
+		<result property="isCriticalTourRideLater" column="is_critical_tour_ride_later" />
+		<result property="isTakeRide" column="is_take_ride" />
+		<result property="isTourTakeRide" column="is_tour_take_ride" />
+		
+		<result property="endOtp" column="end_otp" />
+
+		<result property="createdBy" column="created_by" />
+		<result property="createdAt" column="created_at" />
+		<result property="updatedBy" column="updated_by" />
+		<result property="updatedAt" column="updated_at" />
+		
+		<result property="vendorName" column="vendorName" />
+		<result property="customerName" column="customerName" />
+		<result property="storeName" column="storeName" />
+		<result property="driverName" column="driverName" />
+		<result property="promoCode" column="promoCode" />
+		
+	</resultMap>
+	
+	<sql id="UnifiedHistoryColumns">
+		uh.unified_history_id, uh.history_id, uh.short_id, uh.passenger_id, uh.passenger_vendor_id, 
+		uh.car_type_id, uh.service_type_id, uh.multicity_country_id, uh.multicity_city_region_id, 
+		uh.source_address, uh.destination_address, uh.p_first_name, uh.p_last_name, uh.p_email, uh.p_phone, 
+		uh.p_phone_code, uh.p_photo_url, uh.tour_booked_by, uh.booking_type, uh.ride_later_pickup_time, 
+		uh.is_ride_later, uh.order_number_of_items, uh.order_delivery_address, uh.order_delivery_charges, 
+		uh.order_creation_time, uh.vendor_store_id, uh.order_received_against_vendor_id, 
+		uh.courier_pickup_address, uh.courier_contact_person_name, uh.courier_contact_phone_no, 
+		uh.courier_drop_address, uh.courier_drop_contact_person_name, uh.courier_drop_contact_phone_no, 
+		uh.courier_details, uh.driver_id, uh.driver_vendor_id, uh.car_id, uh.is_delievery_managed_by_vendor_driver, 
+		uh.total, uh.charges, uh.status, uh.promo_code_id, uh.is_promo_code_applied, uh.is_tour_ride_later, 
+		uh.is_critical_tour_ride_later, uh.is_take_ride, uh.is_tour_take_ride,
+		uh.created_by, uh.created_at, uh.updated_by, uh.updated_at, uh.end_otp
+	</sql>
+	
+	<insert id="insertUnifiedHistory" useGeneratedKeys="true" parameterType="UnifiedHistoryModel">
+	
+		INSERT INTO unified_history
+			(
+				unified_history_id, history_id, short_id, passenger_id, passenger_vendor_id, 
+				car_type_id, service_type_id, multicity_country_id, multicity_city_region_id, 
+				source_address, destination_address, p_first_name, p_last_name, p_email, p_phone, 
+				p_phone_code, p_photo_url, tour_booked_by, booking_type, ride_later_pickup_time, 
+				is_ride_later, order_number_of_items, order_delivery_address, order_delivery_charges, 
+				order_creation_time, vendor_store_id, order_received_against_vendor_id, 
+				courier_pickup_address, courier_contact_person_name, courier_contact_phone_no, 
+				courier_drop_address, courier_drop_contact_person_name, courier_drop_contact_phone_no, 
+				courier_details, driver_id, driver_vendor_id, car_id, is_delievery_managed_by_vendor_driver, 
+				total, charges, status, promo_code_id, is_promo_code_applied, is_tour_ride_later, 
+				is_critical_tour_ride_later, is_take_ride, is_tour_take_ride, end_otp,
+				created_by, created_at, updated_by, updated_at
+			)
+		VALUES 
+			(
+				#{unifiedHistoryId}, #{historyId}, #{shortId}, #{passengerId}, #{passengerVendorId}, 
+				#{carTypeId}, #{serviceTypeId}, #{multicityCountryId}, #{multicityCityRegionId}, 
+				#{sourceAddress}, #{destinationAddress}, #{pFirstName}, #{pLastName}, #{pEmail}, #{pPhone}, 
+				#{pPhoneCode}, #{pPhotoUrl}, #{tourBookedBy}, #{bookingType}, #{rideLaterPickupTime}, 
+				#{isRideLater}, #{orderNumberOfItems}, #{orderDeliveryAddress}, #{orderDeliveryCharges}, 
+				#{orderCreationTime}, #{vendorStoreId}, #{orderReceivedAgainstVendorId}, 
+				#{courierPickupAddress}, #{courierContactPersonName}, #{courierContactPhoneNo}, 
+				#{courierDropAddress}, #{courierDropContactPersonName}, #{courierDropContactPhoneNo}, 
+				#{courierDetails}, #{driverId}, #{driverVendorId}, #{carId}, #{isDelieveryManagedByVendorDriver}, 
+				#{total}, #{charges}, #{status}, #{promoCodeId}, #{isPromoCodeApplied}, #{isTourRideLater}, 
+				#{isCriticalTourRideLater}, #{isTakeRide}, #{isTourTakeRide}, #{endOtp}, 
+				#{createdBy}, #{createdAt}, #{updatedBy}, #{updatedAt}
+			);
+	
+	</insert>
+	
+	<update id="deleteEntryByHistoryId" parameterType="UnifiedHistoryModel">
+		DELETE FROM unified_history WHERE history_id = #{historyId}
+	</update>
+	
+	<insert id="batchInsertUnifiedHistoryData" parameterType="UnifiedHistoryModel">
+	
+		INSERT INTO unified_history
+			(
+				unified_history_id, history_id, short_id, passenger_id, passenger_vendor_id, 
+				car_type_id, service_type_id, multicity_country_id, multicity_city_region_id, 
+				source_address, destination_address, p_first_name, p_last_name, p_email, p_phone, 
+				p_phone_code, p_photo_url, tour_booked_by, booking_type, ride_later_pickup_time, 
+				is_ride_later, order_number_of_items, order_delivery_address, order_delivery_charges, 
+				order_creation_time, vendor_store_id, order_received_against_vendor_id, 
+				courier_pickup_address, courier_contact_person_name, courier_contact_phone_no, 
+				courier_drop_address, courier_drop_contact_person_name, courier_drop_contact_phone_no, 
+				courier_details, driver_id, driver_vendor_id, car_id, is_delievery_managed_by_vendor_driver, 
+				total, charges, status, promo_code_id, is_promo_code_applied, is_tour_ride_later, 
+				is_critical_tour_ride_later, is_take_ride, is_tour_take_ride, end_otp,
+				created_by, created_at, updated_by, updated_at
+			)
+		VALUES 
+		<foreach collection="unifiedHistoryList" item="model" separator=","> 
+			(
+				#{model.unifiedHistoryId}, #{model.historyId}, #{model.shortId}, #{model.passengerId}, #{model.passengerVendorId}, 
+				#{model.carTypeId}, #{model.serviceTypeId}, #{model.multicityCountryId}, #{model.multicityCityRegionId}, 
+				#{model.sourceAddress}, #{model.destinationAddress}, #{model.pFirstName}, #{model.pLastName}, #{model.pEmail}, #{model.pPhone}, 
+				#{model.pPhoneCode}, #{model.pPhotoUrl}, #{model.tourBookedBy}, #{model.bookingType}, #{model.rideLaterPickupTime}, 
+				#{model.isRideLater}, #{model.orderNumberOfItems}, #{model.orderDeliveryAddress}, #{model.orderDeliveryCharges}, 
+				#{model.orderCreationTime}, #{model.vendorStoreId}, #{model.orderReceivedAgainstVendorId}, 
+				#{model.courierPickupAddress}, #{model.courierContactPersonName}, #{model.courierContactPhoneNo}, 
+				#{model.courierDropAddress}, #{model.courierDropContactPersonName}, #{model.courierDropContactPhoneNo}, 
+				#{model.courierDetails}, #{model.driverId}, #{model.driverVendorId}, #{model.carId}, #{model.isDelieveryManagedByVendorDriver}, 
+				#{model.total}, #{model.charges}, #{model.status}, #{model.promoCodeId}, #{model.isPromoCodeApplied}, #{model.isTourRideLater}, 
+				#{model.isCriticalTourRideLater}, #{model.isTakeRide}, #{model.isTourTakeRide}, #{model.endOtp},  
+				#{model.createdBy}, #{model.createdAt}, #{model.updatedBy}, #{model.updatedAt}
+			)
+		</foreach>
+	
+	</insert>
+	
+	<update id="updateOrderDeliveryStatus" parameterType="UnifiedHistoryModel">
+		
+		UPDATE 
+			unified_history
+		SET
+			status = #{status},
+			updated_by = #{updatedBy},
+			updated_at = #{updatedAt}
+		WHERE
+			history_id = #{historyId}
+		
+	</update>
+	
+	<update id="updateDelieveryManagedByVendorDriver" parameterType="UnifiedHistoryModel">
+		
+		UPDATE 
+			unified_history
+		SET
+			is_delievery_managed_by_vendor_driver = #{isDelieveryManagedByVendorDriver},
+			updated_by = #{updatedBy},
+			updated_at = #{updatedAt}
+		WHERE
+			history_id = #{historyId}
+		
+	</update>
+	
+	<update id="updateDriverIdAgainstOrder" parameterType="UnifiedHistoryModel">
+		
+		UPDATE 
+			unified_history
+		SET
+			driver_id = #{driverId},
+			updated_by = #{updatedBy},
+			updated_at = #{updatedAt}
+		WHERE
+			history_id = #{historyId}
+		
+	</update>
+	
+	<update id="updateCarTypeIdAgainstOrder" parameterType="UnifiedHistoryModel">
+		
+		UPDATE 
+			unified_history
+		SET
+			car_type_id = #{carTypeId},
+			updated_by = #{updatedBy},
+			updated_at = #{updatedAt}
+		WHERE
+			history_id = #{historyId}
+		
+	</update>
+	
+	<update id="assignTourDriver" parameterType="UnifiedHistoryModel">
+	
+		UPDATE 
+			unified_history 
+		SET 
+		    driver_id = #{driverId},
+			status = #{status},
+			updated_by = #{updatedBy}, 
+			updated_at = #{updatedAt}
+		WHERE  
+		    history_id = #{historyId}
+		    
+	</update>
+	
+	<update id="updateDriverVendorId" parameterType="UnifiedHistoryModel">
+	
+		UPDATE 
+			unified_history 
+		SET 
+		    driver_vendor_id = #{driverVendorId}
+		WHERE  
+		    history_id = #{historyId}
+		    
+	</update>
+	
+	<update id="updateTourCarIdByTourId" parameterType="UnifiedHistoryModel">
+	
+		UPDATE 
+			unified_history 
+		SET 
+		    car_id = #{carId}
+		WHERE  
+		    history_id = #{historyId}
+		    
+	</update>
+	
+	<update id="updateChargesAndDriverAmount" parameterType="UnifiedHistoryModel">
+	
+		UPDATE 
+			unified_history 
+		SET 
+			charges = #{charges},
+			total = #{total},
+			is_promo_code_applied = #{isPromoCodeApplied},
+			promo_code_id = #{promoCodeId}
+		WHERE  
+		   	history_id = #{historyId}
+		    
+	</update>
+	
+	<update id="updatePromoCodeStatus" parameterType="UnifiedHistoryModel">
+	
+		UPDATE 
+			unified_history 
+		SET 
+			total = #{total},
+			is_promo_code_applied = #{isPromoCodeApplied},
+			promo_code_id = #{promoCodeId}
+		WHERE  
+		   	history_id = #{historyId}
+		    
+	</update>
+	
+	<update id="updateCharges" parameterType="UnifiedHistoryModel">
+	
+		UPDATE 
+			unified_history 
+		SET 
+			charges = #{charges},
+			updated_at = #{updatedAt}
+		WHERE  
+		    history_id = #{historyId}
+		    
+	</update>
+	
+	<update id="updateTourStatusByTourId" parameterType="UnifiedHistoryModel">
+	
+		UPDATE 
+			unified_history 
+		SET 
+			status = #{status},
+			updated_by = #{updatedBy}, 
+			updated_at = #{updatedAt}
+		WHERE  
+		    history_id = #{historyId}
+		    
+	</update>
+	
+	<update id="expireToursBatch" parameterType="map">
+	
+		UPDATE 
+			unified_history 
+		SET 
+			status = 'expired',
+			is_tour_ride_later = false,
+			is_critical_tour_ride_later = false
+		WHERE  
+		    history_id IN
+		    	<foreach item="historyId" index="index" collection="historyIds" open="(" separator="," close=")">
+					#{historyId}
+				</foreach>
+		    
+	</update>
+	
+	<update id="updateRideLaterTourFlag" parameterType="UnifiedHistoryModel">
+	
+		UPDATE 
+			unified_history 
+		SET 
+			is_tour_ride_later = #{isTourRideLater}
+		WHERE  
+		    history_id = #{historyId}
+		    
+	</update>
+	
+	<update id="updateTourStatusCritical" parameterType="UnifiedHistoryModel">
+	
+		UPDATE 
+			unified_history 
+		SET 
+			is_critical_tour_ride_later = #{isCriticalTourRideLater}
+		WHERE  
+		    history_id = #{historyId}
+		    
+	</update>
+	
+	<update id="updateTourAsTakeRide" parameterType="UnifiedHistoryModel">
+	
+		UPDATE 
+			unified_history 
+		SET 
+			is_take_ride = #{isTakeRide},
+			is_tour_take_ride = #{isTourTakeRide}
+		WHERE  
+		    history_id = #{historyId}
+		    
+	</update>
+	
+	<update id="updateTourAddress" parameterType="UnifiedHistoryModel">
+	
+		UPDATE 
+			unified_history 
+		SET 
+			destination_address = #{destinationAddress},
+			source_address = #{sourceAddress}
+		WHERE  
+		    history_id = #{historyId}
+		    
+	</update>
+	
+	<select id="getUnifiedHistoryList" resultMap="UnifiedHistoryResultMap">
+	
+		SELECT 
+			<include refid="UnifiedHistoryColumns"></include>,
+			concat(pui.first_name,' ',pui.last_name ) AS customerName,
+			concat(dui.first_name,' ',dui.last_name ) AS driverName,
+			concat(vui.first_name,' ',vui.last_name ) AS vendorName,
+			vs.store_name AS storeName, pc.promo_code AS promoCode
+		FROM 
+			unified_history uh
+	    LEFT JOIN users pu ON pu.user_id = uh.passenger_id
+	    LEFT JOIN user_info pui ON pui.user_id = uh.passenger_id     
+	    LEFT JOIN users du ON du.user_id = uh.driver_id
+	    LEFT JOIN user_info dui ON dui.user_id = uh.driver_id
+		LEFT JOIN user_info vui ON vui.user_id = uh.order_received_against_vendor_id
+		LEFT JOIN vendor_stores vs ON vs.vendor_store_id = uh.vendor_store_id
+		LEFT JOIN promo_code pc ON pc.promo_code_id = uh.promo_code_id    		 
+		WHERE
+		<if test="roleId==5">
+			uh.passenger_id = #{userId}
+		</if>
+		<if test="roleId==6">
+			uh.driver_id = #{userId}
+		</if>
+		<if test="roleId==7">
+			uh.order_received_against_vendor_id = #{userId}
+		</if>
+		<if test="vendorOrderManagement!=null">
+			<if test="vendorOrderManagement==1">
+			AND
+				uh.is_delievery_managed_by_vendor_driver = 'true'
+			</if>
+			<if test="vendorOrderManagement==2">
+			AND
+				uh.is_delievery_managed_by_vendor_driver = 'false'
+			</if>
+		</if>
+		AND
+			uh.status IN
+	    	<foreach item="status" index="index" collection="statusList" open="(" separator="," close=")">
+				#{status}
+			</foreach>
+		AND
+			(
+				CAST (short_id AS character varying) = replace(#{searchKey}, '%', '') 
+			OR
+				concat(vui.first_name,' ',vui.last_name ) ilike #{searchKey}
+			OR
+				concat(pui.first_name,' ',pui.last_name ) ilike #{searchKey}
+			OR
+				concat(dui.first_name,' ',dui.last_name ) ilike #{searchKey}
+			)
+	    ORDER BY uh.created_at DESC	
+	    LIMIT #{length} OFFSET #{start}	
+
+	</select>
+	
+</mapper>

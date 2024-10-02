@@ -1,0 +1,1 @@
+ALTER TABLE services ADD service_priority int DEFAULT 1;

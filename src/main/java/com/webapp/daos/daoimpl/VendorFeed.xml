@@ -1,0 +1,414 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.webapp.daos.VendorFeedDao">
+
+	<resultMap id="VendorFeedResultMap" type="VendorFeedModel">
+	
+		<result property="vendorFeedId" column="vendor_feed_id" />
+		<result property="vendorId" column="vendor_id" />
+		<result property="feedName" column="feed_name" />
+		<result property="feedMessage" column="feed_message" />
+		<result property="feedBaner" column="feed_baner" />
+		<result property="feedViewsCount" column="feed_views_count" />
+		<result property="feedLikesCount" column="feed_likes_count" />
+		<result property="feedNotificationStatus" column="feed_notification_status" />
+		<result property="createdBy" column="created_by" />
+		<result property="createdAt" column="created_at" />
+		<result property="updatedBy" column="updated_by" />
+		<result property="updatedAt" column="updated_at" />
+		<result property="mediaType" column="media_type" />
+		<result property="isSponsored" column="is_sponsored" />
+		<result property="isDeleted" column="is_deleted" />
+		<result property="vendorStoreId" column="vendor_store_id"/>
+		<result property="vendorProductId" column="vendor_product_id"/>
+		
+		<result property="vendorName" column="vendorName" />
+		<result property="vendorBrandImage" column="vendor_brand_image" />
+		<result property="storeName" column="store_name" />
+		<result property="storeAddressLat" column="store_address_lat"/>
+		<result property="storeAddressLng" column="store_address_lng"/>
+		<result property="storePlaceId" column="store_place_id" />
+		<result property="isFeedLike" column="is_feed_like" />
+		<result property="isVendorStoreSubscribe" column="is_vendor_store_subscribe" />
+		<result property="storeAddress" column="store_address" />
+		<result property="serviceId" column="service_id" />
+		<result property="brandName" column="vendor_brand_name"/>
+		<result property="serviceName" column="service_name" />
+		<result property="serviceImage" column="service_image" />
+		
+	</resultMap>
+	
+	<sql id="VendorFeedColumns">
+		vf.vendor_feed_id, vf.vendor_id, vf.feed_name, vf.feed_message, 
+		vf.feed_baner, vf.feed_views_count, vf.feed_likes_count, 
+		vf.created_by, vf.created_at, vf.updated_by, vf.updated_at,
+		vf.feed_notification_status, vf.media_type, vf.is_sponsored,
+		vf.is_deleted, vf.vendor_store_id, vf.vendor_product_id
+	</sql>
+	
+	<insert id="insertVendorFeed" parameterType="VendorFeedModel">
+	
+		INSERT INTO vendor_feeds
+			(
+				vendor_feed_id, vendor_id, feed_name, feed_message, 
+				feed_baner, feed_views_count, feed_likes_count, 
+				created_by, created_at, updated_by, updated_at,
+				feed_notification_status, media_type, is_sponsored,
+				is_deleted, vendor_store_id, vendor_product_id
+			)
+		VALUES 
+			(
+				#{vendorFeedId}, #{vendorId}, #{feedName}, #{feedMessage}, 
+				#{feedBaner}, #{feedViewsCount}, #{feedLikesCount}, 
+				#{createdBy}, #{createdAt}, #{updatedBy}, #{updatedAt},
+				#{feedNotificationStatus}, #{mediaType}, #{isSponsored},
+				#{isDeleted}, #{vendorStoreId}, #{vendorProductId}
+			);
+	
+	</insert>
+	
+	<select id="getVendorFeedCount" resultType="int">
+		
+		SELECT
+			count(vf.vendor_feed_id)
+		FROM
+			vendor_feeds vf
+		WHERE
+			vf.created_at &gt;= #{startDatelong}
+		AND
+			vf.created_at &lt;= #{endDatelong}
+		<if test="vendorId!=null">
+		AND
+			vf.vendor_id = #{vendorId}	
+		</if>		
+	
+	</select>
+	
+	<select id="getVendorFeedSearch" resultMap="VendorFeedResultMap">
+		
+		SELECT
+			<include refid="VendorFeedColumns"></include>,
+			concat(vui.first_name,' ',vui.last_name) AS vendorName,
+			vs.store_name
+		FROM
+			vendor_feeds vf
+		INNER JOIN user_info vui ON vui.user_id = vf.vendor_id
+		LEFT JOIN vendor_stores vs ON vs.vendor_store_id = vf.vendor_store_id
+		WHERE
+			(
+				vf.feed_name ilike #{searchKey}
+			OR
+				vf.feed_message ilike #{searchKey}
+			OR
+				vui.first_name ilike #{searchKey}
+			OR
+				vui.last_name ilike #{searchKey}
+			OR
+				concat(vui.first_name,' ',vui.last_name ) ilike #{searchKey}
+			)
+		<if test="startDatelong>0">
+		AND
+			vf.created_at &gt;= #{startDatelong}
+		AND
+			vf.created_at &lt;= #{endDatelong}
+		</if>
+		<if test="vendorId!=null">
+		AND
+			vf.vendor_id = #{vendorId}	
+		</if>	
+		ORDER BY vf.updated_at DESC
+		<if test="length>0">
+		LIMIT #{length} OFFSET #{start}
+		</if>	
+	
+	</select>
+	
+	<select id="getVendorFeedSearchCount" resultType="int">
+		
+		SELECT
+			count(vf.vendor_feed_id)
+		FROM
+			vendor_feeds vf
+		INNER JOIN user_info vui ON vui.user_id = vf.vendor_id
+		WHERE
+			(
+				vf.feed_name ilike #{searchKey}
+			OR
+				vf.feed_message ilike #{searchKey}
+			OR
+				vui.first_name ilike #{searchKey}
+			OR
+				vui.last_name ilike #{searchKey}
+			OR
+				concat(vui.first_name,' ',vui.last_name ) ilike #{searchKey}
+			)
+		<if test="startDatelong>0">
+		AND
+			vf.created_at &gt;= #{startDatelong}
+		AND
+			vf.created_at &lt;= #{endDatelong}
+		</if>
+		<if test="vendorId!=null">
+		AND
+			vf.vendor_id = #{vendorId}	
+		</if>
+	
+	</select>
+	
+	<delete id="deleteVendorFeedByVendorFeedId" parameterType="VendorFeedModel">
+		DELETE FROM vendor_feeds WHERE vendor_feed_id = #{vendorFeedId}
+	</delete>
+	
+	<select id="getVendorFeedDetailsByFeedId" resultMap="VendorFeedResultMap">
+		
+		SELECT
+			<include refid="VendorFeedColumns"></include>,
+			concat(vui.first_name,' ',vui.last_name) AS vendorName, vui.vendor_brand_name,
+			vui.vendor_brand_image, vs.store_name, vs.store_address_lat, 
+			vs.store_address_lng, vs.store_place_id,
+			vsc.service_id,  s.service_name, s.service_image
+		FROM
+			vendor_feeds vf
+		INNER JOIN user_info vui ON vui.user_id = vf.vendor_id
+		LEFT JOIN vendor_stores vs ON vs.vendor_store_id = vf.vendor_store_id
+		<!-- LEFT JOIN vendor_feed_likes vfl ON vfl.vendor_feed_id = vf.vendor_feed_id -->
+		INNER JOIN vendor_service_categories vsc ON vsc.vendor_id = vf.vendor_id
+		INNER JOIN services s ON s.service_id = vsc.service_id
+			
+		WHERE
+			vf.vendor_feed_id = #{vendorFeedId}
+			
+	</select>
+	
+	<select id="getVendorFeedsByVendorIdAndVendorStoreId" resultMap="VendorFeedResultMap">
+		
+		SELECT
+			<include refid="VendorFeedColumns"></include>,
+			concat(vui.first_name,' ',vui.last_name) AS vendorName, vui.vendor_brand_name,
+			vui.vendor_brand_image, vs.store_name, vs.store_address_lat, 
+			vs.store_address_lng, vs.store_place_id, vs.store_address,
+			(SELECT (count(vfl.vendor_feed_like_id)>0)	FROM vendor_feed_likes vfl WHERE vfl.vendor_feed_id = vf.vendor_feed_id AND vfl.user_id = #{loggedInuserId} ) AS is_feed_like,
+			(SELECT (count(vsub.vendor_subscriber_id)>0) FROM vendor_subscribers vsub WHERE vsub.vendor_store_id = vs.vendor_store_id AND vsub.user_id = #{loggedInuserId} ) AS is_vendor_store_subscribe,
+			vsc.service_id
+		FROM
+			vendor_feeds vf
+		INNER JOIN user_info vui ON vui.user_id = vf.vendor_id
+		LEFT JOIN vendor_stores vs ON vs.vendor_store_id = vf.vendor_store_id
+		<!-- LEFT JOIN vendor_feed_likes vfl ON vfl.vendor_feed_id = vf.vendor_feed_id -->
+		INNER JOIN vendor_service_categories vsc ON vsc.vendor_id = vf.vendor_id
+		WHERE
+			(
+				vf.feed_name ilike #{searchKey}
+			OR
+				vf.feed_message ilike #{searchKey}
+			)
+		AND
+			vf.vendor_id = #{vendorId}
+			
+		<if test="vendorStoreId!=null">
+		AND
+			vf.vendor_store_id = #{vendorStoreId}
+		</if>
+		AND
+			vf.is_deleted = false	
+				
+		ORDER BY vf.updated_at DESC
+		<if test="length>0">
+		LIMIT #{length} OFFSET #{start}
+		</if>	
+	
+	</select>
+	
+	<select id="getVendorFeedsBySubscriberId" resultMap="VendorFeedResultMap">
+		
+		SELECT
+			<include refid="VendorFeedColumns"></include>,
+			concat(vui.first_name,' ',vui.last_name) AS vendorName, vui.vendor_brand_name,
+			vui.vendor_brand_image, vs.store_name, vs.store_address_lat, 
+			vs.store_address_lng, vs.store_place_id, vs.store_address,
+			(SELECT (count(vfl.vendor_feed_like_id)>0)	FROM vendor_feed_likes vfl WHERE vfl.vendor_feed_id = vf.vendor_feed_id AND vfl.user_id = #{subscriberUserId} ) AS is_feed_like,
+			(SELECT (count(vsub.vendor_subscriber_id)>0) FROM vendor_subscribers vsub WHERE vsub.vendor_store_id = vs.vendor_store_id AND vsub.user_id = #{subscriberUserId} ) AS is_vendor_store_subscribe,
+			vsc.service_id
+		
+		FROM
+			vendor_feeds vf
+		INNER JOIN user_info vui ON vui.user_id = vf.vendor_id
+		LEFT JOIN vendor_stores vs ON vs.vendor_store_id = vf.vendor_store_id
+		<!-- LEFT JOIN vendor_feed_likes vfl ON vfl.vendor_feed_id = vf.vendor_feed_id -->
+		INNER JOIN vendor_service_categories vsc ON vsc.vendor_id = vf.vendor_id
+		<!-- INNER JOIN apns_notification_messages apm ON (apm.extra_info_type = #{extraInfoType} AND apm.extra_info_id = vf.vendor_feed_id)
+		WHERE
+			apm.to_user_id = #{subscriberUserId}
+		AND -->
+		WHERE 
+			(
+				vf.feed_name ilike #{searchKey}
+			OR
+				vf.feed_message ilike #{searchKey}
+			)
+		AND
+			vf.is_deleted = false		
+		ORDER BY vf.updated_at DESC
+		<if test="length>0">
+		LIMIT #{length} OFFSET #{start}
+		</if>	
+	
+	</select>
+	
+	<update id="updateFeedLikesCount" parameterType="VendorFeedModel">
+		
+		UPDATE
+			vendor_feeds
+		SET
+			feed_likes_count = #{feedLikesCount}
+		WHERE
+			vendor_feed_id = #{vendorFeedId}
+			
+	</update>
+	
+	<update id="updateFeedViewsCount" parameterType="VendorFeedModel">
+		
+		UPDATE
+			vendor_feeds
+		SET
+			feed_views_count = #{feedViewsCount}
+		WHERE
+			vendor_feed_id = #{vendorFeedId}
+			
+	</update>
+	
+	<update id="updateFeedNotificationStatus" parameterType="VendorFeedModel">
+		
+		UPDATE
+			vendor_feeds
+		SET
+			feed_notification_status = #{feedNotificationStatus},
+			updated_at = #{updatedAt}
+		WHERE
+			vendor_feed_id = #{vendorFeedId}
+			
+	</update>
+	
+	<update id="updateVendorFeedStatus" parameterType="VendorFeedModel">
+	
+		UPDATE 
+			vendor_feeds
+		SET
+			is_deleted = #{isDeleted}
+		WHERE
+			vendor_feed_id = #{vendorFeedId}
+	
+	</update>
+	
+	<select id="getVendorFeedsByVendorIdAndVendorStoreIdAndRegion" resultMap="VendorFeedResultMap">
+		
+		SELECT
+			<include refid="VendorFeedColumns"></include>,
+			concat(vui.first_name,' ',vui.last_name) AS vendorName, vui.vendor_brand_name,
+			vui.vendor_brand_image, vs.store_name, vs.store_address_lat, 
+			vs.store_address_lng, vs.store_place_id, vs.store_address,
+			(SELECT (count(vfl.vendor_feed_like_id)>0)	FROM vendor_feed_likes vfl WHERE vfl.vendor_feed_id = vf.vendor_feed_id AND vfl.user_id = #{loggedInuserId} ) AS is_feed_like,
+			(SELECT (count(vsub.vendor_subscriber_id)>0) FROM vendor_subscribers vsub WHERE vsub.vendor_store_id = vs.vendor_store_id AND vsub.user_id = #{loggedInuserId} ) AS is_vendor_store_subscribe,
+			vsc.service_id, s.service_name, s.service_image
+		FROM
+			vendor_feeds vf
+		INNER JOIN user_info vui ON vui.user_id = vf.vendor_id and vui.user_id in ( select distinct(user_id) from multicity_user_region where multicity_city_region_id = #{regionId} )
+		LEFT JOIN vendor_stores vs ON vs.vendor_store_id = vf.vendor_store_id
+		INNER JOIN vendor_service_categories vsc ON vsc.vendor_id = vf.vendor_id
+		INNER JOIN services s ON s.service_id = vsc.service_id
+		
+		WHERE
+			(
+				vf.feed_name ilike #{searchKey}
+			OR
+				vf.feed_message ilike #{searchKey}
+			)
+		AND
+			vf.vendor_id = #{vendorId}
+			
+		<if test="vendorStoreId!=null">
+		AND
+			vf.vendor_store_id = #{vendorStoreId}
+		</if>
+		AND
+			vf.is_deleted = false
+				
+		ORDER BY vf.updated_at DESC
+		<if test="length>0">
+		LIMIT #{length} OFFSET #{start}
+		</if>	
+	
+	</select>
+	
+	<select id="getNewVendorFeedsBySubscriberId" resultMap="VendorFeedResultMap">
+		
+		SELECT
+			<include refid="VendorFeedColumns"></include>,
+			concat(vui.first_name,' ',vui.last_name) AS vendorName, vui.vendor_brand_name,
+			vui.vendor_brand_image, vs.store_name, vs.store_address_lat, 
+			vs.store_address_lng, vs.store_place_id, vs.store_address,
+			(SELECT (count(vfl.vendor_feed_like_id)>0)	FROM vendor_feed_likes vfl WHERE vfl.vendor_feed_id = vf.vendor_feed_id AND vfl.user_id = #{subscriberUserId} ) AS is_feed_like,
+			(SELECT (count(vsub.vendor_subscriber_id)>0) FROM vendor_subscribers vsub WHERE vsub.vendor_store_id = vs.vendor_store_id AND vsub.user_id = #{subscriberUserId} ) AS is_vendor_store_subscribe,
+			vsc.service_id, s.service_name, s.service_image
+		
+		FROM
+			vendor_feeds vf
+		INNER JOIN user_info vui ON vui.user_id = vf.vendor_id and vui.user_id in ( select distinct(user_id) from multicity_user_region where multicity_city_region_id = #{regionId} )
+		LEFT JOIN vendor_stores vs ON vs.vendor_store_id = vf.vendor_store_id
+		INNER JOIN vendor_service_categories vsc ON vsc.vendor_id = vf.vendor_id
+		INNER JOIN services s ON s.service_id = vsc.service_id
+		
+		WHERE 
+			(
+				vf.feed_name ilike #{searchKey}
+			OR
+				vf.feed_message ilike #{searchKey}
+			)
+		AND
+			vf.is_deleted = false
+					
+		ORDER BY vf.updated_at DESC
+		
+		<if test="length>0">
+		LIMIT #{length} OFFSET #{start}
+		</if>	
+	
+	</select>
+	
+	<update id="repostVendorFeed" parameterType="VendorFeedModel">
+	
+		UPDATE 
+			vendor_feeds
+		SET
+			updated_at = #{updatedAt},
+			updated_by = #{updatedBy}
+		WHERE
+			vendor_feed_id = #{vendorFeedId}
+	
+	</update>
+	
+	<select id="getVendorFeedViewsAndLikesCount" resultType="map">
+		
+		SELECT
+			sum(vf.feed_views_count) as feedViewsCount, sum(feed_likes_count) as feedLikesCount
+		FROM
+			vendor_feeds vf
+		WHERE
+			vf.vendor_id = '91be9e29e0eb4ef396684f8ec26386b9'
+	
+	</select>
+	
+	<select id="getVendorFeedCommentsCountByVendor" resultType="int">
+	
+		SELECT 
+			COUNT(comment_id) 
+		FROM 
+			vendor_feeds vf
+		LEFT JOIN  vendor_feed_comments vfc on vfc.post_id = vf.vendor_feed_id 
+ 		WHERE 
+ 			vendor_id = '91be9e29e0eb4ef396684f8ec26386b9'
+	
+	</select>
+	
+</mapper>

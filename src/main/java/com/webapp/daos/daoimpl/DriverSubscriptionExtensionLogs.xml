@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.webapp.daos.DriverSubscriptionExtensionLogsDao">
+
+	<resultMap id="DriverSubscriptionExtensionLogsResultMap" type="DriverSubscriptionExtensionLogsModel">
+	
+		<result property="driverSubscriptionExtensionLogId" column="driver_subscription_extension_log_id" />
+		<result property="status" column="status" />
+		<result property="multicityCityRegionId" column="multicity_city_region_id" />
+		<result property="totalDrivers" column="total_drivers" />
+		<result property="totalCompletedDrivers" column="total_completed_drivers" />
+		<result property="totalFailedDrivers" column="total_failed_drivers" />
+
+		<result property="createdBy" column="created_by" />
+		<result property="createdAt" column="created_at" />
+		<result property="updatedBy" column="updated_by" />
+		<result property="updatedAt" column="updated_at" />
+		
+		<result property="createdByName" column="createdByName" />
+		<result property="regionName" column="regionName" />
+		
+	</resultMap>
+	
+	<sql id="DriverSubscriptionExtensionLogsColumns">
+		dsel.driver_subscription_extension_log_id, dsel.status, dsel.multicity_city_region_id, 
+		dsel.total_drivers, dsel.total_completed_drivers, dsel.total_failed_drivers, 
+		dsel.created_by, dsel.created_at, dsel.updated_by, dsel.updated_at
+	</sql>
+	
+	<insert id="insertDriverSubscriptionExtensionLogs" parameterType="DriverSubscriptionExtensionLogsModel">
+	
+		INSERT INTO driver_subscription_extension_logs
+			(
+				driver_subscription_extension_log_id, status, multicity_city_region_id, 
+				total_drivers, total_completed_drivers, total_failed_drivers, 
+				created_by, created_at, updated_by, updated_at
+			)
+		VALUES 
+			(
+				#{driverSubscriptionExtensionLogId}, #{status}, #{multicityCityRegionId}, 
+				#{totalDrivers}, #{totalCompletedDrivers}, #{totalFailedDrivers}, 
+				#{createdBy}, #{createdAt}, #{updatedBy}, #{updatedAt}
+			);
+	
+	</insert>
+	
+	<update id="updateDriverSubscriptionExtensionLogs" parameterType="DriverSubscriptionExtensionLogsModel">
+		
+		UPDATE
+			driver_subscription_extension_logs
+		SET
+			status = #{status},
+			total_completed_drivers = #{totalCompletedDrivers},
+			total_failed_drivers = #{totalFailedDrivers},
+			updated_by = #{updatedBy},
+			updated_at = #{updatedAt}
+		WHERE
+			driver_subscription_extension_log_id = #{driverSubscriptionExtensionLogId}
+		
+	</update>
+	
+	<select id="getDriverSubscriptionExtensionLogsCount" resultType="int">
+		
+		SELECT
+			count(dsel.driver_subscription_extension_log_id)
+		FROM
+			driver_subscription_extension_logs dsel
+		WHERE
+			dsel.created_at &gt;= #{startDatelong}
+		AND
+			dsel.created_at &lt;= #{endDatelong}
+	
+	</select>
+	
+	<select id="getDriverSubscriptionExtensionLogsListForSearch" resultMap="DriverSubscriptionExtensionLogsResultMap">
+		
+		SELECT
+			<include refid="DriverSubscriptionExtensionLogsColumns"></include>,
+			concat(dui.first_name,' ',dui.last_name) AS createdByName,
+			mcr.city_display_name AS regionName
+		FROM
+			driver_subscription_extension_logs dsel
+		INNER JOIN user_info dui ON dui.user_id = dsel.created_by
+		INNER JOIN multicity_city_region mcr ON mcr.multicity_city_region_id = dsel.multicity_city_region_id
+		WHERE
+			dsel.created_at &gt;= #{startDatelong}
+		AND
+			dsel.created_at &lt;= #{endDatelong}
+		ORDER BY dsel.created_at DESC
+		LIMIT #{length} OFFSET #{start}
+	
+	</select>
+	
+</mapper>

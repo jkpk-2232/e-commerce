@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.webapp.daos.RentalPackageFareDao">
+
+	<resultMap id="rentalPackageFareResultMap" type="RentalPackageFareModel" >
+  
+		<result property="rentalPackageFareId" column="rental_package_fare_id" />
+		<result property="rentalPackageId" column="rental_package_id" />
+		<result property="carTypeId" column="car_type_id" />
+		
+		<result property="baseFare" column="base_fare" />
+		<result property="perKmFare" column="per_km_fare" />
+		<result property="perMinuteFare" column="per_minute_fare" />
+		<result property="driverPayablePercentage" column="driver_payable_percentage" />
+		
+		<result property="recordStatus" column="record_status" />
+		<result property="createdAt" column="created_at" />
+		<result property="updatedAt" column="updated_at" />
+		<result property="createdBy" column="created_by" />
+		<result property="updatedBy" column="updated_by" />
+		
+		<result property="packageTime" column="package_time" />
+		<result property="packageDistance" column="package_distance" />
+		<result property="rentalPackageType" column="rental_package_type" />
+		
+	</resultMap>
+	
+	<insert id="insertRentalPackageFareBatch" parameterType="java.util.List">
+	
+		INSERT INTO 
+			rental_package_fare 
+				(
+					rental_package_fare_id, rental_package_id, car_type_id, base_fare, per_km_fare, per_minute_fare, driver_payable_percentage,
+					record_status, created_at, created_by, updated_at, updated_by
+				)
+					
+		VALUES
+			<foreach collection="rentalPackageFareModelList" item="rentalPackageFareModel"  separator=",">
+				(
+					#{rentalPackageFareModel.rentalPackageFareId}, #{rentalPackageFareModel.rentalPackageId}, #{rentalPackageFareModel.carTypeId}, 
+					#{rentalPackageFareModel.baseFare}, #{rentalPackageFareModel.perKmFare}, #{rentalPackageFareModel.perMinuteFare}, 
+					#{rentalPackageFareModel.driverPayablePercentage},
+					#{rentalPackageFareModel.recordStatus}, #{rentalPackageFareModel.createdAt}, #{rentalPackageFareModel.createdBy}, 
+					#{rentalPackageFareModel.updatedAt}, #{rentalPackageFareModel.updatedBy}
+				)
+			</foreach>
+				
+	</insert>
+	
+	<update id="deleteRentalPackageFareByRentalPackageId" parameterType="RentalPackageFareModel"> 	
+	
+		DELETE FROM 
+			rental_package_fare 
+		WHERE 
+			rental_package_id = #{rentalPackageId}
+			
+	</update>
+	
+	<select id="getRentalPackageFareListByRentalPackageId" parameterType="map"  resultMap="rentalPackageFareResultMap">
+	
+		SELECT 
+			rental_package_fare_id, rental_package_id, car_type_id, base_fare, per_km_fare, per_minute_fare, driver_payable_percentage,
+			record_status, created_at, created_by, updated_at, updated_by
+			
+		FROM 
+			rental_package_fare		
+			
+		WHERE 
+	    	record_status = 'A'
+	    AND
+	    	rental_package_id = #{rentalPackageId}
+	    	
+	</select>
+	
+	<select id="getRentalPackageFareDetailsByRentalIdnCarType" parameterType="map"  resultMap="rentalPackageFareResultMap">
+	
+		SELECT 
+			RPF.rental_package_fare_id, RPF.rental_package_id, RPF.car_type_id, RPF.base_fare, RPF.per_km_fare, RPF.per_minute_fare, 
+			RPF.driver_payable_percentage, RPF.created_at, 
+			RP.package_time, RP.package_distance, RP.rental_package_type
+			
+		FROM 
+			rental_package_fare RPF
+		
+		INNER JOIN 
+				rental_packages RP
+		ON
+			RP.rental_package_id = RPF.rental_package_id		
+			
+		WHERE 
+	    	RPF.record_status = 'A'
+	    AND
+	    	RPF.rental_package_id = #{rentalPackageId}
+	    AND
+	    	RPF.car_type_id = #{carTypeId}
+	    AND
+	    	RP.record_status = 'A'
+ 		AND
+ 			RP.is_active = true
+	    	
+	</select>
+	
+</mapper>

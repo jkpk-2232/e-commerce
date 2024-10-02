@@ -1,0 +1,219 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.webapp.daos.RentalPackageDao">
+
+	<resultMap id="rentalPackageResultMap" type="RentalPackageModel" >
+  
+		<result property="rentalPackageId" column="rental_package_id" /> 
+		<result property="multicityCityRegionId" column="multicity_city_region_id" />
+		<result property="packageTime" column="package_time" />
+		<result property="packageDistance" column="package_distance" />
+		
+		<result property="rentalPackageType" column="rental_package_type" />
+		
+		<result property="isActive" column="is_active" />
+		<result property="recordStatus" column="record_status" />
+		<result property="createdAt" column="created_at" />
+		<result property="updatedAt" column="updated_at" />
+		<result property="createdBy" column="created_by" />
+		<result property="updatedBy" column="updated_by" />
+		
+		<result property="regionName" column="region_name" /> 
+		<result property="vendorId" column="vendor_id" /> 
+		
+	</resultMap>
+	
+	<insert id="addRentalPackage" parameterType="RentalPackageModel">
+
+		INSERT INTO rental_packages
+				(
+	            	rental_package_id, multicity_city_region_id, package_time, package_distance, rental_package_type,
+	            	is_active, record_status, created_by, created_at, updated_by, updated_at, vendor_id
+	            )
+	   	VALUES 
+				(
+					#{rentalPackageId}, #{multicityCityRegionId}, #{packageTime}, #{packageDistance}, #{rentalPackageType},
+					#{isActive}, #{recordStatus}, #{createdBy}, #{createdAt}, #{updatedBy}, #{updatedAt}, #{vendorId}
+				)
+				
+	</insert>
+	
+	<update id="updateRentalPackage" parameterType="RentalPackageModel"  > 	
+	
+		UPDATE 
+			rental_packages 
+		SET 
+			multicity_city_region_id = #{multicityCityRegionId}, 
+			rental_package_type = #{rentalPackageType},
+			package_time = #{packageTime},
+			package_distance = #{packageDistance},
+			vendor_id = #{vendorId},
+			updated_at = #{updatedAt},
+			updated_by = #{updatedBy}
+		WHERE
+			rental_package_id = #{rentalPackageId}
+			
+	</update>
+	
+	<select id="getRentalPackageDetailsById" parameterType="map" resultMap="rentalPackageResultMap"> 		
+		
+	   	SELECT     
+			rental_package_id, multicity_city_region_id, package_time, package_distance, rental_package_type,
+	        is_active, record_status, created_by, created_at, updated_by, updated_at, vendor_id
+		FROM 
+			rental_packages
+ 		WHERE  
+          	rental_package_id = #{rentalPackageId}
+        AND
+        	record_status = 'A'
+				
+	</select>
+	
+	<select id="getTotalRentalPackagesCount" resultType="int">
+	
+		SELECT 
+			count(RP.rental_package_id)
+		FROM 
+			rental_packages RP 
+		INNER JOIN multicity_city_region MCR ON MCR.multicity_city_region_id = RP.multicity_city_region_id
+ 		WHERE 
+ 			RP.record_status = 'A'
+ 		<if test="vendorIds != null">
+		AND	   
+			RP.vendor_id IN
+			<foreach item="item" index="index" collection="vendorIds" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+ 		<if test="regionIds != null">
+		AND	   
+			RP.multicity_city_region_id IN
+			<foreach item="item" index="index" collection="regionIds" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+		<if test="rentalPackageType != null">
+		AND
+			RP.rental_package_type = #{rentalPackageType}
+		</if>
+	
+	</select>
+	
+	<select id="getRentalPackageListForSearch" parameterType="map" resultMap="rentalPackageResultMap">
+		
+		SELECT     
+			RP.rental_package_id, RP.multicity_city_region_id, RP.package_time, RP.package_distance, RP.rental_package_type,
+	        RP.is_active, RP.record_status, RP.created_by, RP.created_at, RP.updated_by, RP.updated_at,
+	        MCR.city_display_name AS region_name, RP.vendor_id
+		FROM 
+			rental_packages RP
+		INNER JOIN multicity_city_region MCR ON MCR.multicity_city_region_id = RP.multicity_city_region_id
+ 		WHERE 
+ 			RP.record_status = 'A'
+ 		AND
+ 			(
+ 					CAST (RP.package_time AS character varying) iLIKE #{globalSearchString}
+ 				OR
+ 					CAST ((RP.package_distance / 1000) AS character varying) iLIKE #{globalSearchString}
+ 				OR
+ 					MCR.city_display_name iLIKE #{globalSearchString}
+ 			)
+		<if test="vendorIds != null">
+		AND	   
+			RP.vendor_id IN
+			<foreach item="item" index="index" collection="vendorIds" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+ 		<if test="regionIds != null">
+		AND	   
+			RP.multicity_city_region_id IN
+			<foreach item="item" index="index" collection="regionIds" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+		<if test="rentalPackageType != null">
+		AND
+			RP.rental_package_type = #{rentalPackageType}
+		</if>
+		ORDER BY RP.updated_at DESC
+		LIMIT  #{length}  OFFSET  #{start}         
+        
+	</select>
+	
+	<select id="getRentalPackageListPagination" parameterType="map" resultMap="rentalPackageResultMap">
+		
+		SELECT     
+			rental_package_id, multicity_city_region_id, package_time, package_distance, rental_package_type,
+	        is_active, record_status, created_by, created_at, updated_by, updated_at, vendor_id
+		FROM 
+			rental_packages
+ 		WHERE 
+ 			record_status = 'A'
+ 		AND
+ 			is_active = true
+		<if test="multicityCityRegionId != null">
+		AND
+			multicity_city_region_id = #{multicityCityRegionId}
+		</if>
+		<if test="rentalPackageType != null">
+		AND
+			rental_package_type = #{rentalPackageType}
+		</if>
+		AND
+			vendor_id = #{vendorId}
+		ORDER BY updated_at DESC
+		LIMIT  #{length}  OFFSET  #{start}         
+        
+	</select>
+	
+	<update id="activeDeactiveRentalPackage" parameterType="RentalPackageModel">
+	
+		UPDATE
+			rental_packages
+		SET
+			is_active = #{isActive}, 
+    		updated_at = #{updatedAt},
+    		updated_by = #{updatedBy}
+       	WHERE
+			rental_package_id = #{rentalPackageId}
+	
+	</update>
+	
+	<update id="deleteRentalPackage" parameterType="RentalPackageModel">
+	
+		UPDATE
+			rental_packages
+		SET
+			is_active = #{isActive},
+			record_status =  #{recordStatus},
+    		updated_at = #{updatedAt},
+    		updated_by = #{updatedBy}
+       	WHERE
+			rental_package_id = #{rentalPackageId}
+	
+	</update>
+	
+	<update id="updateVendorIdForRentalPackages" parameterType="RentalPackageModel">
+	
+		UPDATE
+			rental_packages
+		SET
+			vendor_id =  #{vendorId},
+    		updated_at = #{updatedAt},
+    		updated_by = #{updatedBy}
+	
+	</update>
+	
+	<select id="getAllRentalPackages" parameterType="map" resultMap="rentalPackageResultMap"> 		
+		
+	   	SELECT     
+			rental_package_id, multicity_city_region_id, package_time, package_distance, rental_package_type,
+	        is_active, record_status, created_by, created_at, updated_by, updated_at, vendor_id
+		FROM 
+			rental_packages
+					
+	</select>
+	
+</mapper>

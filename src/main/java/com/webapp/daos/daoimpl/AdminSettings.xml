@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.webapp.daos.AdminSettingsDao">
+
+	<resultMap id="adminSettingsResultMap" type="AdminSettingsModel" >
+	    
+		<result property="adminSettingsId" column="admin_settings_id" />
+		<result property="radius" column="radius" />
+		<result property="senderBenefit" column="sender_benefit" />
+		<result property="receiverBenefit" column="receiver_benefit" />
+		<result property="aboutUs" column="about_us" />
+		<result property="privacyPolicy" column="privacy_policy" />
+		<result property="termsConditions" column="terms_conditions" /> 
+		<result property="refundPolicy" column="refund_policy" />
+		<result property="distanceType" column="distance_type" />
+		<result property="distanceUnits" column="distance_units" />
+		<result property="currencySymbol" column="currency_symbol" />
+		<result property="currencySymbolHtml" column="currency_symbol_html" />
+		<result property="noOfCars" column="no_of_cars" />
+		<result property="countryCode" column="country_code" />
+		<result property="currencyId" column="currency_id" />
+		<result property="recordStatus" column="record_status" />
+		<result property="createdAt" column="created_at" />
+		<result property="updatedAt" column="updated_at" />
+		<result property="createdBy" column="created_by" />
+		<result property="updatedBy" column="updated_by" />
+		<result property="driverReferralBenefit" column="driver_referral_benefit" />
+		<result property="averageSpeed" column="average_speed" />
+		<result property="driverIdealTime" column="driver_ideal_time" />
+		<result property="isAutoAssign" column="is_auto_assign" /> 
+		<result property="isCarServiceAutoAssign" column="is_car_service_auto_assign" />
+		<result property="demandVendorPercentage" column="demand_vendor_percentage" />
+		<result property="supplierVendorPercentage" column="supplier_vendor_percentage" />
+		<result property="isRestrictDriverVendorSubscriptionExpiry" column="is_restrict_driver_vendor_subscription_expiry" />
+		<result property="driverFare" column="driver_fare" />
+		
+		<result property="radiusDeliveryDriver" column="radius_delivery_driver" />
+		<result property="radiusSelfDelivery" column="radius_self_delivery" />
+		<result property="radiusStoreVisibility" column="radius_store_visibility" />
+		
+		<result property="driverProcessingVia" column="driver_processing_via" />
+		<result property="cronJobTripExpiryAfterXMins" column="cron_job_trip_expiry_after_x_mins" />
+		
+	</resultMap>
+
+	<sql id="adminSettingsTableColsWithOutTypeAlias">
+		admin_settings_id, radius, about_us, privacy_policy, terms_conditions, refund_policy,
+        record_status, created_at, created_by, updated_at, updated_by,
+        sender_benefit, receiver_benefit, distance_type, distance_units, currency_symbol,
+        currency_symbol_html, no_of_cars, country_code, currency_id, driver_referral_benefit, 
+        average_speed, driver_ideal_time, is_auto_assign, is_car_service_auto_assign,
+        demand_vendor_percentage, supplier_vendor_percentage, is_restrict_driver_vendor_subscription_expiry,
+        driver_fare, radius_delivery_driver, radius_self_delivery, radius_store_visibility,
+        driver_processing_via, cron_job_trip_expiry_after_x_mins
+	</sql>
+	
+	<select id="getAdminSettingsDetails" resultMap="adminSettingsResultMap">
+	
+		SELECT 
+			<include refid="adminSettingsTableColsWithOutTypeAlias"/> 
+		FROM 
+			admin_settings
+		LIMIT 1 
+		
+	</select>
+
+	<update id="updateAdminSettings" parameterType="AdminSettingsModel"> 	
+	
+		UPDATE 
+			admin_settings 
+		SET 
+			radius = #{radius},
+			distance_type = #{distanceType},
+			distance_units = #{distanceUnits},
+			currency_symbol = #{currencySymbol},
+			currency_symbol_html = #{currencySymbolHtml},
+			no_of_cars = #{noOfCars},
+			country_code = #{countryCode},
+			currency_id = #{currencyId},
+			driver_ideal_time = #{driverIdealTime},
+			is_auto_assign = #{isAutoAssign},
+			is_car_service_auto_assign = #{isCarServiceAutoAssign},
+			demand_vendor_percentage = #{demandVendorPercentage},
+			supplier_vendor_percentage = #{supplierVendorPercentage},
+			is_restrict_driver_vendor_subscription_expiry = #{isRestrictDriverVendorSubscriptionExpiry},
+			radius_delivery_driver = #{radiusDeliveryDriver},
+			radius_self_delivery = #{radiusSelfDelivery},
+			radius_store_visibility = #{radiusStoreVisibility},
+			driver_processing_via = #{driverProcessingVia},
+			cron_job_trip_expiry_after_x_mins = #{cronJobTripExpiryAfterXMins}
+		WHERE 
+			admin_settings_id = #{adminSettingsId}
+			
+	</update>
+	
+	<update id="updateAboutUsAdminSettings" parameterType="AdminSettingsModel"> 	
+	
+		UPDATE 
+			admin_settings 
+		SET 
+			about_us = #{aboutUs}
+		WHERE 
+			admin_settings_id = #{adminSettingsId}
+			
+	</update>
+	
+	<update id="updatePrivacyPolicyAdminSettings" parameterType="AdminSettingsModel"> 	
+	
+		UPDATE 
+			admin_settings 
+		SET 
+			privacy_policy = #{privacyPolicy}
+		WHERE 
+			admin_settings_id = #{adminSettingsId}
+			
+	</update>
+	
+	<update id="updateRefundPolicyAdminSettings" parameterType="AdminSettingsModel"> 	
+	
+		UPDATE 
+			admin_settings 
+		SET 
+			refund_policy = #{refundPolicy}
+		WHERE 
+			admin_settings_id = #{adminSettingsId}
+			
+	</update>
+	
+	<update id="updateTermsConditionsAdminSettings" parameterType="AdminSettingsModel"> 	
+	
+		UPDATE 
+			admin_settings 
+		SET 
+			terms_conditions = #{termsConditions}
+		WHERE 
+			admin_settings_id = #{adminSettingsId}
+			
+	</update>
+	
+	<update id="updateBenefits" parameterType="AdminSettingsModel"> 	
+	
+		UPDATE 
+			admin_settings 
+		SET 
+			sender_benefit = #{senderBenefit},
+			receiver_benefit = #{receiverBenefit},
+			driver_referral_benefit = #{driverReferralBenefit}
+		WHERE 
+			admin_settings_id = #{adminSettingsId}
+			
+	</update>
+	
+	<update id="updateDriverFareAdminSettings" parameterType="AdminSettingsModel"> 	
+	
+		UPDATE 
+			admin_settings 
+		SET 
+			driver_fare = #{driverFare}
+		WHERE 
+			admin_settings_id = #{adminSettingsId}
+			
+	</update>
+
+</mapper> 

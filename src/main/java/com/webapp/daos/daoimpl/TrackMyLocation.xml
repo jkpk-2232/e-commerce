@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.webapp.daos.TrackMyLocationDao">
+
+	<resultMap id="trackMyLocationResultMap" type="TrackMyLocationModel" >
+	
+	    <result property="passengerId" column="passenger_id" />
+	    <result property="passengerName" column="passenger_name" />
+	    <result property="passengerPhoneNo" column="passenger_phone_no" />
+		<result property="passengerEmail" column="passenger_email" />
+		
+		<result property="driverId" column="driver_id" />
+		<result property="driverName" column="driver_name" />
+		<result property="driverPhoneNo" column="driver_phone_no" />
+		<result property="driverEmail" column="driver_email" />
+		<result property="driverAvgRating" column="driver_avg_rating" />
+		<result property="driverPhotoUrl" column="driver_photo_url" />
+		
+		
+	    <result property="tourId" column="tour_id" />
+		<result property="sourceAddress" column="source_address" />
+		<result property="sourceLatitude" column="source_latitude" />
+		<result property="sourceLongitude" column="source_longitude" />
+		<result property="destinationAddress" column="destination_address" />
+		<result property="destLatitude" column="dest_latitude" />
+		<result property="destLongitude" column="dest_longitude" />
+		<result property="tourStatus" column="tour_status" />
+		
+		<result property="carId" column="car_id" />
+		<result property="carType" column="car_type" />
+		<result property="carModel" column="car_model" />
+		<result property="carColor" column="car_color" /> 
+		<result property="carPlateNo" column="car_plate_no" />
+		
+		<result property="contactNumber" column="contact_number" />
+		<result property="supportEmail" column="support_email" />
+		
+		<result property="createdAt" column="created_at" />
+		<result property="updatedAt" column="updated_at" />
+		<result property="createdBy" column="created_by" />
+		<result property="updatedBy" column="updated_by" />
+		
+	</resultMap>
+	
+	<select id="getPassengerLastUpdatedLocationByUserId" parameterType="String" resultMap="trackMyLocationResultMap">
+	
+		SELECT 
+			U.user_id AS passenger_id, U.email AS passenger_email,  
+			(UI.phone_no_code || ' ' || UI.phone_no) AS passenger_phone_no, (UI.first_name || ' ' || UI.last_name) AS passenger_name,
+			ST_Y(PGL.geo_location::geometry) AS source_latitude,  ST_X(PGL.geo_location::geometry) as source_longitude  
+		FROM 
+			users U
+		INNER JOIN user_info UI ON (UI.user_id = U.user_id)
+	    LEFT JOIN passenger_geo_location PGL ON (PGL.passenger_id = U.user_id)
+		WHERE 
+			U.user_id = #{userId}
+		AND
+			U.is_active = TRUE
+			
+	</select>
+	
+	<select id="getPassengerTourDetailsByTourId" parameterType="String" resultMap="trackMyLocationResultMap">
+	
+		SELECT 
+			T.tour_id, T.source_address, T.destination_address, T.status AS tour_status,
+				ST_Y(T.source_geolocation::geometry) AS source_latitude,  ST_X(T.source_geolocation::geometry) as source_longitude,
+		      	ST_Y(T.destination_geolocation::geometry) AS dest_latitude, ST_X(T.destination_geolocation::geometry) as dest_longitude,
+			PU.user_id AS passenger_id, PU.email AS passenger_email, 
+			PUI.phone_no AS passenger_phone_no, (PUI.first_name || ' ' || PUI.last_name) AS passenger_name,
+			DU.user_id AS driver_id, DU.email AS driver_email, 
+			DUI.phone_no AS driver_phone_no, (DUI.first_name || ' ' || DUI.last_name) AS driver_name,
+			AVG(DTR.rate) AS driver_avg_rating,
+			C.car_id, C.car_model, C.car_color, C.car_plate_no,
+			CT.car_type 
+		FROM 
+			tours T
+		INNER JOIN	users PU ON (PU.user_id = T.passenger_id)
+		INNER JOIN user_info PUI ON (PUI.user_id = PU.user_id)
+		
+		INNER JOIN	users DU ON (DU.user_id = T.driver_id)
+		INNER JOIN user_info DUI ON (DUI.user_id = DU.user_id)
+		
+		INNER JOIN car_drivers CD ON (CD.driver_id = T.driver_id)
+		INNER JOIN cars C ON (C.car_id = CD.car_id)
+		INNER JOIN car_type CT ON (CT.car_type_id = C.car_type_id)
+		
+		LEFT JOIN driver_trip_ratings DTR ON (DTR.driver_id = T.driver_id)
+
+		WHERE 
+			T.tour_id = #{tourId}
+			
+		GROUP BY 
+			T.tour_id, T.source_address, T.destination_address, T.status ,
+			ST_Y(T.source_geolocation::geometry),  ST_X(T.source_geolocation::geometry) ,
+		    ST_Y(T.destination_geolocation::geometry), ST_X(T.destination_geolocation::geometry) ,
+			PU.user_id , PU.email , PUI.phone_no , (PUI.first_name || ' ' || PUI.last_name) ,
+			DU.user_id , DU.email, DUI.phone_no, (DUI.first_name || ' ' || DUI.last_name),
+			C.car_id, C.car_model, c.car_color, CT.car_type 
+			
+	</select>
+	
+	<select id="getDriverUpdatedLocationWithDetailsById" parameterType="String" resultMap="trackMyLocationResultMap">
+	
+		SELECT 
+			U.user_id AS driver_id, U.email AS driver_email,  
+			(UI.phone_no_code || ' ' || UI.phone_no) AS driver_phone_no, (UI.first_name || ' ' || UI.last_name) AS driver_name,
+			ST_Y(DG.car_location::geometry) AS source_latitude,  ST_X(DG.car_location::geometry) AS source_longitude,
+			C.car_id, C.car_model, C.car_color, C.car_plate_no,	CT.car_type,
+			AVG(DTR.rate) AS driver_avg_rating 
+			  
+		FROM 
+			users U
+		INNER JOIN user_info UI ON (UI.user_id = U.user_id)
+		INNER JOIN driver_gps DG ON (DG.driver_id = U.user_id)
+		
+		INNER JOIN car_drivers CD ON (CD.driver_id = U.user_id)
+		INNER JOIN cars C ON (C.car_id = CD.car_id)
+		INNER JOIN car_type CT ON (CT.car_type_id = C.car_type_id)
+		
+		LEFT JOIN driver_trip_ratings DTR ON (DTR.driver_id = U.user_id)
+	   
+	    		 
+		WHERE 
+			U.user_id = #{userId}
+		AND
+			U.is_active = TRUE
+		
+		GROUP BY
+			U.user_id, U.email, (UI.phone_no_code || ' ' || UI.phone_no), (UI.first_name || ' ' || UI.last_name),
+			ST_Y(DG.car_location::geometry),  ST_X(DG.car_location::geometry), C.car_id, C.car_model, C.car_color, C.car_plate_no,	CT.car_type
+			
+	</select>
+	
+</mapper>

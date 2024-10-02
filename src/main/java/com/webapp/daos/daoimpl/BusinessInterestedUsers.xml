@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.webapp.daos.BusinessInterestedUsersDao">
+
+	<resultMap id="BusinessInterestedUsersResultMap" type="BusinessInterestedUsersModel">
+	
+		<result property="businessInterestedUserId" column="business_interested_user_id" />
+		<result property="name" column="name" />
+		<result property="email" column="email" />
+		<result property="phoneNoCode" column="phone_no_code" />
+		<result property="phoneNo" column="phone_no" />
+		<result property="city" column="city" />
+		<result property="roleId" column="role_id" />
+		<result property="vechicleType" column="vechicle_type" />
+		<result property="storeName" column="store_name" />
+		<result property="noOfStores" column="no_of_stores" />
+		<result property="businessCategory" column="business_category" />
+		<result property="brandName" column="brand_name" />
+		<result property="noOfOutlets" column="no_of_outlets" />
+		<result property="description" column="description" />
+		
+		<result property="createdBy" column="created_by" />
+		<result property="createdAt" column="created_at" />
+		<result property="updatedBy" column="updated_by" />
+		<result property="updatedAt" column="updated_at" />
+		
+		<result property="businessType" column="business_type" />
+		
+	</resultMap>
+	
+	<sql id="BusinessInterestedUserColumns">
+		business_interested_user_id, biu.name, biu.email, biu.phone_no_code, 
+		biu.phone_no, biu.city, biu.role_id, biu.vechicle_type,
+		biu.store_name, biu.no_of_stores, biu.business_category, biu.brand_name,
+		biu.no_of_outlets, biu.created_by, biu.created_at, biu.updated_by, biu.updated_at,
+		biu.description
+	</sql>
+	
+	<insert id="insertBusinessInterestedUser" parameterType="BusinessInterestedUsersModel">
+	
+		INSERT INTO business_interested_users
+			(
+				business_interested_user_id, name, email, phone_no_code, 
+				phone_no, city, role_id, vechicle_type,
+				store_name, no_of_stores, business_category, brand_name,
+				no_of_outlets, created_by, created_at, updated_by, updated_at,
+				description
+			)
+		VALUES 
+			(
+				#{businessInterestedUserId}, #{name}, #{email}, #{phoneNoCode},
+				#{phoneNo}, #{city}, #{roleId}, #{vechicleType},
+				#{storeName}, #{noOfStores}, #{businessCategory}, #{brandName},
+				#{noOfOutlets}, #{createdBy}, #{createdAt}, #{updatedBy}, #{updatedAt},
+				#{description}
+			);
+	
+	</insert>
+	
+	<select id="getBusinessInterestedUsersCount" resultType="int">
+	
+		SELECT
+			count(biu.business_interested_user_id)
+		FROM
+			business_interested_users biu
+		WHERE
+			biu.created_at &gt;= #{startDatelong}
+		AND
+			biu.created_at &lt;= #{endDatelong}
+		
+	</select>
+	
+	
+	<select id="getBusinessInterestedUsersSearch" resultMap="BusinessInterestedUsersResultMap">
+	
+		SELECT
+			<include refid="BusinessInterestedUserColumns"></include>, 
+			r.role as business_type
+		FROM
+			business_interested_users biu
+			
+		INNER JOIN roles r ON r.role_id = biu.role_id
+		WHERE
+			(
+				biu.brand_name ilike #{searchKey}
+			OR
+				biu.name ilike #{searchKey}
+			OR
+				biu.phone_no ilike #{searchKey}
+			OR
+				biu.vechicle_type ilike #{searchKey}
+			OR
+				r.role ilike #{searchKey}	
+					 
+			)
+		<if test="startDatelong>0">
+		AND
+			biu.created_at &gt;= #{startDatelong}
+		AND
+			biu.created_at &lt;= #{endDatelong}
+		</if>
+		
+		<if test="length>0">
+		ORDER BY biu.updated_at DESC
+		LIMIT #{length} OFFSET #{start}
+		</if>
+		
+		<if test="length==0">
+		ORDER BY biu.name ASC
+		</if>
+
+	</select>
+	
+	<select id="getBusinessUserSearchCount" resultType="int">
+	
+		SELECT
+			count(biu.business_interested_user_id)
+		FROM
+			business_interested_users biu
+		WHERE
+			(
+				biu.brand_name ilike #{searchKey}
+			OR
+				biu.name ilike #{searchKey}
+			OR
+				biu.phone_no ilike #{searchKey}
+			OR
+				biu.vechicle_type ilike #{searchKey}
+			)
+		<if test="startDatelong>0">
+		AND
+			biu.created_at &gt;= #{startDatelong}
+		AND
+			biu.created_at &lt;= #{endDatelong}
+		</if>
+	
+	</select>
+	
+</mapper>

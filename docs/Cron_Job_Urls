@@ -1,0 +1,148 @@
+#---------------------------------------------------------------------------------------------------------------------------------
+
+## Ride Later cron job urls
+
+# Dev Server
+*/1 * * * *  wget -q -O /dev/null "http://localhost:8080/cfmssdev/api/ride-later/driver-assign-cron-job.json"
+ 
+#Demo Server 
+*/1 * * * *  wget -q -O /dev/null "http://localhost:8080/cfmssdemo/api/ride-later/driver-assign-cron-job.json"
+ 
+#Production Server
+*/1 * * * *  wget -q -O /dev/null "http://localhost:8080/myhub/api/ride-later/driver-assign-cron-job.json"
+  
+#---------------------------------------------------------------------------------------------------------------------------------
+ 
+## Notify ideal driver cron job urls
+ 
+# Dev Server
+*/5 * * * *  wget -q -O /dev/null "http://localhost:8080/cfmssdev/api/ideal-driver/notify/cron-job.json"
+ 
+#Demo Server 
+*/5 * * * *  wget -q -O /dev/null "http://localhost:8080/cfmssdemo/api/ideal-driver/notify/cron-job.json"
+ 
+#Production Server
+*/5 * * * *  wget -q -O /dev/null "http://localhost:8080/myhub/api/ideal-driver/notify/cron-job.json"
+ 
+#---------------------------------------------------------------------------------------------------------------------------------
+
+## Driver logged in time cron job urls
+
+# Dev Server
+45 18 * * *  wget -q -O /dev/null "http://localhost:8080/cfmssdev/api/driver-duty/logged-in-time/cron-job.json"
+
+#Demo Server
+45 18 * * *  wget -q -O /dev/null "http://localhost:8080/cfmssdemo/api/driver-duty/logged-in-time/cron-job.json"
+
+#Production Server
+45 18 * * *  wget -q -O /dev/null "http://localhost:8080/myhub/api/driver-duty/logged-in-time/cron-job.json"
+
+#---------------------------------------------------------------------------------------------------------------------------------
+
+## Vendor store open isClosedToday cron job urls
+
+# Dev Server
+5 0 * * *  wget -q -O /dev/null "http://localhost:8080/cfmssdev/api/cron-job-vendor/open-vendor-store.json"
+
+#Demo Server
+5 0 * * *  wget -q -O /dev/null "http://localhost:8080/cfmssdemo/api/cron-job-vendor/open-vendor-store.json"
+
+#Production Server
+5 0 * * *  wget -q -O /dev/null "http://localhost:8080/myhub/api/cron-job-vendor/open-vendor-store.json"
+
+#---------------------------------------------------------------------------------------------------------------------------------
+
+## Vendor monthly subscription expiry cron job urls
+
+# Dev Server
+5 0 * * *  wget -q -O /dev/null "http://localhost:8080/cfmssdev/api/cron-job-vendor/monthly-subscription-expiry.json"
+
+#Demo Server
+5 0 * * *  wget -q -O /dev/null "http://localhost:8080/cfmssdemo/api/cron-job-vendor/monthly-subscription-expiry.json"
+
+#Production Server
+5 0 * * *  wget -q -O /dev/null "http://localhost:8080/myhub/api/cron-job-vendor/monthly-subscription-expiry.json"
+
+#---------------------------------------------------------------------------------------------------------------------------------
+
+## Assign driver to orders
+
+# Dev Server
+*/1 * * * *  wget -q -O /dev/null "http://localhost:8080/cfmssdev/api/cron-job-process-assign-drivers/orders.json"
+
+#Demo Server
+*/1 * * * *  wget -q -O /dev/null "http://localhost:8080/cfmssdemo/api/cron-job-process-assign-drivers/orders.json"
+
+#Production Server
+*/1 * * * *  wget -q -O /dev/null "http://localhost:8080/myhub/api/cron-job-process-assign-drivers/orders.json"
+
+#---------------------------------------------------------------------------------------------------------------------------------
+
+## Assign driver to couriers
+
+# Dev Server
+*/1 * * * *  wget -q -O /dev/null "http://localhost:8080/cfmssdev/api/cron-job-process-assign-drivers/couriers.json"
+
+#Demo Server
+*/1 * * * *  wget -q -O /dev/null "http://localhost:8080/cfmssdemo/api/cron-job-process-assign-drivers/couriers.json"
+
+#Production Server
+*/1 * * * *  wget -q -O /dev/null "http://localhost:8080/myhub/api/cron-job-process-assign-drivers/couriers.json"
+
+#---------------------------------------------------------------------------------------------------------------------------------
+
+## Assign driver to tours
+
+# Dev Server
+*/1 * * * *  wget -q -O /dev/null "http://localhost:8080/cfmssdev/api/cron-job-process-assign-drivers/tours.json"
+
+#Demo Server
+*/1 * * * *  wget -q -O /dev/null "http://localhost:8080/cfmssdemo/api/cron-job-process-assign-drivers/tours.json"
+
+#Production Server
+*/1 * * * *  wget -q -O /dev/null "http://localhost:8080/myhub/api/cron-job-process-assign-drivers/tours.json"
+
+#---------------------------------------------------------------------------------------------------------------------------------
+
+## Expire new orders
+
+# Dev Server
+*/10 * * * *  wget -q -O /dev/null "http://localhost:8080/cfmssdev/api/cron-job-process-assign-drivers/new-order-expire.json"
+
+#Demo Server
+*/10 * * * *  wget -q -O /dev/null "http://localhost:8080/cfmssdemo/api/cron-job-process-assign-drivers/new-order-expire.json"
+
+#Production Server
+*/10 * * * *  wget -q -O /dev/null "http://localhost:8080/myhub/api/cron-job-process-assign-drivers/new-order-expire.json"
+
+#---------------------------------------------------------------------------------------------------------------------------------
+
+## Expire new appointments
+
+# Dev Server
+*/10 * * * *  wget -q -O /dev/null "http://localhost:8080/cfmssdev/api/cron-job-process-assign-drivers/new-appointment-expire.json"
+
+#Demo Server
+*/10 * * * *  wget -q -O /dev/null "http://localhost:8080/cfmssdemo/api/cron-job-process-assign-drivers/new-appointment-expire.json"
+
+#Production Server
+*/10 * * * *  wget -q -O /dev/null "http://localhost:8080/cfmss/api/cron-job-process-assign-drivers/new-appointment-expire.json"
+
+#---------------------------------------------------------------------------------------------------------------------------------
+
+#---------------------------------------------------------------------------------------------------------------------------------
+##### Existing Production Cron Job Urls#####
+#---------------------------------------------------------------------------------------------------------------------------------
+@reboot /home/ubuntu/socketstart.sh
+@reboot /home/ubuntu/serverstart.sh
+00 01,13 * * * /home/ubuntu/socketrestart.sh >> /home/ubuntu/logs/socketrestart.log
+*/1 * * * *  wget -q -O /dev/null "http://localhost:8080/myhub/api/ride-later/driver-assign-cron-job.json"
+*/5 * * * *  wget -q -O /dev/null "http://localhost:8080/myhub/api/ideal-driver/notify/cron-job.json"
+45 18 * * *  wget -q -O /dev/null "http://localhost:8080/myhub/api/driver-duty/logged-in-time/cron-job.json"
+5 0 * * *  wget -q -O /dev/null "http://localhost:8080/myhub/api/cron-job-vendor/open-vendor-store.json"
+5 0 * * *  wget -q -O /dev/null "http://localhost:8080/myhub/api/cron-job-vendor/monthly-subscription-expiry.json"
+*/1 * * * *  wget -q -O /dev/null "http://localhost:8080/myhub/api/cron-job-process-assign-drivers/orders.json"
+*/1 * * * *  wget -q -O /dev/null "http://localhost:8080/myhub/api/cron-job-process-assign-drivers/couriers.json"
+*/1 * * * *  wget -q -O /dev/null "http://localhost:8080/myhub/api/cron-job-process-assign-drivers/tours.json"
+*/10 * * * *  wget -q -O /dev/null "http://localhost:8080/myhub/api/cron-job-process-assign-drivers/new-order-expire.json"
+*/10 * * * *  wget -q -O /dev/null "http://localhost:8080/myhub/api/cron-job-process-assign-drivers/new-appointment-expire.json"

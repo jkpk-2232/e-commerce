@@ -1,0 +1,421 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.webapp.daos.OrderItemDao">
+
+	<resultMap id="OrderItemResultMap" type="OrderItemModel">
+	
+		<result property="orderItemId" column="order_item_id" />
+		<result property="orderId" column="order_id" />
+		<result property="numberOfItemsOrdered" column="number_of_items_ordered" />
+		<result property="vendorProductId" column="vendor_product_id" />
+		<result property="vendorId" column="vendor_id" />
+		<result property="productName" column="product_name" />
+		<result property="productInformation" column="product_information" />
+		<result property="productActualPrice" column="product_actual_price" />
+		<result property="productDiscountedPrice" column="product_discounted_price" />
+		<result property="productWeight" column="product_weight" />
+		<result property="productWeightUnit" column="product_weight_unit" />
+		<result property="productSpecification" column="product_specification" />
+		<result property="productImage" column="product_image" />
+		<result property="isPaid" column="is_paid" />
+		<result property="productSku" column="product_sku" />
+		<result property="productCategory" column="product_category" />
+		
+		<result property="createdBy" column="created_by" />
+		<result property="createdAt" column="created_at" />
+		<result property="updatedBy" column="updated_by" />
+		<result property="updatedAt" column="updated_at" />
+		
+	</resultMap>
+	
+	<resultMap id="StatsResultMap" type="StatsModel">
+		<result property="productSkuCount" column="productSkuCount" />
+		<result property="productSku" column="productSku" />
+		<result property="numberOfItemsOrdered" column="numberOfItemsOrdered" />
+		<result property="vendorProductId" column="vendorProductID" />
+	</resultMap>
+	
+	<sql id="OrderItemColumns">
+		oi.order_item_id, oi.order_id, oi.number_of_items_ordered, 
+		oi.vendor_product_id, oi.vendor_id, oi.product_name, oi.product_information, 
+		oi.product_actual_price, oi.product_discounted_price, oi.product_weight, 
+		oi.product_weight_unit, oi.product_specification, oi.product_image, oi.is_paid, 
+		oi.created_by, oi.created_at, oi.updated_by, oi.updated_at, oi.product_sku,
+		oi.product_category
+	</sql>
+	
+	<insert id="insertOrderItem" useGeneratedKeys="true" parameterType="OrderItemModel">
+	
+		INSERT INTO order_items
+			(
+				order_item_id, order_id, number_of_items_ordered, 
+				vendor_product_id, vendor_id, product_name, product_information, 
+				product_actual_price, product_discounted_price, product_weight, 
+				product_weight_unit, product_specification, product_image, is_paid, 
+				created_by, created_at, updated_by, updated_at, product_sku, 
+				product_category
+			)
+		VALUES 
+		<foreach collection="orderItemList" item="model" separator=","> 
+			(
+				#{model.orderItemId}, #{model.orderId}, #{model.numberOfItemsOrdered}, 
+				#{model.vendorProductId}, #{model.vendorId}, #{model.productName}, #{model.productInformation},
+				#{model.productActualPrice}, #{model.productDiscountedPrice}, #{model.productWeight}, 
+				#{model.productWeightUnit}, #{model.productSpecification}, #{model.productImage}, #{model.isPaid}, 
+				#{model.createdBy}, #{model.createdAt}, #{model.updatedBy}, #{model.updatedAt}, #{model.productSku},
+				#{model.productCategory}
+			)
+		</foreach>
+			
+	</insert>
+	
+	<update id="deleteOrderItem" parameterType="String">
+		DELETE FROM order_items WHERE order_id = #{orderId}
+	</update>
+	
+	<select id="getOrderItemCount" resultType="int">
+	
+		SELECT
+			count(oi.order_item_id)
+		FROM
+			order_items oi
+		WHERE
+			oi.order_id = #{orderId}
+	
+	</select>
+	
+	<select id="getOrderItemSearch" resultMap="OrderItemResultMap">
+	
+		SELECT
+			<include refid="OrderItemColumns"></include>
+		FROM
+			order_items oi
+		WHERE
+			oi.order_id = #{orderId}
+		AND
+			(
+				oi.product_sku ilike #{searchKey}
+			OR
+				oi.product_name ilike #{searchKey}
+			OR
+				oi.product_information ilike #{searchKey}
+			OR
+				oi.product_specification ilike #{searchKey}
+			<if test="numberSearch!=-1">
+			OR
+				oi.product_actual_price = #{numberSearch} 
+			OR
+				oi.product_discounted_price = #{numberSearch} 
+			OR
+				oi.product_weight = #{numberSearch} 
+			</if>
+			)
+		ORDER BY oi.created_at ASC
+		<if test="length>0">
+		LIMIT #{length} OFFSET #{start}
+		</if>
+	
+	</select>
+	
+	<select id="getOrderItemSearchCount" resultType="int">
+	
+		SELECT
+			count(oi.order_item_id)
+		FROM
+			order_items oi
+		WHERE
+			oi.order_id = #{orderId}
+		AND
+			(
+				oi.product_sku ilike #{searchKey}
+			OR
+				oi.product_name ilike #{searchKey}
+			OR
+				oi.product_information ilike #{searchKey}
+			OR
+				oi.product_specification ilike #{searchKey}
+			<if test="numberSearch!=-1">
+			OR
+				oi.product_actual_price = #{numberSearch} 
+			OR
+				oi.product_discounted_price = #{numberSearch} 
+			OR
+				oi.product_weight = #{numberSearch} 
+			</if>
+			)
+	
+	</select>
+	
+	<select id="getOrderItemListForTrendingProductSkuForOrders" resultMap="StatsResultMap">
+		
+		SELECT
+			COALESCE(COUNT(oi.product_sku), 0.0) AS productSkuCount, 
+			COALESCE(SUM(oi.number_of_items_ordered), 0.0) AS numberOfItemsOrdered, 
+			oi.product_sku AS productSku
+		FROM
+			order_items oi
+		INNER JOIN orders o ON o.order_id = oi.order_id
+		WHERE
+			o.order_received_against_vendor_id = #{vendorId}
+		<if test="vendorStoreIdList!=null">
+		AND
+			o.vendor_store_id IN
+			<foreach item="item" index="index" collection="vendorStoreIdList" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+		<if test="startTime>0">
+		AND
+			o.created_at &gt;= #{startTime}
+		AND
+			o.created_at &lt;= #{endTime}
+		</if>
+		GROUP BY oi.product_sku
+		ORDER BY productSkuCount DESC	
+		<if test="length>0">
+		LIMIT #{length} OFFSET #{start}
+		</if>	
+	
+	</select>
+	
+	<select id="getOrderItemListForTrendingProductSkuForAppointments" resultMap="StatsResultMap">
+		
+		SELECT
+			COALESCE(COUNT(oi.product_sku), 0.0) AS productSkuCount, 
+			COALESCE(SUM(oi.number_of_items_ordered), 0.0) AS numberOfItemsOrdered, 
+			oi.product_sku AS productSku
+		FROM
+			order_items oi
+		INNER JOIN appointments a ON a.appointment_id = oi.order_id
+		WHERE
+			a.appointment_received_against_vendor_id = #{vendorId}
+		<if test="vendorStoreIdList!=null">
+		AND
+			a.appointment_vendor_store_id IN
+			<foreach item="item" index="index" collection="vendorStoreIdList" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+		<if test="startTime>0">
+		AND
+			a.created_at &gt;= #{startTime}
+		AND
+			a.created_at &lt;= #{endTime}
+		</if>
+		GROUP BY oi.product_sku
+		ORDER BY productSkuCount DESC	
+		<if test="length>0">
+		LIMIT #{length} OFFSET #{start}
+		</if>	
+	
+	</select>
+	
+	<select id="getOrderItemStatsByTimeForVendorForOrders" resultMap="StatsResultMap">
+		
+		SELECT
+			COALESCE(SUM(oi.product_actual_price - oi.product_discounted_price), 0.0) AS discountDiff
+		FROM
+			order_items oi
+		INNER JOIN orders o ON o.order_id = oi.order_id
+		WHERE
+			o.order_received_against_vendor_id = #{vendorId}
+		<if test="vendorStoreIdList!=null">
+		AND
+			o.vendor_store_id IN
+			<foreach item="item" index="index" collection="vendorStoreIdList" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+		<if test="startTime>0">
+		AND
+			o.created_at &gt;= #{startTime}
+		AND
+			o.created_at &lt;= #{endTime}
+		</if>			
+	
+	</select>
+	
+	<select id="getOrderItemListForKPMartTrendingProductSku" resultMap="StatsResultMap">
+		
+		SELECT
+			COALESCE(COUNT(oi.product_sku), 0.0) AS productSkuCount, 
+			COALESCE(SUM(oi.number_of_items_ordered), 0.0) AS numberOfItemsOrdered, 
+			oi.product_sku AS productSku
+		FROM
+			order_items oi
+		INNER JOIN orders o ON o.order_id = oi.order_id
+		WHERE
+			o.order_received_against_vendor_id = #{vendorId}
+		<if test="vendorStoreId!=null">
+		AND
+			o.vendor_store_id = #{vendorStoreId}
+		</if>
+		<if test="startTime>0">
+		AND
+			o.created_at &lt;= #{startTime}
+		AND
+			o.created_at &gt;= #{endTime}
+		</if>
+		GROUP BY oi.product_sku
+		ORDER BY productSkuCount DESC	
+		
+		LIMIT 10
+	
+	</select>
+	
+	<select id="getOrderItemListForKPMartPopularProductSku" resultMap="StatsResultMap">
+		
+		SELECT
+			COALESCE(COUNT(oi.product_sku), 0.0) AS productSkuCount, 
+			COALESCE(SUM(oi.number_of_items_ordered), 0.0) AS numberOfItemsOrdered, 
+			oi.product_sku AS productSku
+		FROM
+			order_items oi
+		INNER JOIN orders o ON o.order_id = oi.order_id
+		WHERE
+			o.order_received_against_vendor_id = #{vendorId}
+		<if test="vendorStoreId!=null">
+		AND
+			o.vendor_store_id = #{vendorStoreId}
+		</if>
+		<if test="startTime>0">
+		AND
+			o.created_at &lt;= #{startTime}
+		AND
+			o.created_at &gt;= #{previousThreeMonth}
+		</if>
+		GROUP BY oi.product_sku
+		ORDER BY productSkuCount DESC	
+		
+		LIMIT 10
+	
+	</select>
+	
+	<select id="getPreviousOrderItemListByUser" resultMap="StatsResultMap">
+		
+		SELECT
+			oi.product_sku AS productSku
+		FROM
+			order_items oi
+		INNER JOIN orders o ON o.order_id = oi.order_id
+		WHERE
+			o.order_received_against_vendor_id = #{vendorId}
+		AND
+			O.order_user_id	= #{loggedInUserId}
+		<if test="vendorStoreId!=null">
+		AND
+			o.vendor_store_id = #{vendorStoreId}
+		</if>
+		
+		GROUP BY oi.product_sku, oi.created_by
+		ORDER BY oi.created_by DESC	
+		
+		LIMIT 10
+	
+	</select>
+	
+	<select id="getOrderItemListForKPMartTrendingProducts" resultMap="StatsResultMap">
+		
+		SELECT
+			COALESCE(COUNT(oi.vendor_product_id), 0.0) AS productSkuCount, 
+			COALESCE(SUM(oi.number_of_items_ordered), 0.0) AS numberOfItemsOrdered, 
+			oi.vendor_product_id AS vendorProductId
+		FROM
+			order_items oi
+		INNER JOIN orders o ON o.order_id = oi.order_id
+		WHERE
+			o.order_received_against_vendor_id = #{vendorId}
+		<if test="vendorStoreId!=null">
+		AND
+			o.vendor_store_id = #{vendorStoreId}
+		</if>
+		<if test="startTime>0">
+		AND
+			o.created_at &lt;= #{startTime}
+		AND
+			o.created_at &gt;= #{endTime}
+		</if>
+		GROUP BY oi.vendor_product_id
+		ORDER BY productSkuCount DESC	
+		
+		LIMIT 10
+	
+	</select>
+	
+	<select id="getOrderItemListForKPMartPopularProducts" resultMap="StatsResultMap">
+		
+		SELECT
+			COALESCE(COUNT(oi.vendor_product_id), 0.0) AS productSkuCount, 
+			COALESCE(SUM(oi.number_of_items_ordered), 0.0) AS numberOfItemsOrdered, 
+			oi.vendor_product_id AS vendorProductId
+		FROM
+			order_items oi
+		INNER JOIN orders o ON o.order_id = oi.order_id
+		WHERE
+			o.order_received_against_vendor_id = #{vendorId}
+		<if test="vendorStoreId!=null">
+		AND
+			o.vendor_store_id = #{vendorStoreId}
+		</if>
+		<if test="startTime>0">
+		AND
+			o.created_at &lt;= #{startTime}
+		AND
+			o.created_at &gt;= #{previousThreeMonth}
+		</if>
+		GROUP BY oi.vendor_product_id
+		ORDER BY productSkuCount DESC	
+		
+		LIMIT 10
+	
+	</select>
+	
+	<select id="getPreviousOrderItemProductIdsListByUser" resultMap="StatsResultMap">
+		
+		SELECT
+			oi.vendor_product_id AS vendorProductId
+		FROM
+			order_items oi
+		INNER JOIN orders o ON o.order_id = oi.order_id
+		WHERE
+			o.order_received_against_vendor_id = #{vendorId}
+		AND
+			O.order_user_id	= #{loggedInUserId}
+		<if test="vendorStoreId!=null">
+		AND
+			o.vendor_store_id = #{vendorStoreId}
+		</if>
+		
+		GROUP BY oi.vendor_product_id, oi.created_by
+		ORDER BY oi.created_by DESC	
+		
+		LIMIT 10
+	</select>
+	
+	<select id="getOrderItemStatsByTimeForVendorForAppointments" resultMap="StatsResultMap">
+		
+		SELECT
+			COALESCE(SUM(oi.product_actual_price - oi.product_discounted_price), 0.0) AS discountDiff
+		FROM
+			order_items oi
+		INNER JOIN appointments a ON a.appointment_id = oi.order_id
+		WHERE
+			a.appointment_received_against_vendor_id = #{vendorId}
+		<if test="vendorStoreIdList!=null">
+		AND
+			a.appointment_vendor_store_id IN
+			<foreach item="item" index="index" collection="vendorStoreIdList" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+		<if test="startTime>0">
+		AND
+			a.created_at &gt;= #{startTime}
+		AND
+			a.created_at &lt;= #{endTime}
+		</if>			
+	
+	</select>
+	
+</mapper>

@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.webapp.daos.VendorStoreTimingDao">
+
+	<resultMap id="VendorStoreTimingResultMap" type="VendorStoreTimingModel" >
+	    
+		<result property="vendorStoreTimingId" column="vendor_store_timing_id" />
+		<result property="vendorStoreId" column="vendor_store_id" />
+		<result property="day" column="day" />
+		<result property="openingMorningHours" column="opening_morning_hours" />
+		<result property="closingMorningHours" column="closing_morning_hours" />
+		<result property="openingEveningHours" column="opening_evening_hours" />
+		<result property="closingEveningHours" column="closing_evening_hours" />
+		
+		<result property="recordStatus" column="record_status" />
+		<result property="createdAt" column="created_at" />
+		<result property="updatedAt" column="updated_at" />
+		<result property="createdBy" column="created_by" />
+		<result property="updatedBy" column="updated_by" />
+		
+	</resultMap>
+	
+	<sql id="VendorStoreTimingColumns">
+		vst.vendor_store_timing_id, vst.vendor_store_id, vst.day, 
+		vst.opening_morning_hours, vst.closing_morning_hours, 
+        vst.opening_evening_hours, vst.closing_evening_hours,
+        vst.record_status, vst.created_at, vst.created_by, vst.updated_at, vst.updated_by
+	</sql>
+	
+	<insert id="addVendorStoreTiming" parameterType="VendorStoreTimingModel">
+	
+		INSERT INTO vendor_store_timings
+			(
+	            vendor_store_timing_id, vendor_store_id, day, opening_morning_hours, closing_morning_hours, 
+	            opening_evening_hours, closing_evening_hours,
+	            record_status, created_at, created_by, updated_at, updated_by
+	        )
+	    VALUES 
+	    	(
+	    		#{vendorStoreTimingId}, #{vendorStoreId}, #{day}, #{openingMorningHours}, #{closingMorningHours}, 
+	    		#{openingEveningHours}, #{closingEveningHours},
+	            #{recordStatus}, #{createdAt}, #{createdBy}, #{updatedAt}, #{updatedBy}
+	        );
+	
+	</insert>
+	
+	<update id="deletePreviousEntries" parameterType="VendorStoreTimingModel">
+		DELETE FROM vendor_store_timings WHERE vendor_store_id = #{vendorStoreId}
+	</update>
+	
+	<select id="getVendorStoreTimingListById" resultMap="VendorStoreTimingResultMap">
+	
+		SELECT
+			<include refid="VendorStoreTimingColumns"></include>
+		FROM
+			vendor_store_timings vst
+		WHERE
+			vst.vendor_store_id = #{vendorStoreId}
+			
+	</select>
+	
+</mapper> 

@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.webapp.daos.CcavenueRsaOrderDao">
+
+	<resultMap id="ccavenueRsaOrderResultMap" type="CcavenueRsaOrderModel" >
+	
+		<result property="ccavenueRsaOrderId" column="ccavenue_rsa_order_id" />
+		<result property="userId" column="user_id" />
+		<result property="orderId" column="order_id" />
+		<result property="tourId" column="tour_id" />
+		<result property="subscriptionId" column="subscription_id" />
+		<result property="deliveryOrderId" column="delivery_order_id" />
+		<result property="paymentRequestType" column="payment_request_type" />
+		
+		<result property="recordStatus" column="record_status" />
+		<result property="createdAt" column="created_at" />
+		<result property="updatedAt" column="updated_at" />
+		<result property="createdBy" column="created_by" />
+		<result property="updatedBy" column="updated_by" />
+		
+	</resultMap>
+
+	<insert id="insertCcavenueRsaOrderDetails" parameterType="CcavenueRsaOrderModel" useGeneratedKeys="false">
+	
+		INSERT INTO ccavenue_rsa_orders
+				(
+					ccavenue_rsa_order_id, user_id, order_id, tour_id, subscription_id, delivery_order_id,
+					record_status, created_at, created_by, updated_at, updated_by, payment_request_type
+				)
+		VALUES
+				(
+					#{ccavenueRsaOrderId}, #{userId}, #{orderId}, #{tourId}, #{subscriptionId}, #{deliveryOrderId},
+					#{recordStatus}, #{createdAt}, #{createdBy}, #{updatedAt}, #{updatedBy}, #{paymentRequestType}
+				)
+				
+	</insert>
+	
+	<select id="isOrderIdExists" parameterType="String"	resultType="boolean">
+	
+		SELECT 
+			(count(*)>0) 
+		FROM 
+			ccavenue_rsa_orders 
+		WHERE 
+			order_id = #{orderId} 
+			
+	</select>
+	
+</mapper>

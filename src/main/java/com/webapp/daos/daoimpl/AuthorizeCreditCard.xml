@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.webapp.daos.AuthorizeCreditCardDao">
+
+	<resultMap id="authorizeCreditCardResultMap" type="AuthorizeCreditCardModel" >
+	
+	    <result property="authorizeCreditCardDetailsId" column="authorize_credit_card_details_id" />
+		<result property="userId" column="user_id" />
+		<result property="cardNumber" column="card_number" />
+		<result property="gateWayType" column="gateway_type" />
+		<result property="expiryMonth" column="expiry_month" />
+		<result property="expiryYear" column="expiry_year" />
+		<result property="email" column="email" />
+		<result property="firstName" column="first_name" />
+		<result property="lastName" column="last_name" />
+		<result property="phoneNo" column="phone_no" />
+		<result property="phoneNoCode" column="phone_no_code" />
+		<result property="authorizeCustomerProfileId" column="customer_profile_id" />
+		<result property="authorizeCustomerPaymentProfileId" column="customer_payment_profile_id" />
+		<result property="cardType" column="card_type" />
+		<result property="recordStatus" column="record_status" />
+		<result property="createdAt" column="created_at" />
+		<result property="updatedAt" column="updated_at" />
+		<result property="createdBy" column="created_by" />
+		<result property="updatedBy" column="updated_by" />
+		
+	</resultMap>
+
+	<insert id="addAuthorizeCreditCardDetails" parameterType="AuthorizeCreditCardModel" useGeneratedKeys="false">
+	
+		INSERT INTO 
+			authorize_credit_card_details
+				(
+	            	authorize_credit_card_details_id, user_id, card_number, gateway_type, expiry_month,
+	            	expiry_year,customer_profile_id,customer_payment_profile_id,card_type,
+	            	first_name,last_name,email,phone_no,phone_no_code,
+	            	record_status, created_by, created_at, updated_by, updated_at
+	            )
+    	VALUES
+				(
+					#{authorizeCreditCardDetailsId}, #{userId}, #{cardNumber}, #{gateWayType}, #{expiryMonth},
+					#{expiryYear},#{authorizeCustomerProfileId},#{authorizeCustomerPaymentProfileId},#{cardType},
+					#{firstName},#{lastName},#{email},#{phoneNo},#{phoneNoCode},
+					'A', #{createdBy}, #{createdAt}, #{updatedBy}, #{updatedAt}
+				)
+			
+	</insert>
+	
+	<select id="getAuthorizeCreditCardDetails" parameterType="String" resultMap="authorizeCreditCardResultMap">
+		
+	    SELECT 
+	    	authorize_credit_card_details_id, user_id, card_number, gateway_type, expiry_month,expiry_year,
+	    	customer_profile_id,customer_payment_profile_id,card_type, 
+            record_status, created_by, created_at, updated_by, updated_at
+		FROM 
+			authorize_credit_card_details
+		WHERE 
+			user_id = #{userId}
+		AND
+			record_status = 'A' 
+		ORDER BY created_at desc
+			
+		LIMIT 1	
+		
+ 	</select>
+ 	
+ 	<select id="isAuthorizeCreditCardDetailsPresent" parameterType="String" resultType="boolean">
+		
+	    SELECT 
+	    	(count(*)>0) 
+		FROM 
+			authorize_credit_card_details
+		WHERE 
+			user_id = #{userId}
+		AND
+			record_status = 'A'
+			 
+ 	</select>
+ 	
+ 	<select id="isAuthorizeCreditCardDetailsPresentByEmail" parameterType="String" resultType="boolean">
+		
+	    SELECT 
+	    	(count(*)>0) 
+		FROM 
+			authorize_credit_card_details
+		WHERE 
+			email = #{email}
+		AND
+			record_status = 'A' 
+			
+ 	</select>
+
+	<update id="updateAuthorizeCreditCardDetails" parameterType="AuthorizeCreditCardModel" >
+	
+		UPDATE 
+			authorize_credit_card_details 
+		SET 
+			card_number = #{cardNumber},
+			customer_payment_profile_id = #{authorizeCustomerPaymentProfileId},
+			expiry_month = #{expiryMonth},
+			expiry_year = #{expiryYear},
+			updated_at = #{updatedAt},
+			updated_by = #{updatedBy}
+		WHERE  
+			user_id = #{userId} 
+			
+	</update>	
+	
+	<update id="updateAuthorizeCreditCardDetailsByEmail" parameterType="AuthorizeCreditCardModel" >
+	
+		UPDATE 
+			authorize_credit_card_details 
+		SET 
+			card_number = #{cardNumber},
+			customer_payment_profile_id = #{authorizeCustomerPaymentProfileId},
+			expiry_month = #{expiryMonth},
+			expiry_year = #{expiryYear},
+			first_name = #{firstName},
+			last_name = #{lastName},
+			phone_no = #{phoneNo},
+			phone_no_code = #{phoneNoCode},
+			updated_at = #{updatedAt},
+			updated_by = #{updatedBy}
+		WHERE  
+			email = #{email}
+			
+	</update>			
+
+	<select id="getAuthorizeCreditCardDetailsByEmail" parameterType="String" resultMap="authorizeCreditCardResultMap">
+		
+	    SELECT 
+	    	authorize_credit_card_details_id, user_id, card_number, gateway_type, expiry_month,expiry_year,
+	    	customer_profile_id,customer_payment_profile_id,card_type,
+	    	first_name,last_name,email,phone_no,phone_no_code,
+            record_status, created_by, created_at, updated_by, updated_at
+		FROM 
+			authorize_credit_card_details
+		WHERE 
+			email = #{email}
+		AND
+			record_status = 'A' 
+		ORDER BY created_at desc
+			
+		LIMIT 1	
+		
+ 	</select>
+	
+</mapper> 

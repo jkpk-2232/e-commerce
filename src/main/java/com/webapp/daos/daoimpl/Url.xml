@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.webapp.daos.UrlDao">
+
+	<resultMap id="UrlResultMap" type="UrlModel">
+	
+		<result property="urlId" column="url_id" />
+		<result property="urlGroupId" column="url_group_id" />
+		<result property="urlTitle" column="url_title" />
+		<result property="url" column="url" />
+		<result property="parentUrlId" column="parent_url_id" />
+		<result property="urlIcon" column="url_icon" />
+		<result property="isSubMenuOption" column="is_sub_menu_option" />
+		
+		<result property="urlGroupName" column="url_group_name" />
+		<result property="menuPriority" column="menu_priority" />
+		
+	</resultMap>
+	
+	<sql id="UrlColumns">
+		U.url_id, U.url_group_id, U.url_title, U.url, 
+		U.parent_url_id, U.url_icon, U.is_sub_menu_option, 
+		U.record_status, U.created_at, U.created_by, U.updated_at, U.updated_by
+	</sql>
+
+	<sql id="UrlGroupColumns">
+		UG.url_group_id, UG.url_group_name, UG.menu_priority, 
+		UG.record_status, UG.created_at, UG.created_by, UG.updated_at, UG.updated_by
+	</sql>
+	
+	<select id="getPriorityMenus" parameterType="String" resultMap="UrlResultMap">
+	
+		SELECT  
+			<include refid="UrlColumns"></include>,
+			<include refid="UrlGroupColumns"></include>
+		FROM  
+			urls U 
+		INNER JOIN url_groups UG ON UG.url_group_id = U.url_group_id
+		INNER JOIN url_accesses UA ON U.url_id = UA.url_id
+		WHERE 
+			UA.user_id = #{userId}
+		ORDER BY 
+			UG.menu_priority
+			
+	</select>
+	
+	<select id="getFirstPriorityURL" resultType="String">
+			
+		SELECT 
+			U.url
+		FROM 
+			urls U 
+		INNER JOIN url_accesses UA ON U.url_id = UA.url_id
+		INNER JOIN url_groups UG ON UG.url_group_id = U.url_group_id
+		WHERE 
+			UA.user_id = #{userId}
+		AND 
+			UG.menu_priority IS NOT NULL   
+		ORDER BY 
+			UG.menu_priority ASC 
+		LIMIT 1 
+		
+	</select>
+	
+</mapper>

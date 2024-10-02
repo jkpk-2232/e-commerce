@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.webapp.daos.AdminFaqDao">
+
+	<resultMap id="adminFaqResultMap" type="AdminFaqModel" >
+	    
+		<result property="adminFaqId" column="admin_faq_id" />
+		<result property="userId" column="user_id" />
+		<result property="question" column="question" />
+		<result property="answer" column="answer" />
+		<result property="recordStatus" column="record_status" />
+		<result property="createdAt" column="created_at" />
+		<result property="updatedAt" column="updated_at" />
+		<result property="createdBy" column="created_by" />
+		<result property="updatedBy" column="updated_by" />
+		
+	</resultMap>
+
+	<sql id="adminFaqTableColsWithOutTypeAlias">
+		admin_faq_id, user_id, question, answer,
+        record_status, created_by, created_at, updated_by, updated_at
+	</sql>
+	
+	<insert id="addAdminFaq" parameterType="AdminFaqModel">
+
+		INSERT INTO 
+			admin_faq
+				(
+            		admin_faq_id, user_id, question, answer,
+        			record_status, created_by, created_at, updated_by, updated_at
+            	)
+	    VALUES 
+				(
+					#{adminFaqId}, #{userId}, #{question}, #{answer},
+					'A', #{createdBy}, #{createdAt}, #{updatedBy}, #{updatedAt}
+				)
+	</insert>
+	
+	<select id="getAdminFaqCount" resultType="int">
+	
+		SELECT 
+			count(*)
+		FROM 
+			admin_faq
+		WHERE
+			record_status = 'A'
+		
+	</select>
+	
+	<select id="getAdminFaqListForSearch" resultMap="adminFaqResultMap">
+		
+		SELECT     
+			admin_faq_id, user_id, question, answer,
+        	record_status, created_by, created_at, updated_by, updated_at
+		FROM 
+			admin_faq
+ 		WHERE  
+            (
+            	question iLIKE #{globalSearchString}
+            OR
+            	answer iLIKE #{globalSearchString}
+            )
+		AND 
+			record_status = 'A'
+		ORDER BY updated_at DESC
+		LIMIT  #{length}  OFFSET  #{start}         
+        
+	</select>
+	
+	<select id="getTotalAdminFaqCountBySearch" resultType="int"> 		
+		
+	   	SELECT     
+			count(*)
+		FROM 
+			admin_faq
+ 		WHERE  
+            (
+            	question iLIKE #{globalSearchString}
+            OR
+            	answer iLIKE #{globalSearchString}
+            )
+		AND 
+			record_status = 'A'
+				
+	</select>
+	
+	<update id="deleteAdminFaq" parameterType="AdminFaqModel">
+	
+		UPDATE
+			admin_faq
+		SET
+			record_status = 'D',
+			updated_at = #{updatedAt},
+			updated_by = #{updatedBy}
+		WHERE
+			admin_faq_id = #{adminFaqId}
+			
+	</update>
+	
+	<select id="getAdminFaqList" resultMap="adminFaqResultMap">
+		
+		SELECT     
+			admin_faq_id, user_id, question, answer,
+        	record_status, created_by, created_at, updated_by, updated_at
+		FROM 
+			admin_faq
+ 		WHERE   
+			record_status = 'A'
+		ORDER BY updated_at DESC
+        
+	</select>
+	
+	<select id="getAdminFaqModelById" resultMap="adminFaqResultMap">
+		
+		SELECT     
+			admin_faq_id, user_id, question, answer,
+        	record_status, created_by, created_at, updated_by, updated_at
+		FROM 
+			admin_faq
+ 		WHERE   
+			admin_faq_id = #{adminFaqId}
+		AND
+			record_status = 'A'        
+	</select>
+	
+	<update id="editAdminFaq" parameterType="AdminFaqModel">
+	
+		UPDATE
+			admin_faq
+		SET
+			question = #{question},
+			answer = #{answer},
+			updated_at = #{updatedAt}
+		WHERE
+			admin_faq_id = #{adminFaqId}
+		AND
+			record_status = 'A'
+			
+	</update>
+	
+</mapper> 

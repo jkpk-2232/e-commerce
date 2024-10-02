@@ -1,0 +1,252 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.webapp.daos.DriverSubscriptionPackageHistoryDao">
+
+	<resultMap id="DriverSubscriptionPackageHistoryResultMap" type="DriverSubscriptionPackageHistoryModel" >
+	    
+	    <result property="driverSubscriptionPackageHistoryId" column="driver_subscription_package_history_id" />
+	    <result property="driverId" column="driver_id" />
+	    <result property="vendorId" column="vendor_id" />
+		<result property="subscriptionPackageId" column="subscription_package_id" />
+		<result property="paymentMode" column="payment_mode" />
+		<result property="packageName" column="package_name" />
+		<result property="durationDays" column="duration_days" />
+		<result property="price" column="price" />
+		<result property="packageStartTime" column="package_start_time" />
+		<result property="packageEndTime" column="package_end_time" />
+		<result property="isCurrentPackage" column="is_current_package" />
+		<result property="carTypeId" column="car_type_id" />
+		
+		<result property="isActive" column="is_active" />
+		<result property="createdAt" column="created_at" />
+		<result property="updatedAt" column="updated_at" />
+		<result property="createdBy" column="created_by" />
+		<result property="updatedBy" column="updated_by" />
+		
+		<result property="driverName" column="driverName" />
+		<result property="vendorName" column="vendorName" />
+		<result property="orderId" column="order_id" />
+		<result property="carType" column="car_type" />
+		
+	</resultMap>
+	
+	<sql id="DriverSubscriptionPackageHistoryColumns">
+		dsph.driver_subscription_package_history_id, dsph.driver_id, dsph.vendor_id, 
+		dsph.subscription_package_id, dsph.payment_mode, dsph.package_name, dsph.duration_days, 
+		dsph.price, dsph.package_start_time, dsph.package_end_time, dsph.is_current_package,
+       	dsph.is_active, dsph.created_by, dsph.created_at, dsph.updated_by, dsph.updated_at,
+       	dsph.car_type_id
+	</sql>
+	
+	<insert id="addDriverSubscriptionPackageHistory" parameterType="DriverSubscriptionPackageHistoryModel">
+		
+		INSERT INTO driver_subscription_package_history
+			(
+	            driver_subscription_package_history_id, driver_id, vendor_id, subscription_package_id, 
+	            payment_mode, package_name, duration_days, price, package_start_time, package_end_time,
+	            is_current_package, is_active, created_by, created_at, updated_by, updated_at, car_type_id
+	        )
+	    VALUES 
+	    	(
+	    		#{driverSubscriptionPackageHistoryId}, #{driverId}, #{vendorId}, #{subscriptionPackageId}, 
+	    		#{paymentMode}, #{packageName}, #{durationDays}, #{price}, #{packageStartTime}, #{packageEndTime}, 
+	            #{isCurrentPackage}, #{isActive}, #{createdBy}, #{createdAt}, #{updatedBy}, #{updatedAt}, #{carTypeId}
+	        );
+		
+	</insert>
+	
+	<select id="getDriverSubscriptionPackageHistoryList" parameterType="String" resultMap="DriverSubscriptionPackageHistoryResultMap">
+		
+	    SELECT 
+	    	<include refid="DriverSubscriptionPackageHistoryColumns"></include>
+	    FROM 
+	    	driver_subscription_package_history dsph
+	    WHERE
+	    	dsph.driver_id = #{driverId}
+	    AND
+	    	dsph.is_active = true
+	    ORDER BY dsph.created_at DESC
+	    LIMIT #{length} OFFSET #{start}
+	    
+	</select>
+	
+	<select id="getDriverSubscriptionPackageHistoryForStatus" parameterType="String" resultMap="DriverSubscriptionPackageHistoryResultMap">
+		
+	    SELECT 
+	    	<include refid="DriverSubscriptionPackageHistoryColumns"></include>
+	    FROM 
+	    	driver_subscription_package_history dsph
+	    WHERE
+	    	dsph.driver_id = #{driverId}
+	    <if test="vendorId!=null">
+	    AND
+	    	dsph.vendor_id = #{vendorId}
+	    </if>
+	    AND
+	    	dsph.is_active = true
+		ORDER BY dsph.created_at DESC LIMIT 5	 
+		   
+	</select>
+	
+	<select id="getDriverSubscriptionHistoryByPackageIdDriverId" parameterType="String" resultMap="DriverSubscriptionPackageHistoryResultMap">
+		
+	    SELECT 
+	    	<include refid="DriverSubscriptionPackageHistoryColumns"></include>
+	    FROM 
+	    	driver_subscription_package_history dsph
+	    WHERE
+	    	dsph.driver_id = #{driverId}
+	    AND
+	    	dsph.vendor_id = #{vendorId}
+	    AND
+	    	dsph.subscription_package_id = #{subscriptionPackageId}
+		ORDER BY dsph.created_at DESC LIMIT 5 
+	
+	</select>
+	
+	<select id="getNumberOfPackages" parameterType="String" resultType="int">
+		
+	    SELECT 
+	    	count(*)
+	    FROM 
+	    	driver_subscription_package_history dsph
+	    WHERE
+	    	dsph.driver_id = #{driverId}
+	    AND
+	    	dsph.vendor_id = #{vendorId}
+	    AND
+	    	dsph.created_at &gt;= #{temp}
+	    AND 
+	    	dsph.is_current_package = false 
+		
+	</select>
+	
+	<update id="updateExistingPackagesAsNotCurrent" parameterType="DriverSubscriptionPackageHistoryModel">
+		
+	    UPDATE
+	    	driver_subscription_package_history
+	    SET
+	    	is_current_package = #{isCurrentPackage}
+	    WHERE
+			driver_id = #{driverId}
+	    AND
+	    	vendor_id = #{vendorId}
+	    <if test="driverSubscriptionPackageHistoryId!=null">
+	    AND
+	    	driver_subscription_package_history_id = #{driverSubscriptionPackageHistoryId}
+	    </if>
+	
+	</update>
+	
+	<select id="getDriverSubscriptionPackageHistoryForSearch" parameterType="map" resultMap="DriverSubscriptionPackageHistoryResultMap">
+		
+	    SELECT 
+	    	<include refid="DriverSubscriptionPackageHistoryColumns"></include>,
+	    	CONCAT(VUI.first_name,CONCAT(' ',VUI.last_name)) AS vendorName,
+	    	CONCAT(DUI.first_name,CONCAT(' ',DUI.last_name)) AS driverName,
+	    	DTH.order_id AS orderId, CT.car_type
+	    FROM 
+	    	driver_subscription_package_history dsph
+	    INNER JOIN user_info DUI ON DUI.user_id = dsph.driver_id
+	    INNER JOIN user_info VUI ON VUI.user_id = dsph.vendor_id
+	    INNER JOIN car_type CT ON CT.car_type_id = dsph.car_type_id
+	    LEFT JOIN driver_transaction_history DTH ON DTH.transaction_id = dsph.driver_subscription_package_history_id
+	    WHERE
+	    	(
+            	DUI.first_name iLIKE #{globalSearchString} 
+		 	OR 
+		 		DUI.last_name iLIKE #{globalSearchString}
+		 	OR 
+		 		CONCAT(DUI.first_name,CONCAT(' ',DUI.last_name)) iLIKE #{globalSearchString} 
+		 	OR
+		 		VUI.first_name iLIKE #{globalSearchString} 
+		 	OR 
+		 		VUI.last_name iLIKE #{globalSearchString}
+		 	OR 
+		 		CONCAT(VUI.first_name,CONCAT(' ',VUI.last_name)) iLIKE #{globalSearchString} 
+		 	) 
+		AND
+	    	dsph.is_active = true
+	    <if test="driverId != null">
+	    AND
+	    	dsph.driver_id = #{driverId}
+	    </if>
+		<if test="vendorIds != null">
+		AND	   
+			dsph.vendor_id IN
+			<foreach item="item" index="index" collection="vendorIds" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+		AND
+			dsph.created_at &gt;= #{startDatelong}
+		AND
+			dsph.created_at &lt;= #{endDatelong}
+	    ORDER BY dsph.updated_at DESC
+	    <if test="length!=0">
+		LIMIT #{length} OFFSET #{start}	    
+	    </if>
+	    
+	</select>
+	
+	<select id="getDriverSubscriptionPackageHistoryCount" parameterType="map" resultType="int">
+		
+	    SELECT 
+	    	count(dsph.driver_subscription_package_history_id)
+	    FROM 
+	    	driver_subscription_package_history dsph
+	    INNER JOIN user_info DUI ON DUI.user_id = dsph.driver_id
+	    INNER JOIN user_info VUI ON VUI.user_id = dsph.vendor_id
+	    INNER JOIN car_type CT ON CT.car_type_id = dsph.car_type_id
+	    LEFT JOIN driver_transaction_history DTH ON DTH.transaction_id = dsph.driver_subscription_package_history_id
+	    WHERE
+	    	dsph.is_active = true
+	    <if test="driverId != null">
+	    AND
+	    	dsph.driver_id = #{driverId}
+	    </if>
+		<if test="vendorIds != null">
+		AND	   
+			dsph.vendor_id IN
+			<foreach item="item" index="index" collection="vendorIds" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+		AND
+			dsph.created_at &gt;= #{startDatelong}
+		AND
+			dsph.created_at &lt;= #{endDatelong}
+	    
+	</select>
+	
+	<select id="getLatestDriverSubscriptionPackageHistory" parameterType="String" resultMap="DriverSubscriptionPackageHistoryResultMap">
+		
+	    SELECT 
+	    	<include refid="DriverSubscriptionPackageHistoryColumns"></include>
+	    FROM 
+	    	driver_subscription_package_history dsph
+	    WHERE
+	    	dsph.driver_id = #{driverId}
+	    AND
+	    	dsph.is_active = true
+		ORDER BY dsph.created_at DESC LIMIT 1	 
+		   
+	</select>
+	
+	<select id="getCurrentPackageByDriverId" parameterType="String" resultMap="DriverSubscriptionPackageHistoryResultMap">
+		
+	    SELECT 
+	    	<include refid="DriverSubscriptionPackageHistoryColumns"></include>
+	    FROM 
+	    	driver_subscription_package_history dsph
+	    WHERE
+	    	dsph.driver_id = #{driverId}
+	    AND
+	    	dsph.package_start_time &lt;= #{currentTime}
+	    AND
+	    	#{currentTime} &lt;= dsph.package_end_time	
+		
+	</select>
+	
+</mapper> 

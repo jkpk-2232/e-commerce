@@ -1,0 +1,444 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.webapp.daos.EncashRequestsDao">
+	
+	<resultMap id="encashRequestsResultMap" type="EncashRequestsModel">
+  
+		<result property="encashRequestId" column="encash_request_id" />
+		<result property="userId" column="user_id" />
+		<result property="requestedAmount" column="requested_amount" />
+		<result property="requestedDate" column="requested_date" />
+		<result property="status" column="status" />
+		<result property="holdDate" column="hold_date" />
+		<result property="approvedDate" column="approved_date" />
+		<result property="rejectedDate" column="rejected_date" />
+		<result property="transferDate" column="transfer_date" />
+		
+		<result property="createdAt" column="created_at" />
+		<result property="createdBy" column="created_by" />
+		<result property="updatedAt" column="updated_at" />
+		<result property="updatedBy" column="updated_by" />
+		
+		<result property="firstName" column="first_name" />
+		<result property="lastName" column="last_name" />
+		<result property="phoneNoCode" column="phone_no_code" />
+		<result property="phoneNo" column="phone_no" />
+		<result property="email" column="email" />
+		
+		<result property="currentBalance" column="current_balance" />
+		<result property="holdBalance" column="hold_balance" />
+		<result property="approvedBalance" column="approved_balance" />
+		<result property="totalBalance" column="total_balance" /> 
+		
+		<result property="remark" column="remark" />
+		
+	</resultMap>
+	
+	<insert id="addEncashRequest" parameterType="EncashRequestsModel">
+
+		INSERT INTO 
+			encash_requests
+				(
+					encash_request_id, user_id, requested_amount, requested_date, status, hold_date, approved_date, 
+					rejected_date, transfer_date, created_at, created_by, updated_at, updated_by
+				)
+		VALUES
+				(
+					#{encashRequestId}, #{userId}, #{requestedAmount}, #{requestedDate}, #{status}, #{holdDate}, #{approvedDate}, 
+					#{rejectedDate}, #{transferDate}, #{createdAt}, #{createdBy}, #{updatedAt}, #{updatedBy}
+				)
+				
+	</insert>
+	
+	<update id="updateEncashRequestStatus" parameterType="EncashRequestsModel">
+	
+		UPDATE 
+			encash_requests 
+		SET 
+			hold_date = #{holdDate},
+			approved_date = #{approvedDate},
+			rejected_date = #{rejectedDate},
+			transfer_date = #{transferDate},
+			status = #{status},
+			updated_at = #{updatedAt},
+			updated_by = #{updatedBy}
+		WHERE  
+			encash_request_id = #{encashRequestId}
+			
+	</update>
+	
+	<select id="getEncashRequestDetailsById" parameterType="String" resultMap="encashRequestsResultMap">
+		
+	    SELECT 
+	    	ER.encash_request_id, ER.user_id, ER.requested_amount, ER.requested_date, ER.status, ER.hold_date, ER.approved_date, 
+			ER.rejected_date, ER.transfer_date, ER.created_at, ER.created_by, ER.updated_at, ER.updated_by,
+			U.email,
+			UI.first_name, UI.last_name, UI.phone_no_code, UI.phone_no,
+			UA.current_balance, UA.hold_balance, UA.approved_balance, UA.total_balance
+			
+		FROM 
+			encash_requests ER
+			
+		INNER JOIN users U ON (U.user_id = ER.user_id)
+		INNER JOIN user_info UI ON (UI.user_id = U.user_id)
+		INNER JOIN user_account UA ON (UA.user_id = UI.user_id) 
+		
+		WHERE 
+			encash_request_id = #{encashRequestId}
+		
+ 	</select>
+ 	
+ 	<select id="getEncashRequestForSearchByStatus" parameterType="map" resultMap="encashRequestsResultMap">
+		
+		SELECT     
+			ER.encash_request_id, ER.user_id, ER.requested_amount, ER.requested_date, ER.status, ER.hold_date, ER.approved_date, 
+			ER.rejected_date, ER.transfer_date, ER.created_at, ER.created_by, ER.updated_at, ER.updated_by,
+			U.email,
+			UI.first_name, UI.last_name, UI.phone_no_code, UI.phone_no,
+			UA.current_balance, UA.hold_balance, UA.approved_balance, UA.total_balance,
+			UAL.remark
+			
+		FROM 
+			encash_requests ER
+			
+		INNER JOIN users U ON (U.user_id = ER.user_id)
+		INNER JOIN user_info UI ON (UI.user_id = U.user_id)
+		INNER JOIN user_account UA ON (UA.user_id = UI.user_id)
+		LEFT JOIN user_account_logs UAL ON (UAL.encash_request_id = ER.encash_request_id)
+			
+ 		WHERE 
+ 			ER.status iLike #{status} 
+ 		AND
+ 			(
+ 					UI.first_name iLIKE #{globalSearchString}
+ 				OR
+ 					UI.last_name iLIKE #{globalSearchString}
+ 				OR
+ 					UI.phone_no_code iLIKE #{globalSearchString}
+ 				OR
+ 					UI.phone_no iLIKE #{globalSearchString}
+ 				OR
+ 					CONCAT(UI.first_name, CONCAT(' ', UI.last_name)) iLIKE #{globalSearchString}
+ 				OR
+ 					CONCAT(UI.phone_no_code, CONCAT(' ', UI.phone_no)) iLIKE #{globalSearchString}
+ 				OR
+ 					U.email iLIKE #{globalSearchString}
+ 				OR
+ 					CAST (ER.requested_amount AS character varying) = #{globalSearchString}
+ 			) 
+ 			
+ 		<if test="'HOLD'.equalsIgnoreCase(status)">
+		
+			<if test="startDateLong > 0">
+				AND
+					ER.requested_date &gt; #{startDateLong}
+			</if>
+			
+			<if test="endDateLong > 0">
+				AND
+					ER.requested_date &lt; #{endDateLong}
+			</if>
+			
+			ORDER BY ER.requested_date DESC
+			
+		</if>
+		
+		<if test="'APPROVED'.equalsIgnoreCase(status)">
+		
+			<if test="startDateLong > 0">
+				AND
+					ER.approved_date &gt; #{startDateLong}
+			</if>
+			
+			<if test="endDateLong > 0">
+				AND
+					ER.approved_date &lt; #{endDateLong}
+			</if>
+			
+			ORDER BY ER.approved_date DESC
+		
+		</if>
+ 			
+ 		<if test="'TRANSFERRED'.equalsIgnoreCase(status)">
+		
+			<if test="startDateLong > 0">
+				AND
+					ER.transfer_date &gt; #{startDateLong}
+			</if>
+			
+			<if test="endDateLong > 0">
+				AND
+					ER.transfer_date &lt; #{endDateLong}
+			</if>
+			
+			ORDER BY ER.transfer_date DESC
+			
+		</if>
+		
+		<if test="'REJECTED'.equalsIgnoreCase(status)">
+		
+			<if test="startDateLong > 0">
+				AND
+					ER.rejected_date &gt; #{startDateLong}
+			</if>
+			
+			<if test="endDateLong > 0">
+				AND
+					ER.rejected_date &lt; #{endDateLong}
+			</if>
+			
+			ORDER BY ER.rejected_date DESC
+		
+		</if>
+		
+		LIMIT  #{length}  OFFSET  #{start}         
+        
+	</select>
+	
+	<select id="getTotalCountOfEncashRequestForSearchByStatus" resultType="int">
+	
+		SELECT     
+			count(*)
+			
+		FROM 
+			encash_requests ER
+			
+		INNER JOIN users U ON (U.user_id = ER.user_id)
+		INNER JOIN user_info UI ON (UI.user_id = U.user_id)
+		INNER JOIN user_account UA ON (UA.user_id = UI.user_id)
+		
+ 		WHERE 
+ 			ER.status iLike #{status} 
+ 		
+ 		<if test="'HOLD'.equalsIgnoreCase(status)">
+		
+			<if test="startDateLong > 0">
+				AND
+					ER.requested_date &gt; #{startDateLong}
+			</if>
+			
+			<if test="endDateLong > 0">
+				AND
+					ER.requested_date &lt; #{endDateLong}
+			</if>
+			
+		</if>
+		
+		<if test="'APPROVED'.equalsIgnoreCase(status)">
+		
+			<if test="startDateLong > 0">
+				AND
+					ER.approved_date &gt; #{startDateLong}
+			</if>
+			
+			<if test="endDateLong > 0">
+				AND
+					ER.approved_date &lt; #{endDateLong}
+			</if>
+		
+		</if>
+ 			
+ 		<if test="'TRANSFERRED'.equalsIgnoreCase(status)">
+		
+			<if test="startDateLong > 0">
+				AND
+					ER.transfer_date &gt; #{startDateLong}
+			</if>
+			
+			<if test="endDateLong > 0">
+				AND
+					ER.transfer_date &lt; #{endDateLong}
+			</if>
+			
+		</if>
+		
+		<if test="'REJECTED'.equalsIgnoreCase(status)">
+		
+			<if test="startDateLong > 0">
+				AND
+					ER.rejected_date &gt; #{startDateLong}
+			</if>
+			
+			<if test="endDateLong > 0">
+				AND
+					ER.rejected_date &lt; #{endDateLong}
+			</if>
+		
+		</if>
+	
+	</select>
+	
+	<select id="getFilteredCountOfEncashRequestForSearchByStatus" parameterType="map" resultType="int">
+		
+		SELECT     
+			count(*)
+			
+		FROM 
+			encash_requests ER
+			
+		INNER JOIN users U ON (U.user_id = ER.user_id)
+		INNER JOIN user_info UI ON (UI.user_id = U.user_id)
+		INNER JOIN user_account UA ON (UA.user_id = UI.user_id)
+			
+ 		WHERE
+ 			ER.status iLike #{status}
+ 		AND 
+ 			(
+ 					UI.first_name iLIKE #{globalSearchString}
+ 				OR
+ 					UI.last_name iLIKE #{globalSearchString}
+ 				OR
+ 					UI.phone_no_code iLIKE #{globalSearchString}
+ 				OR
+ 					UI.phone_no iLIKE #{globalSearchString}
+ 				OR
+ 					CONCAT(UI.first_name, CONCAT(' ', UI.last_name)) iLIKE #{globalSearchString}
+ 				OR
+ 					CONCAT(UI.phone_no_code, CONCAT(' ', UI.phone_no)) iLIKE #{globalSearchString}
+ 				OR
+ 					U.email iLIKE #{globalSearchString}
+ 				OR
+ 					CAST (ER.requested_amount AS character varying) = #{globalSearchString}
+ 			) 
+ 			
+ 		<if test="'HOLD'.equalsIgnoreCase(status)">
+		
+			<if test="startDateLong > 0">
+				AND
+					ER.requested_date &gt; #{startDateLong}
+			</if>
+			
+			<if test="endDateLong > 0">
+				AND
+					ER.requested_date &lt; #{endDateLong}
+			</if>
+			
+		</if>
+		
+		<if test="'APPROVED'.equalsIgnoreCase(status)">
+		
+			<if test="startDateLong > 0">
+				AND
+					ER.approved_date &gt; #{startDateLong}
+			</if>
+			
+			<if test="endDateLong > 0">
+				AND
+					ER.approved_date &lt; #{endDateLong}
+			</if>
+		
+		</if>
+ 			
+ 		<if test="'TRANSFERRED'.equalsIgnoreCase(status)">
+		
+			<if test="startDateLong > 0">
+				AND
+					ER.transfer_date &gt; #{startDateLong}
+			</if>
+			
+			<if test="endDateLong > 0">
+				AND
+					ER.transfer_date &lt; #{endDateLong}
+			</if>
+			
+		</if>
+		
+		<if test="'REJECTED'.equalsIgnoreCase(status)">
+		
+			<if test="startDateLong > 0">
+				AND
+					ER.rejected_date &gt; #{startDateLong}
+			</if>
+			
+			<if test="endDateLong > 0">
+				AND
+					ER.rejected_date &lt; #{endDateLong}
+			</if>
+		
+		</if>
+        
+	</select>
+	
+	<select id="getEncashRequestsListForExport"  parameterType="map"  resultMap="encashRequestsResultMap">
+	
+		SELECT 
+			ER.encash_request_id, ER.user_id, ER.requested_amount, ER.requested_date, ER.status, ER.hold_date, ER.approved_date, 
+			ER.rejected_date, ER.transfer_date, ER.created_at, ER.created_by, ER.updated_at, ER.updated_by,
+			U.email,
+			UI.first_name, UI.last_name, UI.phone_no, UI.phone_no_code
+			
+		FROM 
+			encash_requests ER
+			
+		INNER JOIN users U ON U.user_id = ER.user_id
+		INNER JOIN user_info UI ON UI.user_id = U.user_id
+		<if test="assignedRegionList != null">	
+			INNER JOIN multicity_user_region MUR ON MUR.user_id = U.user_id
+		</if>
+		
+        WHERE
+        	ER.status iLike #{status}
+        AND
+			(
+					UI.first_name iLIKE #{searchString}
+ 				OR
+ 					UI.last_name iLIKE #{searchString}
+ 				OR
+ 					UI.phone_no_code iLIKE #{searchString}
+ 				OR
+ 					UI.phone_no iLIKE #{searchString}
+ 				OR
+ 					CONCAT(UI.first_name, CONCAT(' ', UI.last_name)) iLIKE #{searchString}
+ 				OR
+ 					CONCAT(UI.phone_no_code, CONCAT(' ', UI.phone_no)) iLIKE #{searchString}
+ 				OR
+ 					U.email iLIKE #{searchString}
+ 				OR
+ 					CAST (ER.requested_amount AS character varying) = #{searchString}
+			)
+			
+		<if test="assignedRegionList != null">
+	    AND
+	    	MUR.multicity_city_region_id IN
+	    		
+	    		<foreach item="item" index="index" collection="assignedRegionList" open="(" separator="," close=")">
+					#{item}
+				</foreach>
+	    </if>
+		
+		<if test="'TRANSFERRED'.equalsIgnoreCase(status)">
+		
+			<if test="startDateLong > 0">
+				AND
+					ER.transfer_date &gt; #{startDateLong}
+			</if>
+			
+			<if test="endDateLong > 0">
+				AND
+					ER.transfer_date &lt; #{endDateLong}
+			</if>
+			
+			ORDER BY ER.transfer_date DESC
+			
+		</if>
+		
+		<if test="'REJECTED'.equalsIgnoreCase(status)">
+		
+			<if test="startDateLong > 0">
+				AND
+					ER.rejected_date &gt; #{startDateLong}
+			</if>
+			
+			<if test="endDateLong > 0">
+				AND
+					ER.rejected_date &lt; #{endDateLong}
+			</if>
+		
+			ORDER BY ER.rejected_date DESC
+			
+		</if>
+        
+	</select>
+	
+</mapper>

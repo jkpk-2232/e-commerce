@@ -1,0 +1,2588 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.webapp.daos.TourDao">
+
+	<resultMap id="tourResultMap" type="TourModel" >
+	    
+	    <result property="tourId" column="tour_id" />
+	    <result property="userTourId" column="user_tour_id" />
+	    <result property="driverId" column="driver_id" />
+		<result property="passengerId" column="passenger_id" />
+		<result property="firstName" column="first_name" />
+		<result property="lastName" column="last_name" />
+		<result property="phoneNo" column="phone_no" />
+		<result property="phoneNoCode" column="phone_no_code" />
+		<result property="email" column="email" />
+		<result property="photoUrl" column="photo_url" />
+		<result property="pFirstName" column="p_first_name" />
+		<result property="pLastName" column="p_last_name" />
+		<result property="pEmail" column="p_email" />
+		<result property="pPhone" column="p_phone" />
+		<result property="pPhoneCode" column="p_phone_code" />
+		<result property="pPhotoUrl" column="p_photo_url" />
+		<result property="sLatitude" column="slatitude" />
+		<result property="sLongitude" column="slongitude" />
+		<result property="dLatitude" column="dlatitude" />
+		<result property="dLongitude" column="dlongitude" />
+		<result property="sourceAddress" column="source_address" />
+		<result property="destinationAddress" column="destination_address" />
+		<result property="sourceGeolocation" column="source_geolocation" />
+		<result property="destinationGeolocation" column="destination_geolocation" />
+		<result property="carTypeId" column="car_type_id" />
+		<result property="status" column="status" />
+		<result property="bookingType" column="booking_type" />
+		<result property="cardOwner" column="card_owner" />
+		<result property="createdAt" column="created_at" />
+		<result property="updatedAt" column="updated_at" />
+		<result property="createdBy" column="created_by" />
+		<result property="updatedBy" column="updated_by" />
+		
+		<result property="distance" column="distance" />
+		<result property="charges" column="charges" />
+		<result property="percentage" column="percentage" />
+		<result property="driverAmount" column="driver_amount" />
+		<result property="invoiceTotal" column="invoiceTotal" />
+		<result property="driverAmountTotal" column="driverAmountTotal" />
+		<result property="initialFare" column="initial_fare" />
+		<result property="perKmFare" column="per_km_fare" />
+		<result property="perMinuteFare" column="per_minute_fare" />
+		<result property="bookingFees" column="booking_fees" />
+		<result property="discount" column="discount" />
+		<result property="minimumFare" column="minimum_fare" />
+		<result property="freeDistance" column="free_distance" />		
+		<result property="language" column="language" />
+		<result property="promoCodeId" column="promo_code_id" />
+		<result property="isPromoCodeApplied" column="is_promo_code_applied" />
+		<result property="total" column="total" />
+		<result property="promoDiscount" column="promo_discount" />
+		<result property="usedCredits" column="used_credits" />
+		<result property="mode" column="mode" />
+		<result property="cardBooking" column="card_booking" />
+		<result property="paymentType" column="payment_type" />
+		<result property="carId" column="car_id" />
+		<result property="isFixedFare" column="is_fixed_fare" />
+		<result property="finalAmountCollected" column="final_amount_collected" />
+		<result property="tollAmount" column="toll_amount" />
+		<result property="rideLaterPickupTime" column="ride_later_pickup_time" />
+		<result property="rideLaterPickupTimeLogs" column="ride_later_pickup_time_logs" />
+		<result property="isRideLater" column="is_ride_later" />
+		<result property="rideLaterLastNotification" column="ride_later_last_notification" />
+		<result property="isTourRideLater" column="is_tour_ride_later" />
+		<result property="isCriticalTourRideLater" column="is_critical_tour_ride_later" />
+		<result property="isAcknowledged" column="is_acknowledged" />
+		<result property="multicityCityRegionId" column="multicity_city_region_id" />
+		<result property="multicityCountryId" column="multicity_country_id" />
+		<result property="currencySymbol" column="currency_symbol" />
+		<result property="currencySymbolHtml" column="currency_symbol_html" />
+		<result property="distanceType" column="distance_type" />
+		<result property="distanceUnits" column="distance_units" />
+		<result property="cancellationCharges" column="cancellation_charges" />
+		<result property="isSurgePriceApplied" column="is_surge_price_applied" />
+		<result property="surgePriceId" column="surge_price_id" />
+		<result property="surgePrice" column="surge_price" />
+		<result property="totalWithSurge" column="total_with_surge" /> 
+		<result property="distanceLive" column="distance_live" />
+		<result property="isRentalBooking" column="is_rental_booking" />
+		<result property="rentalPackageId" column="rental_package_id" />
+		<result property="rentalPackageTime" column="rental_package_time" />
+		<result property="pickupFavouriteLocationsId" column="pickup_favourite_locations_id" />
+		<result property="destinationFavouriteLocationsId" column="destination_favourite_locations_id" />
+		<result property="carType" column="car_type" />
+		<result property="fareAfterSpecificKm" column="fare_after_specific_km" />
+		<result property="kmToIncreaseFare" column="km_to_increase_fare" />
+		
+		<result property="passengerComment" column="passenger_comment" />
+		<result property="passengerRating" column="passenger_rating" />
+		<result property="driverComment" column="driver_comment" />
+		<result property="driverRating" column="driver_rating" />
+		<result property="usageCount" column="usage_count" />
+		<result property="usage" column="usage" />
+		<result property="usageType" column="usage_type" />
+		<result property="promoCode" column="promo_code" />
+		<result property="remarkBy" column="remark_by" />
+		<result property="remark" column="remark" />
+		<result property="updatedAmountCollected" column="updated_amount_collected" />
+		<result property="isRefunded" column="is_refunded" />
+		<result property="paymentMode" column="payment_mode" />
+		<result property="fine" column="fine" /> 
+		<result property="isCashNotReceived" column="is_cash_not_received" /> 
+		<result property="transmissionTypeId" column="transmission_type_id" />
+		<result property="vendorId" column="vendor_id" />
+		<result property="isAirportFixedFareApplied" column="is_airport_fixed_fare_applied" />
+		<result property="airportBookingType" column="airport_booking_type" />
+		<result property="surgeType" column="surge_type" />
+		<result property="surgeRadius" column="surge_radius" />
+		<result property="markupFare" column="markup_fare" />
+		<result property="vendorName" column="vendorName" />
+		<result property="tourBookedBy" column="tour_booked_by" />
+		
+		<result property="passengerVendorId" column="passenger_vendor_id" />
+		<result property="driverVendorId" column="driver_vendor_id" />
+		
+		<result property="airportBooking" column="is_airport_booking" />
+		<result property="airportRegionId" column="airport_region_id" />
+		
+		<result property="rentalVendorId" column="rental_vendor_id" />
+		<result property="subscriptionPackageId" column="subscription_package_id" />
+		
+		<result property="vendorIdFareApplied" column="vendor_id_fare_applied" />
+		<result property="demandVendorPercentage" column="demand_vendor_percentage" />
+		<result property="supplierVendorPercentage" column="supplier_vendor_percentage" />
+		<result property="demandVendorAmount" column="demand_vendor_amount" />
+		<result property="supplierVendorAmount" column="supplier_vendor_amount" />
+		<result property="amountForDemandSupplier" column="amount_for_demand_supplier" />
+		
+		<result property="isTakeRide" column="is_take_ride" />
+		<result property="isTourTakeRide" column="is_tour_take_ride" />
+		<result property="markedTakeRideUserId" column="marked_take_ride_user_id" />
+		
+		<result property="serviceTypeId" column="service_type_id" />
+		<result property="courierPickupAddress" column="courier_pickup_address" />
+		<result property="courierContactPersonName" column="courier_contact_person_name" />
+		<result property="courierContactPhoneNo" column="courier_contact_phone_no" />
+		<result property="courierDropAddress" column="courier_drop_address" />
+		<result property="courierDropContactPersonName" column="courier_drop_contact_person_name" />
+		<result property="courierDropContactPhoneNo" column="courier_drop_contact_phone_no" />
+		<result property="courierDetails" column="courier_details" />
+		<result property="courierOrderReceivedAgainstVendorId" column="courier_order_received_against_vendor_id" />
+
+		<result property="cashCollected" column="cash_collected" />
+		<result property="adminSettlementAmount" column="admin_settlement_amount" />
+		<result property="totalTaxAmount" column="total_tax_amount" />
+		<result property="invoiceId" column="invoice_id" />
+		
+		<result property="isTakeBookingByDriver" column="is_take_booking_by_driver" />
+		<result property="takeBookingDriverId" column="take_booking_driver_id" />
+		<result property="takeBookingByDriverTime" column="take_booking_by_driver_time" />
+		
+		<result property="driverProcessingViaCronTime" column="driver_processing_via_cron_time" />
+		
+	</resultMap>
+	
+	<sql id="allTourColumns">
+		DISTINCT T.tour_id, T.user_tour_id, T.driver_id, T.passenger_id, T.distance, T.charges, T.total, T.promo_discount, 
+		ST_Y(source_geolocation::geometry) AS slatitude,  ST_X(source_geolocation::geometry) as slongitude,
+		ST_Y(destination_geolocation::geometry) AS dlatitude, ST_X(destination_geolocation::geometry) as dlongitude,
+		T.used_credits, T.percentage, T.driver_amount, T.initial_fare, T.per_km_fare, T.per_minute_fare, 
+		T.booking_fees, T.minimum_fare, T.discount, T.p_first_name, T.p_last_name, T.p_email, T.p_phone, 
+		T.p_phone_code, T.source_geolocation, T.destination_geolocation, T.source_address, T.destination_address, 
+		T.car_type_id, T.p_photo_url, T.status, T.booking_type, T.language, T.card_owner, T.promo_code_id, 
+		T.is_promo_code_applied, T.card_booking, T.payment_type, T.car_id, T.is_fixed_fare, T.final_amount_collected, 
+		T.toll_amount, T.ride_later_pickup_time, T.ride_later_pickup_time_logs, T.is_ride_later, T.ride_later_last_notification, 
+		T.is_tour_ride_later, T.is_critical_tour_ride_later, T.is_acknowledged, T.free_distance, T.multicity_city_region_id, 
+		T.multicity_country_id, T.currency_symbol, T.currency_symbol_html, T.distance_type, T.distance_units, T.cancellation_charges, 
+		T.is_surge_price_applied, T.surge_price_id, T.surge_price, T.total_with_surge, T.surge_fare, T.distance_live, 
+		T.created_by, T.created_at, T.updated_by, T.updated_at, T.is_rental_booking, T.rental_package_id, T.rental_package_time, 
+		T.pickup_favourite_locations_id, T.destination_favourite_locations_id, T.fare_after_specific_km, T.km_to_increase_fare, 
+		T.transmission_type_id, T.is_airport_fixed_fare_applied, T.airport_booking_type, T.surge_type, T.surge_radius, T.markup_fare, 
+		T.tour_booked_by, T.passenger_vendor_id, T.driver_vendor_id, T.is_airport_booking, T.airport_region_id, T.rental_vendor_id, 
+		T.subscription_package_id, T.vendor_id_fare_applied, T.demand_vendor_percentage, T.supplier_vendor_percentage, T.demand_vendor_amount, 
+		T.supplier_vendor_amount, T.amount_for_demand_supplier, T.is_take_ride, T.is_tour_take_ride, T.marked_take_ride_user_id, 
+		T.service_type_id, T.courier_pickup_address, T.courier_contact_person_name, T.courier_contact_phone_no, 
+		T.courier_drop_address, T.courier_drop_contact_person_name, T.courier_drop_contact_phone_no, T.courier_details,
+		T.courier_order_received_against_vendor_id, T.is_take_booking_by_driver, T.take_booking_driver_id, T.take_booking_by_driver_time,
+		T.driver_processing_via_cron_time
+	</sql>
+	
+	<sql id="invoiceColumns">
+		INV.invoice_id, INV.total, INV.distance, INV.charges, INV.percentage, INV.driver_amount, 
+		INV.payment_mode, INV.promo_discount, INV.used_credits, INV.final_amount_collected, 
+		INV.admin_settlement_amount, INV.surge_price, INV.total_tax_amount, INV.markup_fare,
+		INV.fine, INV.is_cash_not_received, INV.cash_collected, INV.is_refunded,
+		INV.promo_code_id, INV.is_surge_price_applied, INV.updated_amount_collected, 
+		INV.remark, INV.is_promo_code_applied
+	</sql>
+	
+	<sql id="driverInfoColumns">
+		UI.first_name, UI.last_name, UI.phone_no, UI.phone_no_code, 
+		U.photo_url, U.email
+	</sql>
+	
+	<insert id="createTour" useGeneratedKeys="true" parameterType="TourModel">
+
+		INSERT INTO tours
+			(
+				tour_id, passenger_id, driver_id, p_first_name, p_last_name, p_email, p_phone, p_photo_url, 
+		  		source_address,destination_address, source_geolocation, destination_geolocation, 
+				car_type_id, status, created_at, updated_at,percentage,driver_amount,
+				created_by, updated_by, booking_type, card_owner,payment_type,p_phone_code,
+				distance, charges, language,promo_code_id,is_promo_code_applied,total,promo_discount,used_credits,
+				initial_fare, per_km_fare, per_minute_fare, booking_fees, discount, minimum_fare, card_booking, car_id,
+				final_amount_collected, free_distance, pickup_favourite_locations_id, destination_favourite_locations_id,
+				fare_after_specific_km, km_to_increase_fare, passenger_vendor_id, driver_vendor_id,
+				is_airport_booking, airport_region_id, rental_vendor_id, demand_vendor_percentage, supplier_vendor_percentage,
+				service_type_id
+			)
+		VALUES
+			(
+				#{tourId}, #{passengerId},#{driverId},#{pFirstName},#{pLastName},#{pEmail}, #{pPhone}, #{pPhotoUrl},
+				#{sourceAddress}, #{destinationAddress}, ${sourceGeolocation}, ${destinationGeolocation},
+				#{carTypeId},#{status},#{createdAt},#{updatedAt},#{percentage},#{driverAmount},
+				#{createdBy},#{updatedBy}, #{bookingType}, #{cardOwner}, #{paymentType}, #{pPhoneCode},
+				#{distance}, #{charges}, #{language}, #{promoCodeId}, #{isPromoCodeApplied},#{total},#{promoDiscount},#{usedCredits},
+				#{initialFare}, #{perKmFare}, #{perMinuteFare}, #{bookingFees}, #{discount}, #{minimumFare}, #{cardBooking} , #{carId},
+				#{finalAmountCollected}, #{freeDistance}, #{pickupFavouriteLocationsId}, #{destinationFavouriteLocationsId},
+				#{fareAfterSpecificKm}, #{kmToIncreaseFare}, #{passengerVendorId}, #{driverVendorId},
+				#{airportBooking}, #{airportRegionId}, #{rentalVendorId}, #{demandVendorPercentage}, #{supplierVendorPercentage},
+				#{serviceTypeId}
+			)
+				
+	</insert>
+	
+	<insert id="createTourV2" useGeneratedKeys="true" parameterType="TourModel">
+
+		INSERT INTO tours
+			(
+			    tour_id, passenger_id, driver_id, p_first_name, p_last_name, p_email, p_phone, p_photo_url, source_address, destination_address, 
+			    source_geolocation, destination_geolocation, car_type_id, status, created_at, updated_at, percentage, driver_amount, is_fixed_fare,
+				created_by, updated_by, booking_type, card_owner, payment_type, p_phone_code, distance, charges, language, promo_code_id, is_promo_code_applied,
+				total, promo_discount, used_credits, initial_fare, per_km_fare, per_minute_fare, booking_fees, discount, minimum_fare, card_booking, car_id,
+				multicity_city_region_id, multicity_country_id, currency_symbol, distance_type, distance_units, cancellation_charges, currency_symbol_html,
+				final_amount_collected, free_distance, is_surge_price_applied, surge_price_id, surge_price, total_with_surge, distance_live,
+				is_ride_later, ride_later_pickup_time_logs, ride_later_pickup_time, is_tour_ride_later, is_acknowledged, transmission_type_id,
+				is_rental_booking, rental_package_id, rental_package_time, pickup_favourite_locations_id, destination_favourite_locations_id,
+				fare_after_specific_km, km_to_increase_fare, is_airport_fixed_fare_applied, airport_booking_type, surge_type, surge_radius,
+				markup_fare, tour_booked_by, passenger_vendor_id, driver_vendor_id,
+				is_airport_booking, airport_region_id, rental_vendor_id, demand_vendor_percentage, supplier_vendor_percentage,
+				service_type_id
+			)
+		VALUES
+			(
+				#{tourId}, #{passengerId}, #{driverId}, #{pFirstName}, #{pLastName}, #{pEmail}, #{pPhone}, #{pPhotoUrl}, #{sourceAddress}, #{destinationAddress}, 
+				${sourceGeolocation}, ${destinationGeolocation}, #{carTypeId}, #{status}, #{createdAt}, #{updatedAt}, #{percentage}, #{driverAmount}, #{isFixedFare},
+				#{createdBy}, #{updatedBy}, #{bookingType}, #{cardOwner}, #{paymentType}, #{pPhoneCode}, #{distance}, #{charges}, #{language}, #{promoCodeId}, #{isPromoCodeApplied},
+				#{total}, #{promoDiscount}, #{usedCredits}, #{initialFare}, #{perKmFare}, #{perMinuteFare}, #{bookingFees}, #{discount}, #{minimumFare}, #{cardBooking} , #{carId},
+				#{multicityCityRegionId}, #{multicityCountryId}, #{currencySymbol}, #{distanceType}, #{distanceUnits}, #{cancellationCharges}, #{currencySymbolHtml}, 
+				#{finalAmountCollected}, #{freeDistance}, #{isSurgePriceApplied}, #{surgePriceId}, #{surgePrice}, #{totalWithSurge}, #{distanceLive},
+				#{isRideLater}, #{rideLaterPickupTimeLogs}, #{rideLaterPickupTime}, #{isTourRideLater}, #{isAcknowledged},#{transmissionTypeId},
+				#{isRentalBooking}, #{rentalPackageId}, #{rentalPackageTime}, #{pickupFavouriteLocationsId}, #{destinationFavouriteLocationsId},
+				#{fareAfterSpecificKm}, #{kmToIncreaseFare}, #{isAirportFixedFareApplied}, #{airportBookingType}, #{surgeType}, #{surgeRadius},
+				#{markupFare}, #{tourBookedBy}, #{passengerVendorId}, #{driverVendorId},
+				#{airportBooking}, #{airportRegionId}, #{rentalVendorId}, #{demandVendorPercentage}, #{supplierVendorPercentage},
+				#{serviceTypeId}
+			)
+			
+	</insert>
+	
+	<insert id="createTourRideLater" useGeneratedKeys="true" parameterType="TourModel">
+
+		INSERT INTO tours
+			(
+			    tour_id, passenger_id, driver_id, p_first_name, p_last_name, p_email, p_phone, p_photo_url, source_address,destination_address, 
+			    source_geolocation, destination_geolocation, car_type_id, status, created_at, updated_at, percentage, driver_amount, is_fixed_fare,
+			    created_by, updated_by, booking_type, card_owner,payment_type,p_phone_code, distance, charges, language,promo_code_id,is_promo_code_applied,
+			    total,promo_discount,used_credits, initial_fare, per_km_fare, per_minute_fare, booking_fees, discount, minimum_fare, card_booking, 
+			    car_id, is_ride_later, ride_later_pickup_time_logs, ride_later_pickup_time, is_tour_ride_later, is_acknowledged, final_amount_collected, 
+			    free_distance, is_surge_price_applied, surge_price_id, surge_price, total_with_surge, distance_live, multicity_city_region_id, 
+			    multicity_country_id, currency_symbol, currency_symbol_html, distance_type, distance_units, is_rental_booking, rental_package_id, 
+			    rental_package_time, pickup_favourite_locations_id, destination_favourite_locations_id,transmission_type_id,
+			    fare_after_specific_km, km_to_increase_fare, is_airport_fixed_fare_applied, airport_booking_type, surge_type, surge_radius,tour_booked_by,
+			    passenger_vendor_id, driver_vendor_id, is_airport_booking, airport_region_id, rental_vendor_id, demand_vendor_percentage, supplier_vendor_percentage,
+				service_type_id
+			)
+		VALUES
+			(
+				#{tourId}, #{passengerId}, #{driverId}, #{pFirstName}, #{pLastName}, #{pEmail}, #{pPhone}, #{pPhotoUrl}, #{sourceAddress}, #{destinationAddress}, 
+				${sourceGeolocation}, ${destinationGeolocation}, #{carTypeId}, #{status}, #{createdAt}, #{updatedAt}, #{percentage}, #{driverAmount}, #{isFixedFare},
+				#{createdBy}, #{updatedBy}, #{bookingType}, #{cardOwner}, #{paymentType}, #{pPhoneCode}, #{distance}, #{charges}, #{language}, #{promoCodeId}, #{isPromoCodeApplied},
+				#{total}, #{promoDiscount}, #{usedCredits}, #{initialFare}, #{perKmFare}, #{perMinuteFare}, #{bookingFees}, #{discount}, #{minimumFare}, #{cardBooking} , 
+				#{carId}, #{isRideLater}, #{rideLaterPickupTimeLogs}, #{rideLaterPickupTime}, #{isTourRideLater}, #{isAcknowledged}, #{finalAmountCollected}, 
+				#{freeDistance}, #{isSurgePriceApplied}, #{surgePriceId}, #{surgePrice}, #{totalWithSurge}, #{distanceLive}, #{multicityCityRegionId}, 
+				#{multicityCountryId}, #{currencySymbol}, #{currencySymbolHtml}, #{distanceType}, #{distanceUnits}, #{isRentalBooking}, #{rentalPackageId}, 
+				#{rentalPackageTime}, #{pickupFavouriteLocationsId}, #{destinationFavouriteLocationsId}, #{transmissionTypeId},
+				#{fareAfterSpecificKm}, #{kmToIncreaseFare}, #{isAirportFixedFareApplied}, #{airportBookingType}, #{surgeType},  #{surgeRadius},#{tourBookedBy},
+				#{passengerVendorId}, #{driverVendorId}, #{airportBooking}, #{airportRegionId}, #{rentalVendorId}, #{demandVendorPercentage}, #{supplierVendorPercentage},
+				#{serviceTypeId}
+			)
+			
+	</insert>
+	
+	<insert id="createCourierOrder" useGeneratedKeys="true" parameterType="TourModel">
+
+		INSERT INTO tours
+			(
+			    tour_id, passenger_id, driver_id, p_first_name, p_last_name, p_email, p_phone, p_photo_url, source_address,destination_address, 
+			    source_geolocation, destination_geolocation, car_type_id, status, created_at, updated_at, percentage, driver_amount, is_fixed_fare,
+			    created_by, updated_by, booking_type, card_owner,payment_type,p_phone_code, distance, charges, language,promo_code_id,is_promo_code_applied,
+			    total,promo_discount,used_credits, initial_fare, per_km_fare, per_minute_fare, booking_fees, discount, minimum_fare, card_booking, 
+			    car_id, is_ride_later, ride_later_pickup_time_logs, ride_later_pickup_time, is_tour_ride_later, is_acknowledged, final_amount_collected, 
+			    free_distance, is_surge_price_applied, surge_price_id, surge_price, total_with_surge, distance_live, multicity_city_region_id, 
+			    multicity_country_id, currency_symbol, currency_symbol_html, distance_type, distance_units, is_rental_booking, rental_package_id, 
+			    rental_package_time, pickup_favourite_locations_id, destination_favourite_locations_id,transmission_type_id,
+			    fare_after_specific_km, km_to_increase_fare, is_airport_fixed_fare_applied, airport_booking_type, surge_type, surge_radius,tour_booked_by,
+			    passenger_vendor_id, driver_vendor_id, is_airport_booking, airport_region_id, rental_vendor_id, demand_vendor_percentage, supplier_vendor_percentage,
+				service_type_id, courier_pickup_address, courier_contact_person_name, courier_contact_phone_no,
+				courier_drop_address, courier_drop_contact_person_name, courier_drop_contact_phone_no, courier_details, courier_order_received_against_vendor_id
+			)
+		VALUES
+			(
+				#{tourId}, #{passengerId}, #{driverId}, #{pFirstName}, #{pLastName}, #{pEmail}, #{pPhone}, #{pPhotoUrl}, #{sourceAddress}, #{destinationAddress}, 
+				${sourceGeolocation}, ${destinationGeolocation}, #{carTypeId}, #{status}, #{createdAt}, #{updatedAt}, #{percentage}, #{driverAmount}, #{isFixedFare},
+				#{createdBy}, #{updatedBy}, #{bookingType}, #{cardOwner}, #{paymentType}, #{pPhoneCode}, #{distance}, #{charges}, #{language}, #{promoCodeId}, #{isPromoCodeApplied},
+				#{total}, #{promoDiscount}, #{usedCredits}, #{initialFare}, #{perKmFare}, #{perMinuteFare}, #{bookingFees}, #{discount}, #{minimumFare}, #{cardBooking} , 
+				#{carId}, #{isRideLater}, #{rideLaterPickupTimeLogs}, #{rideLaterPickupTime}, #{isTourRideLater}, #{isAcknowledged}, #{finalAmountCollected}, 
+				#{freeDistance}, #{isSurgePriceApplied}, #{surgePriceId}, #{surgePrice}, #{totalWithSurge}, #{distanceLive}, #{multicityCityRegionId}, 
+				#{multicityCountryId}, #{currencySymbol}, #{currencySymbolHtml}, #{distanceType}, #{distanceUnits}, #{isRentalBooking}, #{rentalPackageId}, 
+				#{rentalPackageTime}, #{pickupFavouriteLocationsId}, #{destinationFavouriteLocationsId}, #{transmissionTypeId},
+				#{fareAfterSpecificKm}, #{kmToIncreaseFare}, #{isAirportFixedFareApplied}, #{airportBookingType}, #{surgeType},  #{surgeRadius},#{tourBookedBy},
+				#{passengerVendorId}, #{driverVendorId}, #{airportBooking}, #{airportRegionId}, #{rentalVendorId}, #{demandVendorPercentage}, #{supplierVendorPercentage},
+				#{serviceTypeId}, #{courierPickupAddress}, #{courierContactPersonName}, #{courierContactPhoneNo},
+				#{courierDropAddress}, #{courierDropContactPersonName}, #{courierDropContactPhoneNo}, #{courierDetails}, #{courierOrderReceivedAgainstVendorId}
+			)
+			
+	</insert>
+	
+	<select id="getPassengerToursBySpecificDate" parameterType="map" resultMap="tourResultMap">
+	
+		SELECT 
+			<include refid="allTourColumns"></include>,
+			<include refid="driverInfoColumns"></include>,
+			<include refid="invoiceColumns"></include>,
+			DTR.rate AS driver_rating, DTR.note AS driver_comment,
+			PTR.rate AS passenger_rating, PTR.note AS passenger_comment
+		FROM 
+			tours T
+		LEFT JOIN invoices INV ON T.tour_id = INV.tour_id
+	    LEFT JOIN users U ON T.driver_id = U.user_id
+	    LEFT JOIN user_info UI ON T.driver_id = UI.user_id
+	    LEFT JOIN driver_trip_ratings DTR ON DTR.trip_id = T.tour_id 
+		LEFT JOIN passenger_trip_ratings PTR ON PTR.trip_id = T.tour_id       		 
+		WHERE 
+			T.passenger_id = #{userId}
+	    AND	
+		    T.created_at &gt;= #{startDate}
+		AND	
+		    T.created_at &lt;= #{endDate}
+		ORDER BY T.created_at DESC
+
+	</select>
+	
+	<select id="getDriverToursBySpecificDate" parameterType="map" resultMap="tourResultMap">
+	    
+		SELECT 
+		    <include refid="allTourColumns"></include>,
+			<include refid="driverInfoColumns"></include>,
+			<include refid="invoiceColumns"></include>,
+			DTR.rate AS driver_rating, DTR.note AS driver_comment,
+			PTR.rate AS passenger_rating, PTR.note AS passenger_comment
+		FROM 
+			tours T
+		LEFT JOIN invoices INV ON T.tour_id = INV.tour_id
+	    LEFT JOIN users U ON T.driver_id = U.user_id
+	    LEFT JOIN user_info UI ON T.driver_id = UI.user_id  
+	    LEFT JOIN driver_trip_ratings DTR ON DTR.trip_id = T.tour_id 
+		LEFT JOIN passenger_trip_ratings PTR ON PTR.trip_id = T.tour_id
+		WHERE 
+			(
+        		UI.first_name ilike #{globalSearchString} 
+        	OR 
+       			UI.last_name ilike #{globalSearchString} 
+       		OR 
+       			CONCAT(UI.first_name,CONCAT(' ',UI.last_name)) iLIKE #{globalSearchString}  
+       		OR 
+       			T.p_first_name ilike #{globalSearchString} 
+       		OR 
+       			T.p_last_name ilike #{globalSearchString}  
+       		OR 
+       			CONCAT(T.p_first_name,CONCAT(' ',T.p_last_name)) iLIKE #{globalSearchString}
+       		OR 
+       			T.source_address ilike #{globalSearchString} 
+       		OR 
+       			T.destination_address ilike #{globalSearchString}
+   			)
+   		AND
+			T.driver_id = #{userId} 
+		AND	 
+			T.created_at &gt;= #{startDate} 
+		AND 
+			T.created_at &lt;= #{endDate}	
+		<if test="assignedRegionList != null">
+	    AND
+	    	T.multicity_city_region_id IN
+    		<foreach item="item" index="index" collection="assignedRegionList" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+	    </if>
+		ORDER BY T.created_at DESC
+
+	</select>
+	
+	<select id="getCurrentTourByDriverId" parameterType="String" resultMap="tourResultMap">
+	
+		SELECT 
+		    <include refid="allTourColumns"></include>,
+			<include refid="driverInfoColumns"></include>,
+			<include refid="invoiceColumns"></include>
+		FROM 
+			tours T
+		LEFT JOIN invoices INV ON T.tour_id = INV.tour_id
+	    LEFT JOIN users U ON T.driver_id = U.user_id
+	    LEFT JOIN user_info UI ON T.driver_id = UI.user_id  
+		WHERE 
+			T.driver_id = #{userId} 
+		AND 
+		    T.created_at = (SELECT MAX(created_at) 
+		                      FROM 
+		                          tours 
+		                      WHERE 
+		                           driver_id = #{userId} 
+		                      AND 
+		                           (status='assigned' OR status='accepted' OR status='started' OR status ilike '%arrived%')
+		                   )	
+
+	</select>
+	
+	<select id="getCurrentTourByDriverIdForRideNowTakeBooking" parameterType="String" resultMap="tourResultMap">
+	
+		SELECT 
+		    <include refid="allTourColumns"></include>,
+			<include refid="driverInfoColumns"></include>,
+			<include refid="invoiceColumns"></include>
+		FROM 
+			tours T
+		LEFT JOIN invoices INV ON T.tour_id = INV.tour_id
+	    LEFT JOIN users U ON T.driver_id = U.user_id
+	    LEFT JOIN user_info UI ON T.driver_id = UI.user_id  
+		WHERE 
+			T.driver_id = #{userId} 
+		AND 
+		    T.created_at = (SELECT MAX(created_at) 
+		                      FROM 
+		                          tours 
+		                      WHERE 
+		                           driver_id = #{userId} 
+		                      AND 
+		                           (status='accepted' OR status='started' OR status ilike '%arrived%')
+		                   )	
+
+	</select>
+	
+	<select id="getAdminCurrentTourByDriverId" parameterType="String" resultMap="tourResultMap">
+	
+		SELECT 
+		    <include refid="allTourColumns"></include>,
+			<include refid="driverInfoColumns"></include>,
+			<include refid="invoiceColumns"></include>
+		FROM 
+			tours T
+		LEFT JOIN invoices INV ON T.tour_id = INV.tour_id
+	    LEFT JOIN users U ON T.driver_id = U.user_id
+	    LEFT JOIN user_info UI ON T.driver_id = UI.user_id      		 
+		WHERE 
+			T.driver_id = #{userId} 
+		AND 
+		    T.created_at = (SELECT MAX(created_at) 
+		                      FROM 
+		                          tours 
+		                      WHERE 
+		                           driver_id = #{userId} 
+		                      )	
+
+	</select>
+	
+	<select id="getCurrentTourByPassangerId" parameterType="String" resultMap="tourResultMap">
+		
+		SELECT 
+		    <include refid="allTourColumns"></include>,
+			<include refid="driverInfoColumns"></include>,
+			<include refid="invoiceColumns"></include>
+		FROM 
+			tours T
+		LEFT JOIN invoices INV ON T.tour_id = INV.tour_id
+	    LEFT JOIN users U ON T.driver_id = U.user_id
+	    LEFT JOIN user_info UI ON T.driver_id = UI.user_id      		 
+		WHERE 
+			T.passenger_id = #{userId}
+	    AND 
+	        T.created_at = (SELECT MAX(created_at) 
+		                      FROM 
+		                          tours 
+		                      WHERE 
+		                           passenger_id = #{userId} 
+		                      AND 
+		                           (status='assigned' OR status='new' OR status='pending' OR status='accepted' OR status='started' OR status ilike '%arrived%'))	
+
+	</select>
+	
+	<select id="getTourDetailsByTourId" parameterType="String" resultMap="tourResultMap">
+	
+		SELECT 
+		    <include refid="allTourColumns"></include>,
+			<include refid="driverInfoColumns"></include>,
+			<include refid="invoiceColumns"></include>
+		FROM 
+			tours T
+		LEFT JOIN invoices INV ON T.tour_id = INV.tour_id
+	    LEFT JOIN users U ON T.driver_id = U.user_id
+	    LEFT JOIN user_info UI ON T.driver_id = UI.user_id  
+		WHERE 
+			T.tour_id = #{tourId}
+			
+   	</select>
+	
+	<update id="updateTourStatusByTourId" parameterType="TourModel">
+	
+		UPDATE 
+			tours 
+		SET 
+			status = #{status},
+			updated_by = #{updatedBy}, 
+			updated_at = #{updatedAt}
+		WHERE  
+		    tour_id = #{tourId}
+		    
+	</update>
+	
+	<update id="updateDriverPercentageByTourId" parameterType="TourModel">
+	
+		UPDATE 
+			tours 
+		SET 
+			driver_amount = #{driverAmount},
+			percentage = #{percentage},
+			updated_by = #{updatedBy}, 
+			updated_at = #{updatedAt}
+		WHERE  
+		    tour_id = #{tourId}
+		    
+	</update>
+	
+	<update id="assignTourDriver" parameterType="TourModel">
+	
+		UPDATE 
+			tours 
+		SET 
+		    driver_id = #{driverId},
+			status = #{status},
+			updated_by = #{updatedBy}, 
+			updated_at = #{updatedAt}
+		WHERE  
+		    tour_id = #{tourId}
+		    
+	</update>
+	
+	<update id="updateTourStatusByPassenger" parameterType="TourModel">
+	
+		UPDATE 
+			tours 
+		SET 
+			status = #{status},
+			updated_by = #{updatedBy}, 
+			updated_at = #{updatedAt}
+		WHERE  
+		    tour_id = #{tourId}
+		    
+	</update>
+	
+	<select id="getTourListBySearch" parameterType="map" resultMap="tourResultMap">
+	
+		SELECT 
+		    <include refid="allTourColumns"></include>,
+			<include refid="driverInfoColumns"></include>,
+			<include refid="invoiceColumns"></include>
+		FROM 
+			tours T
+		LEFT JOIN invoices INV ON T.tour_id = INV.tour_id
+	    LEFT JOIN users U ON T.driver_id = U.user_id
+	    LEFT JOIN user_info UI ON T.driver_id = UI.user_id         
+		WHERE 
+		 	(
+		 		T.user_tour_id = #{userTourId} 
+		 	OR 
+		 		T.p_first_name iLIKE #{globalSearchString} 
+		 	OR
+		 		T.p_last_name iLIKE #{globalSearchString} 
+			OR 
+			 	T.source_address iLIKE #{globalSearchString} 
+			OR 
+				T.destination_address iLIKE #{globalSearchString}
+			OR 
+				T.status iLIKE #{globalSearchString}
+			OR 
+				CONCAT(T.p_first_name,CONCAT(' ',T.p_last_name)) iLIKE #{globalSearchString}
+			OR 
+			 	CONCAT(UI.first_name,CONCAT(' ',UI.last_name)) iLIKE #{globalSearchString}
+			) 
+		AND   
+		    T.passenger_id = #{userId}
+		ORDER BY T.updated_at DESC
+	    LIMIT #{length} OFFSET #{start}   
+	    
+	</select>
+	
+	<select id="getDriverTourListBySearchByDriverId" parameterType="map" resultMap="tourResultMap">
+
+		SELECT 
+		    <include refid="allTourColumns"></include>,
+			<include refid="driverInfoColumns"></include>,
+			<include refid="invoiceColumns"></include>
+		FROM 
+			tours T
+		INNER JOIN invoices INV ON T.tour_id = INV.tour_id
+	    LEFT JOIN users U ON T.driver_id = U.user_id
+	    LEFT JOIN user_info UI ON T.driver_id = UI.user_id  
+		WHERE 
+		 	(
+			 		T.user_tour_id = #{userTourId} 
+			 	OR 
+			 		T.source_address iLIKE #{globalSearchString} 
+			 	OR 
+			 		T.destination_address iLIKE #{globalSearchString}
+			 	OR 
+			 		T.status iLIKE #{globalSearchString}
+			 	OR 
+			 		CONCAT(UI.first_name,CONCAT(' ',UI.last_name)) iLIKE #{globalSearchString}
+			 	OR 
+			 		CONCAT(T.p_first_name,CONCAT(' ',T.p_last_name)) iLIKE #{globalSearchString}
+		 	) 
+		AND   
+		    T.driver_id = #{driverId}
+		AND
+			T.created_at &gt; #{startDate}
+		AND
+			T.created_at &lt; #{endDate}
+		<if test="assignedRegionList != null">
+	    AND
+	    	T.multicity_city_region_id IN
+	    		<foreach item="item" index="index" collection="assignedRegionList" open="(" separator="," close=")">
+					#{item}
+				</foreach>
+	    </if>
+		ORDER BY T.updated_at DESC
+	    LIMIT #{length} OFFSET #{start}   
+	    
+	</select>
+	
+	<select id="getPassengerTourListBySearchByPassengerId" parameterType="map" resultMap="tourResultMap">
+
+		SELECT 
+		    <include refid="allTourColumns"></include>,
+			<include refid="driverInfoColumns"></include>,
+			<include refid="invoiceColumns"></include>
+		FROM 
+			tours T
+		LEFT JOIN invoices INV ON T.tour_id = INV.tour_id
+	    LEFT JOIN users U ON T.driver_id = U.user_id
+	    LEFT JOIN user_info UI ON T.driver_id = UI.user_id  
+		WHERE 
+		 	(
+			 		T.user_tour_id = #{userTourId} 
+			 	OR 
+			 		T.source_address iLIKE #{globalSearchString} 
+			 	OR 
+			 		T.destination_address iLIKE #{globalSearchString}
+			 	OR 
+			 		T.status iLIKE #{globalSearchString}
+			 	OR 
+			 		CONCAT(UI.first_name,CONCAT(' ',UI.last_name)) iLIKE #{globalSearchString}
+			 	OR 
+			 		CONCAT(T.p_first_name,CONCAT(' ',T.p_last_name)) iLIKE #{globalSearchString}
+		 	) 
+		AND   
+		    T.passenger_id = #{passengerId}
+		AND
+			T.created_at &gt; #{startDate}
+		AND
+			T.created_at &lt; #{endDate}
+		<if test="assignedRegionList != null">
+	    AND
+	    	T.multicity_city_region_id IN
+	    		<foreach item="item" index="index" collection="assignedRegionList" open="(" separator="," close=")">
+					#{item}
+				</foreach>
+	    </if>
+		ORDER BY T.updated_at DESC
+	    LIMIT #{length} OFFSET #{start}   
+	    
+	</select>
+	
+	<select id="getDriverTourListBySearchByDriverIdCount" parameterType="map" resultType="int">
+
+	    SELECT 
+		    count(T.tour_id)
+		FROM 
+			tours T
+		INNER JOIN invoices INV ON T.tour_id = INV.tour_id
+	    LEFT JOIN users U ON T.driver_id = U.user_id
+	    LEFT JOIN user_info UI ON T.driver_id = UI.user_id
+		WHERE 
+		 	(
+			 		T.user_tour_id = #{userTourId} 
+			 	OR 
+			 		T.source_address iLIKE #{globalSearchString} 
+			 	OR 
+			 		T.destination_address iLIKE #{globalSearchString}
+			 	OR 
+			 		T.status iLIKE #{globalSearchString}
+			 	OR 
+			 		CONCAT(UI.first_name,CONCAT(' ',UI.last_name)) iLIKE #{globalSearchString}
+			 	OR 
+				 	CONCAT(T.p_first_name,CONCAT(' ',T.p_last_name)) iLIKE #{globalSearchString}
+		 	) 
+		AND   
+		    T.driver_id = #{driverId}
+		AND
+			T.created_at &gt; #{startDate}
+		AND
+			T.created_at &lt; #{endDate}  
+		<if test="assignedRegionList != null">
+	    AND
+	    	T.multicity_city_region_id IN
+	    		<foreach item="item" index="index" collection="assignedRegionList" open="(" separator="," close=")">
+					#{item}
+				</foreach>
+	    </if>
+	    
+	</select>
+	
+	<select id="getDriverTourCountByDriverId" resultType="int">
+
+		SELECT
+			count(T.tour_id)
+		FROM 
+	        tours T
+	    INNER JOIN invoices INV ON T.tour_id = INV.tour_id AND T.driver_id = #{driverId}  
+		WHERE 
+		    T.driver_id = #{driverId}
+		<if test="startDate != 0">
+		AND
+			T.created_at &gt; #{startDate}
+		</if>
+		<if test="endDate != 0">
+		AND
+			T.created_at &lt; #{endDate}
+		</if>
+		<if test="assignedRegionList != null">
+	    AND
+	    	T.multicity_city_region_id IN
+    		<foreach item="item" index="index" collection="assignedRegionList" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+	    </if>
+	    
+	</select>
+	
+	<select id="getPassengerTourCountByPassengerId" resultType="int">
+
+		SELECT
+			count(T.tour_id)
+		FROM 
+	        tours T
+		WHERE 
+		    T.passenger_id = #{passengerId}
+		<if test="startDate != 0">
+		AND
+			T.created_at &gt; #{startDate}
+		</if>
+		<if test="endDate != 0">
+		AND
+			T.created_at &lt; #{endDate}
+		</if>
+		<if test="assignedRegionList != null">
+	    AND
+	    	T.multicity_city_region_id IN
+	    		<foreach item="item" index="index" collection="assignedRegionList" open="(" separator="," close=")">
+					#{item}
+				</foreach>
+	    </if>
+	    
+	</select>
+	
+	<update id="updateTourAddress" parameterType="TourModel">
+	
+		UPDATE 
+			tours 
+		SET 
+			destination_geolocation = ${destinationGeolocation},
+			destination_address = #{destinationAddress},
+			source_address = #{sourceAddress},
+			source_geolocation = ${sourceGeolocation},
+		    updated_at = #{updatedAt}
+		WHERE  
+		    tour_id = #{tourId}
+		    
+	</update>
+	
+	<update id="updateCharges" parameterType="TourModel">
+	
+		UPDATE 
+			tours 
+		SET 
+			charges = #{charges},
+			updated_at = #{updatedAt}
+		WHERE  
+		    tour_id = #{tourId}
+		    
+	</update>
+	
+	<select id="getTotalBookingsCountByTime" parameterType="map" resultType="int">
+
+		SELECT
+			count(T.tour_id)
+		FROM 
+	        tours T
+		WHERE 
+		 	T.created_at &gt; #{createdAt}
+		<if test="assignedRegionList != null">
+	    AND
+	    	T.multicity_city_region_id IN
+    		<foreach item="item" index="index" collection="assignedRegionList" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+	    </if>   
+	    
+	</select>
+	
+	<select id="getAllTourListCount" parameterType="map" resultType="int">
+	
+		SELECT
+			count(T.tour_id)
+		FROM 
+		    tours T
+	   	LEFT JOIN users U ON T.driver_id = U.user_id
+	    LEFT JOIN user_info UI ON T.driver_id = UI.user_id
+		WHERE
+			T.created_at &lt; #{endDate}	    
+		AND	
+			T.created_at &gt; #{startDate}
+		AND	
+	    	T.status IN
+			<foreach item="item" index="index" collection="statusArray" open="(" separator="," close=")">
+				#{item}
+			</foreach> 
+		AND	
+	    	T.surge_price IN
+			<foreach item="item" index="index" collection="surgeArray" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		<if test="assignedRegionList != null">
+	    AND
+	    	T.multicity_city_region_id IN
+    		<foreach item="item" index="index" collection="assignedRegionList" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+	    </if>
+				
+	</select>
+	
+	<select id="getAllTourListBySearch" parameterType="map" resultMap="tourResultMap">
+	
+		SELECT 
+		    <include refid="allTourColumns"></include>,
+			<include refid="driverInfoColumns"></include>,
+			<include refid="invoiceColumns"></include>,
+			CT.car_type, concat(VUI.first_name,VUI.last_name) As vendorName
+		FROM 
+			tours T
+		LEFT JOIN invoices INV ON T.tour_id = INV.tour_id
+	    LEFT JOIN users U ON T.driver_id = U.user_id
+	    LEFT JOIN user_info UI ON T.driver_id = UI.user_id
+	    LEFT JOIN car_type CT ON CT.car_type_id = T.car_type_id 
+	    LEFT JOIN users VU ON VU.user_id = T.created_by
+	    LEFT JOIN user_info VUI ON VUI.user_id = T.created_by AND VU.role_id = #{vendorRoleId}
+		WHERE 
+	 		(		
+	 			CAST (T.user_tour_id AS character varying) = replace(#{globalSearchString}, '%', '')  
+	 		OR 
+	 			T.p_first_name iLIKE #{globalSearchString} 
+	 		OR 
+	 			T.p_last_name iLIKE #{globalSearchString} 
+		 	OR 
+		 		CONCAT(T.p_first_name,CONCAT(' ',T.p_last_name)) iLIKE #{globalSearchString}
+		 	OR 
+		 		CONCAT(UI.first_name,CONCAT(' ',UI.last_name)) iLIKE #{globalSearchString}
+		 	OR
+		 		T.booking_type iLIKE #{globalSearchString} 
+		 	) 
+		AND
+			T.created_at &lt; #{endDate}	    
+		AND	
+			T.created_at &gt; #{startDate}
+		AND	
+	    	T.status IN
+			<foreach item="item" index="index" collection="statusArray" open="(" separator="," close=")">
+				#{item}
+			</foreach>  
+		AND	
+	    	T.surge_price IN
+			<foreach item="item" index="index" collection="surgeArray" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		<if test="assignedRegionList != null">
+	    AND
+	    	T.multicity_city_region_id IN
+    		<foreach item="item" index="index" collection="assignedRegionList" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+	    </if>
+	    <if test="vendorId != null and vendorId != '-1'">
+	    AND
+	    	T.created_by = #{vendorId}
+	    AND 
+	    	T.tour_booked_by = '4'
+	    </if>
+		ORDER BY T.user_tour_id DESC  
+	    LIMIT #{length} OFFSET #{start}   
+	    
+	</select>
+	
+	<select id="getAdminTourListCount" parameterType="map" resultType="int">
+		
+		SELECT
+			count(T.tour_id)
+		FROM 
+		    tours T
+	    LEFT JOIN users U ON T.driver_id = U.user_id
+	    LEFT JOIN user_info UI ON T.driver_id = UI.user_id
+		WHERE
+			T.created_at &lt; #{endDate}	    
+		AND	
+			T.created_at &gt; #{startDate}
+		AND	
+	    	T.status IN
+			<foreach item="item" index="index" collection="statusArray" open="(" separator="," close=")">
+				#{item}
+			</foreach>  
+		AND	
+	    	T.surge_price IN
+			<foreach item="item" index="index" collection="surgeArray" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		<if test="assignedRegionList != null">
+	    AND
+	    	T.multicity_city_region_id IN
+    		<foreach item="item" index="index" collection="assignedRegionList" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+	    </if>
+	   <if test="vendorId != null and vendorId != '-1'">
+	    AND
+	    	T.created_by = #{vendorId}
+	    AND 
+	    	T.tour_booked_by = '4'
+	    </if>
+	    <if test="vendorId == null or vendorId == '-1'"> 
+		AND
+			T.booking_type = #{bookingType}
+		</if>
+				
+	</select>
+	
+	<select id="getAdminTourListBySearch" parameterType="map" resultMap="tourResultMap">
+	
+		SELECT 
+		    <include refid="allTourColumns"></include>,
+			<include refid="driverInfoColumns"></include>,
+			<include refid="invoiceColumns"></include>,
+			CT.car_type, concat(VUI.first_name, ' ', VUI.last_name) As vendorName
+		FROM 
+			tours T
+		LEFT JOIN invoices INV ON T.tour_id = INV.tour_id
+	    LEFT JOIN users U ON T.driver_id = U.user_id
+	    LEFT JOIN user_info UI ON T.driver_id = UI.user_id
+	    LEFT JOIN car_type CT ON CT.car_type_id = T.car_type_id 
+	    LEFT JOIN users VU ON  VU.user_id = T.created_by
+	    LEFT JOIN user_info VUI ON VUI.user_id = T.created_by AND VU.role_id = #{vendorRoleId}
+		WHERE 
+	 		( 
+	 			CAST (T.user_tour_id AS character varying) = replace(#{globalSearchString}, '%', '')
+	 		OR
+	 			T.p_first_name iLIKE #{globalSearchString} 
+	 		OR 
+	 			T.p_last_name iLIKE #{globalSearchString} 
+		 	OR 
+		 		CONCAT(T.p_first_name,CONCAT(' ',T.p_last_name)) iLIKE #{globalSearchString}
+		 	OR 
+		 		CONCAT(UI.first_name,CONCAT(' ',UI.last_name)) iLIKE #{globalSearchString}
+		 	OR
+		 		T.booking_type iLIKE #{globalSearchString} 
+		 	)
+		AND
+			T.created_at &lt; #{endDate}	    
+		AND	
+			T.created_at &gt; #{startDate}
+		AND	
+	    	T.status IN
+			<foreach item="item" index="index" collection="statusArray" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		AND	
+	    	T.surge_price IN
+			<foreach item="item" index="index" collection="surgeArray" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		<if test="assignedRegionList != null">
+	    AND
+	    	T.multicity_city_region_id IN
+    		<foreach item="item" index="index" collection="assignedRegionList" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+	    </if>
+	    <if test="vendorId != null and vendorId != '-1'">
+	    AND
+	    	T.created_by = #{vendorId}
+	    AND 
+	    	T.tour_booked_by = '4'
+	    </if>
+	    <if test="vendorId == null or vendorId == '-1'"> 
+		AND   
+			T.booking_type = #{bookingType}
+		</if>
+		ORDER BY T.user_tour_id DESC
+	    LIMIT #{length} OFFSET #{start}   
+	    
+	</select>
+	
+	<select id="getDriverReportTourListByDate" resultMap="tourResultMap">
+		
+		SELECT 
+		    <include refid="allTourColumns"></include>,
+			<include refid="driverInfoColumns"></include>,
+			<include refid="invoiceColumns"></include>
+		FROM 
+			tours T
+		LEFT JOIN invoices INV ON T.tour_id = INV.tour_id
+	    LEFT JOIN users U ON T.driver_id = U.user_id
+	    LEFT JOIN user_info UI ON T.driver_id = UI.user_id
+	    WHERE
+	    	T.created_at &gt; #{tourStartDate}
+	    AND
+	    	T.created_at &lt; #{tourEndDate}
+		ORDER BY T.created_at DESC
+	    
+	</select>
+	
+	<select id="getDriverReportTourListByDateByUserIds" resultMap="tourResultMap">
+		
+		SELECT 
+		    <include refid="allTourColumns"></include>,
+			<include refid="driverInfoColumns"></include>,
+			<include refid="invoiceColumns"></include>
+		FROM 
+			tours T
+		LEFT JOIN invoices INV ON T.tour_id = INV.tour_id
+	    LEFT JOIN users U ON T.driver_id = U.user_id
+	    LEFT JOIN user_info UI ON T.driver_id = UI.user_id
+	    WHERE
+	    	T.created_at &gt; #{tourStartDate}
+	    AND
+	    	T.created_at &lt; #{tourEndDate}
+	    AND
+	    	T.driver_id IN
+	    	<foreach item="item" index="index" collection="userIds" open="(" separator="," close=")">
+				#{item}
+			</foreach> 
+		ORDER BY T.created_at DESC
+	    
+	</select>
+	
+	<update id="updateChargesAndDriverAmount" parameterType="TourModel">
+	
+		UPDATE 
+			tours 
+		SET 
+			driver_amount = #{driverAmount},
+			charges = #{charges},
+			distance = #{distance},
+			percentage = #{percentage},
+			used_credits = #{usedCredits},
+			promo_discount = #{promoDiscount},
+			total = #{total},
+			is_promo_code_applied = #{isPromoCodeApplied},
+			promo_code_id = #{promoCodeId},
+			final_amount_collected = #{finalAmountCollected},
+			toll_amount = #{tollAmount}
+		WHERE  
+		    tour_id = #{tourId}
+		    
+	</update>
+	
+	<update id="updatePromoCodeStatus" parameterType="TourModel">
+	
+		UPDATE 
+			tours 
+		SET 
+			total = #{total},
+			is_promo_code_applied = #{isPromoCodeApplied},
+			promo_code_id = #{promoCodeId}
+		WHERE  
+		    tour_id = #{tourId}
+		    
+	</update>
+	
+	<select id="getCurrentEndedTourByPassangerId" parameterType="String" resultMap="tourResultMap">
+	
+		SELECT 
+		    T.tour_id
+		FROM 
+			tours T 
+		WHERE 
+			T.passenger_id = #{userId}
+	    AND 
+	        T.status = #{status}
+	    ORDER BY T.created_at DESC LIMIT 1
+
+	</select>
+	
+	<select id="getToursByStatus" parameterType="map" resultMap="tourResultMap">
+	
+		SELECT 
+		    <include refid="allTourColumns"></include>,
+			<include refid="driverInfoColumns"></include>,
+			<include refid="invoiceColumns"></include>
+		FROM 
+			tours T
+		LEFT JOIN invoices INV ON T.tour_id = INV.tour_id
+	    LEFT JOIN users U ON T.driver_id = U.user_id
+	    LEFT JOIN user_info UI ON T.driver_id = UI.user_id      		 
+		WHERE 
+			T.passenger_id = #{userId}
+	    AND 	
+	        T.updated_at &gt; #{afterTime}
+	    AND	
+	    	T.status IN
+			<foreach item="item" index="index" collection="statusArray" open="(" separator="," close=")">
+				#{item}
+			</foreach> 
+	    ORDER BY T.created_at DESC	
+	   	LIMIT #{length} OFFSET #{start}
+
+	</select>
+	
+	<update id="updateTourCarIdByTourId" parameterType="TourModel">
+	
+		UPDATE 
+			tours 
+		SET 
+			car_id = #{carId}
+		WHERE  
+		    tour_id = #{tourId}
+		    
+	</update>
+	
+	<select id="getToursByPassengerIdPagination" resultMap="tourResultMap">
+	
+		SELECT 
+		    <include refid="allTourColumns"></include>,
+			<include refid="driverInfoColumns"></include>,
+			<include refid="invoiceColumns"></include>
+		FROM 
+			tours T
+		LEFT JOIN invoices INV ON T.tour_id = INV.tour_id
+	    LEFT JOIN users U ON T.driver_id = U.user_id
+	    LEFT JOIN user_info UI ON T.driver_id = UI.user_id      		 
+		WHERE 
+			T.passenger_id = #{userId}
+		AND
+			T.is_tour_ride_later = false
+	    ORDER BY T.created_at DESC	
+	    LIMIT #{length} OFFSET #{start}	
+
+	</select>
+	
+	<select id="getToursByDriverIdPagination" resultMap="tourResultMap">
+	
+		SELECT 
+		    <include refid="allTourColumns"></include>,
+			<include refid="driverInfoColumns"></include>,
+			<include refid="invoiceColumns"></include>
+		FROM 
+			tours T
+		LEFT JOIN invoices INV ON T.tour_id = INV.tour_id
+	    LEFT JOIN users U ON T.driver_id = U.user_id
+	    LEFT JOIN user_info UI ON T.driver_id = UI.user_id      		 
+		WHERE 
+			T.driver_id = #{userId} 
+		AND
+			T.is_tour_ride_later = false
+		ORDER BY T.created_at DESC	
+	 	LIMIT #{length} OFFSET #{start}	
+
+	</select>
+	
+	<select id="getCronJobRideLaterTourList" resultMap="tourResultMap">
+	
+		SELECT 
+		    <include refid="allTourColumns"></include>
+		FROM 
+	        tours T
+		WHERE 
+			T.is_ride_later = true
+		AND
+			T.ride_later_pickup_time &gt;= #{currentTime}
+		AND
+			T.ride_later_pickup_time &lt;= #{nextOneHour}
+		AND
+			T.is_tour_ride_later = true
+		ORDER BY T.updated_at DESC
+	    
+	</select>
+	
+	<select id="getCronJobRideLaterTourListForNotification" resultMap="tourResultMap">
+	
+		SELECT 
+		    <include refid="allTourColumns"></include>
+		FROM 
+	        tours T
+		WHERE 
+			T.is_ride_later = true
+		AND
+			T.ride_later_pickup_time &gt;= #{currentTime}
+		AND
+			T.ride_later_pickup_time &lt;= #{endTime}
+		AND
+			T.is_tour_ride_later = true
+		ORDER BY T.updated_at DESC
+	    
+	</select>
+	
+	<update id="updateTourStatusCritical" parameterType="TourModel">
+	
+		UPDATE 
+			tours 
+		SET 
+			is_critical_tour_ride_later = #{isCriticalTourRideLater}
+		WHERE  
+		    tour_id = #{tourId}
+		    
+	</update>
+	
+	<update id="updateRideLaterTourFlag" parameterType="TourModel">
+	
+		UPDATE 
+			tours 
+		SET 
+			is_tour_ride_later = #{isTourRideLater}
+		WHERE  
+		    tour_id = #{tourId}
+		    
+	</update>
+	
+	<update id="updateTourRideLaterLastNotification" parameterType="TourModel">
+	
+		UPDATE 
+			tours 
+		SET 
+			ride_later_last_notification = #{rideLaterLastNotification}
+		WHERE  
+		    tour_id = #{tourId}
+		    
+	</update>
+	
+	<select id="getRideLaterToursByPassengerIdPagination" resultMap="tourResultMap">
+		
+		SELECT 
+		    <include refid="allTourColumns"></include>,
+			<include refid="driverInfoColumns"></include>,
+			<include refid="invoiceColumns"></include>
+		FROM 
+			tours T
+		LEFT JOIN invoices INV ON T.tour_id = INV.tour_id
+	    LEFT JOIN users U ON T.driver_id = U.user_id
+	    LEFT JOIN user_info UI ON T.driver_id = UI.user_id     		 
+		WHERE 
+			T.passenger_id = #{userId}
+		AND
+		 	T.is_ride_later = true
+		AND
+			T.is_tour_ride_later = true
+		AND 
+            (
+            	status='rl-assigned' OR status='rl-reassigned' OR status='rl-new' OR status='rl-pending' OR status='rl-accepted'
+            )
+	    ORDER BY T.ride_later_pickup_time ASC	
+	    LIMIT #{length} OFFSET #{start}		
+
+	</select>
+	
+	<select id="getRideLaterToursByDriverIdPagination" resultMap="tourResultMap">
+	
+		SELECT 
+		    <include refid="allTourColumns"></include>,
+			<include refid="driverInfoColumns"></include>,
+			<include refid="invoiceColumns"></include>
+		FROM 
+			tours T
+		LEFT JOIN invoices INV ON T.tour_id = INV.tour_id
+	    LEFT JOIN users U ON T.driver_id = U.user_id
+	    LEFT JOIN user_info UI ON T.driver_id = UI.user_id     		 
+		WHERE 
+			T.driver_id = #{userId} 
+		AND
+		 	T.is_ride_later = true
+		AND
+			T.is_tour_ride_later = true
+		AND 
+            (
+            	status='rl-assigned' OR status='rl-reassigned' OR status='rl-new' OR status='rl-pending' OR status='rl-accepted'
+            )
+	    ORDER BY T.ride_later_pickup_time ASC	
+	 	LIMIT #{length} OFFSET #{start}
+
+	</select>
+	
+	<select id="getRideLaterPassengerDetailsBetweenTimeSlot" resultType="int">
+	
+		SELECT
+			count(T.tour_id)
+		FROM
+			tours T
+		WHERE
+			T.passenger_id = #{userId}
+		AND
+			T.is_ride_later = true
+		AND
+			T.ride_later_pickup_time &gt;= #{beforePickupTime}
+		AND
+			T.ride_later_pickup_time &lt;= #{afterPickupTime}
+		AND
+			T.is_tour_ride_later = true
+		AND 
+	        T.created_at = (
+	        				SELECT 
+	        					MAX(created_at) 
+		                    FROM 
+		                    	tours 
+		                    WHERE 
+		                   		passenger_id = #{userId} 
+		                    AND 
+		                    	(
+		                    			status='assigned' OR status='new' OR status='pending' OR status='accepted' OR status='started' 
+		                    			OR status ilike '%arrived%'
+		                    			OR status='rl-assigned' OR status='rl-reassigned' OR status='rl-new' OR status='rl-pending' OR status='rl-accepted'
+		                    	)
+		                 )
+	
+	</select>
+	
+	<select id="getRideLaterTourListCount" parameterType="string" resultType="int">
+	
+		SELECT
+			count(T.tour_id)
+		FROM
+			tours T  
+		WHERE
+			T.is_ride_later = true
+		AND
+			T.is_tour_ride_later = true
+		AND
+			T.is_critical_tour_ride_later = false
+		AND
+			T.is_take_ride = #{isTakeRide}
+		<if test="serviceTypeId!=null">
+		AND
+			T.service_type_id = #{serviceTypeId}
+		</if>
+		<if test="isTakeRide==true">
+		AND
+			T.driver_id = '-1'
+		</if>
+		<if test = "startDate !=0">
+		AND
+			T.created_at &gt; #{startDate}
+		AND
+			T.created_at &lt; #{endDate}
+		</if>
+		
+	</select>
+	
+	<select id="getRideLaterTourListBySearch" resultMap="tourResultMap">
+	
+		SELECT 
+		    <include refid="allTourColumns"></include>,
+			<include refid="driverInfoColumns"></include>,
+			<include refid="invoiceColumns"></include>,
+			CT.car_type
+		FROM 
+			tours T
+		LEFT JOIN invoices INV ON T.tour_id = INV.tour_id
+	    LEFT JOIN users U ON T.driver_id = U.user_id
+	    LEFT JOIN user_info UI ON T.driver_id = UI.user_id
+	    LEFT JOIN car_type CT ON CT.car_type_id = T.car_type_id    
+		WHERE 
+		 	( 		
+	 			CAST (T.user_tour_id AS character varying) =  replace(#{globalSearchString}, '%', '')
+	 		OR
+	 			T.p_first_name iLIKE #{globalSearchString} 
+	 		OR 
+	 			T.p_last_name iLIKE #{globalSearchString} 
+		 	OR 
+		 		CONCAT(T.p_first_name,CONCAT(' ',T.p_last_name)) iLIKE #{globalSearchString}
+		 	OR 
+		 		CONCAT(UI.first_name,CONCAT(' ',UI.last_name)) iLIKE #{globalSearchString} 
+			)    
+		AND
+			T.is_ride_later = true
+		AND
+			T.is_tour_ride_later = true
+		AND
+			T.is_critical_tour_ride_later = false
+		AND
+			T.is_take_ride = #{isTakeRide}
+		<if test="serviceTypeId!=null">
+		AND
+			T.service_type_id = #{serviceTypeId}
+		</if>
+		<if test="isTakeRide==true">
+		AND
+			T.driver_id = '-1'
+		</if>
+		<if test = "startDate !=0">
+		AND
+			T.created_at &gt; #{startDate}
+		AND
+			T.created_at &lt; #{endDate}
+		</if>
+		ORDER BY T.updated_at DESC
+	    LIMIT #{length} OFFSET #{start}   
+	    
+	</select>
+	
+	<select id="getCriticalRideLaterTourListCount" parameterType="map" resultType="int">
+	
+		SELECT
+			count(T.tour_id)
+		FROM 
+		    tours T
+		WHERE
+			T.is_ride_later = true
+		AND
+			T.is_tour_ride_later = true
+		AND
+			T.is_critical_tour_ride_later = true
+		AND
+			T.created_at &gt; #{rideLaterVisitedTime}
+		<if test = "startDate !=0">
+		AND
+			T.created_at &gt; #{startDate}
+		AND
+			T.created_at &lt; #{endDate}
+		</if>
+		
+	</select>
+	
+	<select id="getCriticalRideLaterTourListBySearch" resultMap="tourResultMap">
+		
+		SELECT 
+		    <include refid="allTourColumns"></include>,
+			<include refid="driverInfoColumns"></include>,
+			<include refid="invoiceColumns"></include>,
+			CT.car_type
+		FROM 
+			tours T
+		LEFT JOIN invoices INV ON T.tour_id = INV.tour_id
+	    LEFT JOIN users U ON T.driver_id = U.user_id
+	    LEFT JOIN user_info UI ON T.driver_id = UI.user_id
+	    LEFT JOIN car_type CT ON CT.car_type_id = T.car_type_id
+		WHERE 
+		 	( 		
+	 			CAST (user_tour_id AS character varying) = replace(#{globalSearchString}, '%', '')
+	 		OR
+	 			T.p_first_name iLIKE #{globalSearchString} 
+	 		OR 
+	 			T.p_last_name iLIKE #{globalSearchString} 
+		 	OR 
+		 		CONCAT(T.p_first_name,CONCAT(' ',T.p_last_name)) iLIKE #{globalSearchString}
+		 	OR 
+		 		CONCAT(UI.first_name,CONCAT(' ',UI.last_name)) iLIKE #{globalSearchString}
+			)    
+		AND
+			T.is_ride_later = true
+		AND
+			T.is_tour_ride_later = true
+		AND
+			T.is_critical_tour_ride_later = true
+		AND
+			T.created_at &gt; #{rideLaterVisitedTime}
+		<if test = "startDate !=0">
+		AND
+			T.created_at &gt; #{startDate}
+		AND
+			T.created_at &lt; #{endDate}
+		</if>
+		ORDER BY T.updated_at DESC
+	    LIMIT #{length} OFFSET #{start}   
+	    
+	</select>
+	
+	<select id="getDriverAllTourListCount" parameterType="map" resultType="int">
+	
+		SELECT
+			count(T.tour_id)
+		FROM 
+		    tours T
+	    LEFT JOIN user_info UI ON T.driver_id = UI.user_id 
+		WHERE
+			T.driver_id = #{driverId}	    
+		AND
+			T.created_at &lt; #{endDate}	    
+		AND	
+			T.created_at &gt; #{startDate}
+		AND	
+	    	T.status IN
+			<foreach item="item" index="index" collection="statusArray" open="(" separator="," close=")">
+				#{item}
+			</foreach> 
+	</select>
+	
+	<select id="getDriverAllTourListBySearch" parameterType="map" resultMap="tourResultMap">
+		
+		SELECT 
+		    <include refid="allTourColumns"></include>,
+			<include refid="driverInfoColumns"></include>,
+			<include refid="invoiceColumns"></include>
+		FROM 
+			tours T
+		LEFT JOIN invoices INV ON T.tour_id = INV.tour_id
+	    LEFT JOIN users U ON T.driver_id = U.user_id
+	    LEFT JOIN user_info UI ON T.driver_id = UI.user_id
+		WHERE 
+	 		( 
+	 			T.p_first_name iLIKE #{globalSearchString} 
+	 		OR 
+	 			T.p_last_name iLIKE #{globalSearchString} 
+		 	OR 
+		 		CONCAT(T.p_first_name,CONCAT(' ',T.p_last_name)) iLIKE #{globalSearchString}
+		 	OR 
+		 		CONCAT(UI.first_name,CONCAT(' ',UI.last_name)) iLIKE #{globalSearchString}
+		 	)
+		AND
+			T.driver_id = #{driverId}	    
+		AND
+			T.created_at &lt; #{endDate}	    
+		AND	
+			T.created_at &gt; #{startDate}
+		AND	
+	    	T.status IN
+			<foreach item="item" index="index" collection="statusArray" open="(" separator="," close=")">
+				#{item}
+			</foreach>  
+		<if test="assignedRegionList != null">
+	    AND
+	    	T.multicity_city_region_id IN
+    		<foreach item="item" index="index" collection="assignedRegionList" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+	    </if>
+		ORDER BY T.updated_at DESC
+		<if test="length>0">
+	    LIMIT #{length} OFFSET #{start}   
+	    </if>
+	    
+	</select>
+	
+	<update id="updateRideLaterTourAcknowledgeByTourId" parameterType="TourModel">
+	
+		UPDATE 
+			tours 
+		SET 
+			is_acknowledged = #{isAcknowledged}
+		WHERE  
+		    tour_id = #{tourId}
+		    
+	</update>
+	
+	<update id="updateDistanceLiveByTourId" parameterType="TourModel">
+	
+		UPDATE 
+			tours 
+		SET 
+			distance_live = #{distanceLive},
+			updated_at = #{updatedAt},
+			updated_by = #{updatedBy}
+		WHERE  
+		    tour_id = #{tourId}
+		    
+	</update>
+	
+	<select id="getTourListForHeatMap" resultMap="tourResultMap">
+	
+		SELECT 
+		    <include refid="allTourColumns"></include>
+		FROM 
+			tours T
+	    
+	</select>
+	
+	<select id="checkDriverIsBusyInRideNowAndLaterTrip" parameterType="map" resultType="boolean">
+	
+		SELECT 
+			(count(T.tour_id) > 0)
+		FROM 
+			tours T
+	    INNER JOIN users U ON T.passenger_id = U.user_id
+	    INNER JOIN user_info UI ON T.passenger_id = UI.user_id   
+		WHERE 
+			T.driver_id = #{userId} 
+		AND 
+		    (  
+		    	( 
+		    		T.created_at = (SELECT MAX(created_at) 
+		                      FROM 
+		                      		tours 
+		                      WHERE 
+		                      		driver_id = #{userId} 
+		                      AND
+		                      		is_ride_later = false
+		                      AND 
+		                           	(
+		                           		status='assigned' OR status='accepted' OR status='started' OR status ilike '%arrived%'
+		                           	)
+		            ) 
+		        )
+		   	OR
+		      	( 
+		      		T.created_at = (SELECT MAX(created_at) 
+		                      FROM 
+		                          tours 
+		                      WHERE 
+		                      		driver_id = #{userId} 
+		                      AND
+		                      		is_ride_later = true
+		                      AND
+									created_at &gt;= #{driverTripBeforeTime}
+							  AND
+									created_at &lt;= #{driverTripAfterTime}
+		                      AND 
+		                            (
+		                           		status='assigned' OR status='accepted' OR status='started' OR status ilike '%arrived%' 
+		                           		OR status='rl-pending' OR status='rl-accepted' OR status='rl-pending' OR status='rl-assigned'
+		                            )
+		            ) 
+		        )                  
+		    )	
+
+	</select>
+	
+	<update id="updateFavouriteLocations" parameterType="TourModel">
+	
+		UPDATE 
+			tours 
+		SET 
+		<if test="pickupFavouriteLocationsId != null">
+			pickup_favourite_locations_id = #{pickupFavouriteLocationsId},
+		</if>
+		<if test="destinationFavouriteLocationsId != null">
+			destination_favourite_locations_id = #{destinationFavouriteLocationsId},
+		</if>
+			updated_at = #{updatedAt}
+		WHERE  
+		    tour_id = #{tourId}
+		    
+	</update>
+	
+	<select id="checkPassengerCurrentTourAsFirstTour" parameterType="map" resultType="boolean">
+	
+		SELECT 
+			(count(T.tour_id) = 0)
+		FROM 
+			tours T
+		WHERE
+		 	T.tour_id != #{currentTourId}
+		AND
+			T.passenger_id = #{passengerId}
+		AND
+			T.created_at &lt; #{currentTourTime}
+		AND
+			T.status ilike '%ended%'
+
+	</select>
+	
+	<select id="getTourListForBookingsExport" parameterType="map" resultMap="tourResultMap">
+		
+		SELECT 
+		    <include refid="allTourColumns"></include>,
+			<include refid="driverInfoColumns"></include>,
+			<include refid="invoiceColumns"></include>,
+			CT.car_type, 
+			PC.promo_code, PC.discount, PC.usage_type, PC.usage, PC.usage_count, PC.mode, 
+			DTR.rate AS driver_rating, DTR.note AS driver_comment, 
+			PTR.rate AS passenger_rating, PTR.note AS passenger_comment,
+			CONCAT(RUI.first_name, CONCAT(' ', RUI.last_name)) AS remark_by,
+			CONCAT(VUI.first_name, CONCAT(' ', VUI.last_name)) AS vendorName
+		FROM 
+			tours T
+		LEFT JOIN invoices INV ON T.tour_id = INV.tour_id
+	    LEFT JOIN users U ON T.driver_id = U.user_id
+	    LEFT JOIN user_info UI ON T.driver_id = UI.user_id
+		LEFT JOIN car_type CT ON CT.car_type_id = T.car_type_id
+		LEFT JOIN user_info RUI ON RUI.user_id = INV.remark_by
+		LEFT JOIN promo_code PC ON PC.promo_code_id = INV.promo_code_id
+		LEFT JOIN driver_trip_ratings DTR ON DTR.trip_id = T.tour_id 
+		LEFT JOIN passenger_trip_ratings PTR ON PTR.trip_id = T.tour_id 
+		LEFT JOIN users VU ON VU.user_id = T.created_by
+	    LEFT JOIN user_info VUI ON VUI.user_id = T.created_by AND VU.role_id =#{vendorRoleId}
+	    <if test="userId!=null">
+	    INNER JOIN driver_vendors DV ON DV.driver_id = UI.user_id AND DV.vendor_id = #{userId} 
+	   	</if>
+		WHERE 
+		 	( 
+	 			CAST (T.user_tour_id AS character varying) =  replace(#{searchString}, '%', '')
+	 		OR
+	 			T.p_first_name iLIKE #{searchString} 
+	 		OR 
+	 			T.p_last_name iLIKE #{searchString} 
+		 	OR 
+		 		CONCAT(T.p_first_name,CONCAT(' ',T.p_last_name)) iLIKE #{searchString}
+		 	OR 
+		 		CONCAT(UI.first_name,CONCAT(' ',UI.last_name)) iLIKE #{searchString}
+		 	OR
+		 		T.booking_type iLIKE #{searchString} 
+			) 
+		AND
+			T.created_at &lt; #{endDate}	    
+		AND	
+			T.created_at &gt; #{startDate}
+		<if test="bookingType != null">
+		AND   
+			T.booking_type = #{bookingType}
+		</if>
+		AND	
+	    	T.status IN
+			<foreach item="item" index="index" collection="statusArray" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		AND	
+	    	T.surge_price IN
+			<foreach item="item" index="index" collection="surgeArray" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		<if test="assignedRegionList != null">
+	    AND
+	    	T.multicity_city_region_id IN
+    		<foreach item="item" index="index" collection="assignedRegionList" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+	    </if>
+		ORDER BY T.user_tour_id DESC
+	    
+	</select>
+	
+	<select id="getVendorsTotalBookingsCountByTime" parameterType="map" resultType="int">
+
+		SELECT
+			count(tour_id)
+		FROM 
+	        tours T
+	    INNER JOIN driver_vendors dv ON T.driver_id = dv.driver_id
+		WHERE 
+			dv.vendor_id = #{userId}
+		AND
+		 	T.created_at &gt; #{createdAt}
+		<if test="assignedRegionList != null">
+	    AND
+	    	T.multicity_city_region_id IN
+    		<foreach item="item" index="index" collection="assignedRegionList" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+	    </if>   
+	    
+	</select>
+	
+	<select id="getVendorsAllTourListBySearch" parameterType="map" resultMap="tourResultMap">
+	
+		SELECT 
+		    <include refid="allTourColumns"></include>,
+			<include refid="driverInfoColumns"></include>,
+			<include refid="invoiceColumns"></include>,
+			CT.car_type
+		FROM 
+			tours T
+		LEFT JOIN invoices INV ON T.tour_id = INV.tour_id
+	    LEFT JOIN users U ON T.driver_id = U.user_id
+	    LEFT JOIN user_info UI ON T.driver_id = UI.user_id
+	    LEFT JOIN car_type CT ON CT.car_type_id = T.car_type_id
+		WHERE 
+		 	(		
+	 			CAST (T.user_tour_id AS character varying) = replace(#{globalSearchString}, '%', '')  
+	 		OR 
+	 			T.p_first_name iLIKE #{globalSearchString} 
+	 		OR 
+	 			T.p_last_name iLIKE #{globalSearchString} 
+		 	OR 
+		 		CONCAT(T.p_first_name,CONCAT(' ',T.p_last_name)) iLIKE #{globalSearchString}
+		 	OR 
+		 		CONCAT(UI.first_name,CONCAT(' ',UI.last_name)) iLIKE #{globalSearchString}
+		 	OR
+		 		T.booking_type iLIKE #{globalSearchString} 
+			) 
+		AND
+			T.created_at &lt; #{endDate}	    
+		AND	
+			T.created_at &gt; #{startDate}
+		AND
+			(
+				T.passenger_vendor_id = #{userId}
+			OR
+				T.driver_vendor_id = #{userId}
+			)
+		<if test="statusArray != null">
+		AND	
+	    	T.status IN
+			<foreach item="item" index="index" collection="statusArray" open="(" separator="," close=")">
+				#{item}
+			</foreach>  
+		</if>
+		<if test="surgeArray != null">
+		AND	
+	    	T.surge_price IN
+			<foreach item="item" index="index" collection="surgeArray" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+		<if test="assignedRegionList != null">
+	    AND
+	    	T.multicity_city_region_id IN
+    		<foreach item="item" index="index" collection="assignedRegionList" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+	    </if>
+		ORDER BY T.user_tour_id DESC  
+	    LIMIT #{length} OFFSET #{start}   
+	    
+	</select>
+	
+	<select id="getVendorsAllTourListCount" parameterType="map" resultType="int">
+	
+		SELECT
+			count(T.tour_id)
+		FROM 
+		    tours T
+	    LEFT JOIN user_info UI ON T.driver_id = UI.user_id 
+		WHERE
+			T.created_at &lt; #{endDate}	    
+		AND	
+			T.created_at &gt; #{startDate}
+		AND
+			(
+				T.passenger_vendor_id = #{userId}
+			OR
+				T.driver_vendor_id = #{userId}
+			)
+		<if test="statusArray != null">
+		AND	
+	    	T.status IN
+			<foreach item="item" index="index" collection="statusArray" open="(" separator="," close=")">
+				#{item}
+			</foreach> 
+		</if>
+		<if test="surgeArray != null">
+		AND	
+	    	T.surge_price IN
+			<foreach item="item" index="index" collection="surgeArray" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+		<if test="assignedRegionList != null">
+	    AND
+	    	T.multicity_city_region_id IN
+    		<foreach item="item" index="index" collection="assignedRegionList" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+	    </if>
+				
+	</select>
+	
+ 	<select id="getVendorRideLaterTourListBySearch" parameterType="map" resultMap="tourResultMap">
+		
+		SELECT 
+		    <include refid="allTourColumns"></include>,
+			<include refid="driverInfoColumns"></include>,
+			<include refid="invoiceColumns"></include>,
+			CT.car_type
+		FROM 
+			tours T
+		LEFT JOIN invoices INV ON T.tour_id = INV.tour_id
+	    LEFT JOIN users U ON T.driver_id = U.user_id
+	    LEFT JOIN user_info UI ON T.driver_id = UI.user_id
+	    LEFT JOIN car_type CT ON CT.car_type_id = T.car_type_id
+		WHERE 
+		 	( 		
+	 			CAST (T.user_tour_id AS character varying) =  replace(#{globalSearchString}, '%', '')
+	 		OR
+	 			T.p_first_name iLIKE #{globalSearchString} 
+	 		OR 
+	 			T.p_last_name iLIKE #{globalSearchString} 
+		 	OR 
+		 		CONCAT(T.p_first_name,CONCAT(' ',T.p_last_name)) iLIKE #{globalSearchString}
+		 	OR 
+		 		CONCAT(UI.first_name,CONCAT(' ',UI.last_name)) iLIKE #{globalSearchString} 	
+			)    
+ 		AND
+			T.is_ride_later = true
+		AND
+			T.is_tour_ride_later = true
+		AND
+			T.is_critical_tour_ride_later = false   
+		<if test="serviceTypeId!=null">
+		AND
+			T.service_type_id = #{serviceTypeId}
+		</if>
+		AND
+			T.is_take_ride = #{isTakeRide}
+		<if test="isTakeRide==true">
+		AND
+			T.driver_id = '-1'
+		</if>
+		<if test = "startDate !=0">
+		AND
+			T.created_at &gt; #{startDate}
+		AND
+			T.created_at &lt; #{endDate}
+		</if>
+	    AND
+	    	T.status != 'rl-reassigned'
+	    <if test="userId!=null">
+    	AND
+			(
+				T.passenger_vendor_id = #{userId}
+			OR
+				T.driver_vendor_id = #{userId}			
+			)
+		</if>
+		<if test="assignedRegionList != null">
+	    AND
+	    	T.multicity_city_region_id IN
+    		<foreach item="item" index="index" collection="assignedRegionList" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+	    </if>
+		AND	  
+	   		(	
+	   			T.status IN
+	    		<foreach item="item" index="index" collection="statusList" open="(" separator="," close=")">
+					#{item}
+				</foreach> 
+			)
+		ORDER BY T.updated_at DESC
+	    LIMIT #{length} OFFSET #{start}   
+	    
+	</select> 
+	
+	<select id="getVendorDriverReportTourListByDateByUserIds" resultMap="tourResultMap">
+		
+		SELECT 
+		    <include refid="allTourColumns"></include>,
+			<include refid="driverInfoColumns"></include>,
+			<include refid="invoiceColumns"></include>,
+			CT.car_type
+		FROM 
+			tours T
+		LEFT JOIN invoices INV ON T.tour_id = INV.tour_id
+	    LEFT JOIN users U ON T.driver_id = U.user_id
+	    LEFT JOIN user_info UI ON T.driver_id = UI.user_id
+	    LEFT JOIN car_type CT ON CT.car_type_id = T.car_type_id
+	    INNER JOIN driver_vendors DV ON DV.driver_id = UI.user_id AND DV.vendor_id = #{loggedInUserId}
+	    WHERE
+	    	T.created_at &gt; #{tourStartDate}
+	    AND
+	    	T.created_at &lt; #{tourEndDate}
+	    AND
+	    	T.driver_id IN
+	    	<foreach item="item" index="index" collection="userIds" open="(" separator="," close=")">
+				#{item}
+			</foreach> 
+		ORDER BY T.created_at DESC
+	    
+	</select>
+		
+	<select id="getVendorDriverReportTourListByDate" resultMap="tourResultMap">
+		
+		SELECT 
+		    <include refid="allTourColumns"></include>,
+			<include refid="driverInfoColumns"></include>,
+			<include refid="invoiceColumns"></include>,
+			CT.car_type
+		FROM 
+			tours T
+		LEFT JOIN invoices INV ON T.tour_id = INV.tour_id
+	    LEFT JOIN users U ON T.driver_id = U.user_id
+	    LEFT JOIN user_info UI ON T.driver_id = UI.user_id
+	    LEFT JOIN car_type CT ON CT.car_type_id = T.car_type_id
+	    INNER JOIN driver_vendors DV ON DV.driver_id = UI.user_id AND DV.vendor_id = #{loggedInUserId}
+	    WHERE
+	    	T.created_at &gt; #{tourStartDate}
+	    AND
+	    	T.created_at &lt; #{tourEndDate}
+		ORDER BY T.created_at DESC
+	    
+	</select>
+	
+	<select id="getVendorCriticalRideLaterTourListBySearch" resultMap="tourResultMap">
+	
+		SELECT 
+		    <include refid="allTourColumns"></include>,
+			<include refid="driverInfoColumns"></include>,
+			<include refid="invoiceColumns"></include>,
+			CT.car_type
+		FROM 
+			tours T
+		LEFT JOIN invoices INV ON T.tour_id = INV.tour_id
+	    LEFT JOIN users U ON T.driver_id = U.user_id
+	    LEFT JOIN user_info UI ON T.driver_id = UI.user_id
+	    LEFT JOIN car_type CT ON CT.car_type_id = T.car_type_id 
+		WHERE 
+		 	( 		
+	 			CAST (T.user_tour_id AS character varying) = replace(#{globalSearchString}, '%', '')
+	 		OR
+	 			T.p_first_name iLIKE #{globalSearchString} 
+	 		OR 
+	 			T.p_last_name iLIKE #{globalSearchString} 
+		 	OR 
+		 		CONCAT(T.p_first_name,CONCAT(' ',T.p_last_name)) iLIKE #{globalSearchString}
+		 	OR 
+		 		CONCAT(UI.first_name,CONCAT(' ',UI.last_name)) iLIKE #{globalSearchString}
+			)    
+		AND
+	 		T.is_ride_later = true
+		AND
+			T.is_tour_ride_later = true
+		AND
+			T.is_critical_tour_ride_later = true
+	 	AND
+			T.created_at &gt; #{rideLaterVisitedTime}  
+	 	AND
+			T.status IN
+	    	<foreach item="item" index="index" collection="statusList" open="(" separator="," close=")">
+					#{item}
+			</foreach>   
+		<if test = "startDate !=0">
+		AND
+			T.created_at &gt; #{startDate}
+		AND
+			T.created_at &lt; #{endDate}
+		</if>
+		AND
+			(
+				T.passenger_vendor_id = #{userId}
+			OR
+				T.driver_vendor_id = #{userId}
+			)
+		<if test="assignedRegionList != null">
+	    AND
+	    	T.multicity_city_region_id IN
+    		<foreach item="item" index="index" collection="assignedRegionList" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+	    </if>
+		ORDER BY T.updated_at DESC
+	    LIMIT #{length} OFFSET #{start}   
+	    
+	</select>
+	
+	<select id="getVendorRideLaterTourListCount" parameterType="string" resultType="int">
+	
+		SELECT
+			count(T.tour_id)
+		FROM 
+			tours T
+		LEFT JOIN user_info UI ON T.driver_id = UI.user_id
+		WHERE 
+			T.is_ride_later = true
+		AND
+			T.is_tour_ride_later = true
+		AND
+			T.is_critical_tour_ride_later = false   
+		<if test="serviceTypeId!=null">
+		AND
+			T.service_type_id = #{serviceTypeId}
+		</if>
+		AND
+			T.is_take_ride = #{isTakeRide}
+		<if test="isTakeRide==true">
+		AND
+			T.driver_id = '-1'
+		</if>
+		<if test = "startDate !=0">
+			AND
+				T.created_at &gt; #{startDate}
+			AND
+				T.created_at &lt; #{endDate}
+		</if>
+		<if test="userId!=null">
+		AND
+			(
+				T.passenger_vendor_id = #{userId}
+			OR
+				T.driver_vendor_id = #{userId}			
+			)
+		</if>
+	   	AND
+			(
+				T.status IN
+				<foreach item="item" index="index" collection="statusList" open="(" separator="," close=")">
+					#{item}
+				</foreach> 
+			)
+		<if test="assignedRegionList != null">
+	    AND
+	    	T.multicity_city_region_id IN
+    		<foreach item="item" index="index" collection="assignedRegionList" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+	    </if>
+		
+	</select>
+	
+	<select id="getVendorCriticalRideLaterTourListCount" parameterType="map" resultType="int">
+	
+		SELECT
+			count(T.tour_id)
+		FROM 
+		    tours T
+		LEFT JOIN user_info UI ON T.driver_id = UI.user_id   
+		WHERE
+			T.is_ride_later = true
+		AND
+			T.is_tour_ride_later = true
+		AND
+			T.is_critical_tour_ride_later = true
+		AND
+			T.created_at &gt; #{rideLaterVisitedTime}
+		<if test = "startDate !=0">
+		AND
+			T.created_at &gt; #{startDate}
+		AND
+			T.created_at &lt; #{endDate}
+		</if>
+		AND
+			(
+				T.passenger_vendor_id = #{userId}
+			OR
+				T.driver_vendor_id = #{userId}
+			)
+		<if test="assignedRegionList != null">
+	    AND
+	    	T.multicity_city_region_id IN
+    		<foreach item="item" index="index" collection="assignedRegionList" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+	    </if>
+		AND
+			T.status IN
+	    	<foreach item="item" index="index" collection="statusList" open="(" separator="," close=")">
+					#{item}
+			</foreach>
+		
+	</select>
+	
+	<select id="getDriverDetailsByTourId" parameterType="String" resultMap="tourResultMap">
+	
+		SELECT 
+			T.tour_id, T.driver_id, T.status, dv.vendor_id
+		FROM 
+			tours T
+	    LEFT JOIN driver_vendors dv ON T.driver_id = dv.driver_id
+		WHERE 
+			tour_id = #{tourId}
+			
+   	</select>
+   	
+   	<select id="getRideLaterTourListToExpire" parameterType="map" resultMap="tourResultMap">
+	
+		SELECT
+			T.tour_id, T.user_tour_id, T.driver_id, T.passenger_id
+		FROM 
+	        tours T
+		WHERE 
+			T.is_ride_later = true
+		AND
+			T.is_tour_ride_later = true
+		AND
+			T.ride_later_pickup_time &lt; #{timeInMillies} 
+		AND
+			T.status IN
+			<foreach item="item" index="index" collection="statusList" open="(" separator="," close=")">
+					#{item}
+			</foreach>	
+	    
+	</select>
+	
+	<update id="expireToursBatch" parameterType="map">
+	
+		UPDATE 
+			tours 
+		SET 
+			status = 'expired',
+			is_tour_ride_later = false,
+			is_critical_tour_ride_later = false
+		WHERE  
+		    tour_id IN
+	    	<foreach item="tourId" index="index" collection="tourIds" open="(" separator="," close=")">
+				#{tourId}
+			</foreach>
+		    
+	</update>
+	
+	<update id="updateVendorWiseCarFare" parameterType="TourModel">
+	
+		UPDATE 
+			tours 
+		SET 
+			initial_fare = #{initialFare},
+			per_km_fare = #{perKmFare},
+			per_minute_fare = #{perMinuteFare},
+			free_distance = #{freeDistance},
+			fare_after_specific_km = #{fareAfterSpecificKm},
+			km_to_increase_fare = #{kmToIncreaseFare},
+			vendor_id_fare_applied = #{vendorIdFareApplied}
+		WHERE  
+		    tour_id = #{tourId}
+		    
+	</update>
+	
+	<update id="updateDriverVendorId" parameterType="TourModel">
+	
+		UPDATE 
+			tours 
+		SET 
+			driver_vendor_id = #{driverVendorId}
+		WHERE  
+		    tour_id = #{tourId}
+		    
+	</update>
+	
+	<update id="updateScriptPassengerAndDriverVendorIdByCreatedAt" parameterType="TourModel">
+	
+		UPDATE 
+			tours 
+		SET 
+			driver_vendor_id = #{driverVendorId},
+			passenger_vendor_id = #{passengerVendorId}
+		WHERE  
+		    created_at &lt;= #{createdAt}
+		    
+	</update>
+	
+	<select id="getScriptTourListByCreatedAt" parameterType="String" resultMap="tourResultMap">
+	
+		SELECT 
+			T.tour_id, user_tour_id, T.passenger_id, T.driver_id, 
+			T.passenger_vendor_id, T.driver_vendor_id
+		FROM 
+			tours T
+	   	WHERE
+	   		T.created_at &gt; #{tourDate}
+       	
+	</select>
+	
+	<update id="updateScriptPassengerAndDriverVendorIdByTourId" parameterType="TourModel">
+	
+		UPDATE 
+			tours 
+		SET 
+			driver_vendor_id = #{driverVendorId},
+			passenger_vendor_id = #{passengerVendorId}
+		WHERE  
+		    tour_id = #{tourId}
+		    
+	</update>
+	
+	<update id="updateDriverSubscriptionAgainstTour" parameterType="TourModel">
+	
+		UPDATE 
+			tours 
+		SET 
+			subscription_package_id = #{subscriptionPackageId}
+		WHERE  
+		    tour_id = #{tourId}
+		    
+	</update>
+	
+	<update id="updateTourDemandSupplierParameters" parameterType="TourModel">
+	
+		UPDATE 
+			tours 
+		SET 
+			demand_vendor_amount = #{demandVendorAmount},
+			supplier_vendor_amount = #{supplierVendorAmount},
+			amount_for_demand_supplier = #{amountForDemandSupplier}
+		WHERE  
+		    tour_id = #{tourId}
+		    
+	</update>
+	
+	<update id="updateTourAsTakeRide" parameterType="TourModel">
+	
+		UPDATE 
+			tours 
+		SET 
+			is_take_ride = #{isTakeRide},
+			is_tour_take_ride = #{isTourTakeRide},
+			marked_take_ride_user_id = #{markedTakeRideUserId}
+		WHERE  
+		    tour_id = #{tourId}
+		    
+	</update>
+	
+	<select id="getCouriersForProcessingCronJob" resultMap="tourResultMap">
+		
+		SELECT 
+		    <include refid="allTourColumns"></include>,
+			<include refid="driverInfoColumns"></include>,
+			<include refid="invoiceColumns"></include>
+		FROM 
+			tours T
+		LEFT JOIN invoices INV ON T.tour_id = INV.tour_id
+	    LEFT JOIN users U ON T.driver_id = U.user_id
+	    LEFT JOIN user_info UI ON T.driver_id = UI.user_id
+		WHERE
+			T.service_type_id = #{serviceTypeId}
+		AND
+			T.is_take_ride = false
+		AND
+			T.is_tour_take_ride = false
+		AND
+			T.ride_later_pickup_time &gt;= #{currentTime}
+		AND
+			T.ride_later_pickup_time &lt;= #{nextOneHour}
+		AND
+			T.status IN
+	    	<foreach item="status" index="index" collection="courierStatus" open="(" separator="," close=")">
+				#{status}
+			</foreach>
+		ORDER BY T.ride_later_pickup_time ASC
+		LIMIT #{length} OFFSET #{start}
+			
+	</select>
+	
+	<select id="getCouriersHistoryByUserId" resultMap="tourResultMap">
+		
+		
+		SELECT 
+		    <include refid="allTourColumns"></include>,
+			<include refid="driverInfoColumns"></include>,
+			<include refid="invoiceColumns"></include>
+		FROM 
+			tours T
+		LEFT JOIN invoices INV ON T.tour_id = INV.tour_id
+	    LEFT JOIN users U ON T.driver_id = U.user_id
+	    LEFT JOIN user_info UI ON T.driver_id = UI.user_id
+		WHERE
+			T.service_type_id = #{serviceTypeId}
+		<if test="roleId==5">
+		AND
+			T.passenger_id = #{userId}
+		</if>
+		<if test="roleId==6">
+		AND
+			T.driver_id = #{userId}
+		</if>
+		ORDER BY T.ride_later_pickup_time ASC
+		LIMIT #{length} OFFSET #{start}
+			
+	</select>
+	
+	<select id="getAllToursDataForMigration" resultMap="tourResultMap">
+		
+		SELECT 
+			<include refid="allTourColumns"></include>
+		FROM 
+			tours T
+		ORDER BY T.created_at ASC
+		LIMIT #{length} OFFSET #{start}
+			
+	</select>
+	
+	<select id="getRideLaterToursForTakeBookings" resultMap="tourResultMap">
+	
+		SELECT 
+		    <include refid="allTourColumns"></include>,
+			<include refid="driverInfoColumns"></include>,
+			<include refid="invoiceColumns"></include>
+		FROM 
+			tours T
+		LEFT JOIN invoices INV ON T.tour_id = INV.tour_id
+	    LEFT JOIN users U ON T.driver_id = U.user_id
+	    LEFT JOIN user_info UI ON T.driver_id = UI.user_id     		 
+		WHERE 
+			T.service_type_id = #{serviceTypeId}
+		AND
+		 	T.is_ride_later = true
+		AND
+			T.is_tour_ride_later = true
+		AND 
+       		T.status = 'rl-new'
+       	AND
+       		T.driver_id = '-1'
+       	AND
+       		T.ride_later_pickup_time &lt;= #{maxTime}
+       	AND
+	    	T.multicity_city_region_id IN
+    		<foreach item="item" index="index" collection="regionList" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		AND
+			T.car_type_id IN
+			<foreach item="item" index="index" collection="carTypeList" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+	    ORDER BY T.ride_later_pickup_time ASC	
+	 	LIMIT #{length} OFFSET #{start}
+
+	</select>
+	
+	<select id="getRideNowToursForTakeBookings" resultMap="tourResultMap">
+	
+		SELECT 
+		    <include refid="allTourColumns"></include>,
+			<include refid="driverInfoColumns"></include>,
+			<include refid="invoiceColumns"></include>
+		FROM 
+			tours T
+		LEFT JOIN invoices INV ON T.tour_id = INV.tour_id
+	    LEFT JOIN users U ON T.driver_id = U.user_id
+	    LEFT JOIN user_info UI ON T.driver_id = UI.user_id     		 
+		WHERE 
+			T.service_type_id = #{serviceTypeId}
+		AND
+	   		${latAndLong}
+		AND
+		 	T.is_ride_later = false
+		AND
+		 	T.is_rental_booking = false
+       	AND
+	    	T.multicity_city_region_id IN
+    		<foreach item="item" index="index" collection="regionList" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		AND
+			T.car_type_id IN
+			<foreach item="item" index="index" collection="carTypeList" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		AND 
+       		T.status IN
+       		<foreach item="item" index="index" collection="statusList" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+	    ORDER BY T.created_at ASC	
+	 	LIMIT #{length} OFFSET #{start}
+
+	</select>
+	
+	<select id="getTakeBookingDriverCurrentCount" resultType="int">
+		
+		SELECT 
+			count(T.tour_id)
+		FROM 
+			tours T
+		WHERE
+			T.service_type_id = #{serviceTypeId}
+		AND
+       		T.driver_id = #{driverId}
+       	AND
+		 	T.is_ride_later = true
+		AND
+			T.is_tour_ride_later = true
+		AND 
+       		(
+       			T.status='rl-assigned' OR T.status='rl-reassigned' OR T.status='rl-pending' OR T.status='rl-accepted'
+       		)
+			
+	</select>
+	
+	<update id="updateTakeBookingByDriverParams" parameterType="TourModel">
+	
+		UPDATE 
+			tours 
+		SET 
+			is_take_booking_by_driver = #{isTakeBookingByDriver},
+			take_booking_driver_id = #{takeBookingDriverId},
+			take_booking_by_driver_time = #{takeBookingByDriverTime}
+		WHERE  
+		    tour_id = #{tourId}
+		    
+	</update>
+	
+	<select id="checkForConflictingSlotForRideLater" resultType="int">
+		
+		SELECT 
+		    count(T.tour_id)
+		FROM 
+			tours T
+		WHERE
+			T.service_type_id = #{serviceTypeId}
+		<if test="tourId!=null">
+		AND
+			T.tour_id != #{tourId}
+		</if>
+		AND
+			T.driver_id = #{driverId}
+		AND
+		 	T.is_ride_later = true
+		AND
+			T.is_tour_ride_later = true
+		AND
+			T.ride_later_pickup_time &gt;= #{beforePickupTime}
+		AND
+			T.ride_later_pickup_time &lt;= #{afterPickupTime}
+		AND
+			(
+        			T.status='assigned' OR T.status='new' OR T.status='pending' OR T.status='accepted' OR T.status='started' 
+        			OR T.status ilike '%arrived%'
+        			OR T.status='rl-assigned' OR T.status='rl-reassigned' OR T.status='rl-new' OR T.status='rl-pending' OR T.status='rl-accepted'
+        	)
+
+	</select>
+	
+	<select id="getToursForProcessingCronJob" resultMap="tourResultMap">
+		
+		SELECT 
+		    <include refid="allTourColumns"></include>
+		FROM 
+			tours T
+		WHERE
+			T.service_type_id = #{serviceTypeId}
+		AND
+		 	T.is_ride_later = false
+		AND
+		 	T.is_rental_booking = false
+		AND
+			T.status IN
+	    	<foreach item="status" index="index" collection="tourStatus" open="(" separator="," close=")">
+				#{status}
+			</foreach>
+		ORDER BY T.created_at ASC
+		LIMIT #{length} OFFSET #{start}
+			
+	</select>
+	
+	<update id="updateDriverProcessingViaCronTime" parameterType="TourModel">
+	
+		UPDATE 
+			tours 
+		SET 
+			driver_processing_via_cron_time = #{driverProcessingViaCronTime}
+		WHERE  
+		    tour_id = #{tourId}
+		    
+	</update>
+	
+	<select id="getCurrentTourByPassangerIdNew" parameterType="String" resultMap="tourResultMap">
+		
+		SELECT 
+		    <include refid="allTourColumns"></include>,
+			<include refid="driverInfoColumns"></include>,
+			<include refid="invoiceColumns"></include>
+		FROM 
+			tours T
+		LEFT JOIN invoices INV ON T.tour_id = INV.tour_id
+	    LEFT JOIN users U ON T.driver_id = U.user_id
+	    LEFT JOIN user_info UI ON T.driver_id = UI.user_id      		 
+		WHERE 
+			T.passenger_id = #{userId}
+	    AND 
+	        T.created_at = (SELECT MAX(created_at) 
+		                      FROM 
+		                          tours 
+		                      WHERE 
+		                           passenger_id = #{userId} 
+		                      AND 
+		                           (status='assigned' OR status='new' OR status='pending' OR status='accepted' OR status='started' OR status ilike '%arrived%' OR status='ended' OR status ilike '%cancelled%' OR status='expired' ))	
+
+	</select>
+	
+	
+</mapper> 

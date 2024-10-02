@@ -1,0 +1,772 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.webapp.daos.DriverGeoLocationDao">
+    
+    <resultMap id="carResultMap" type="DriverGeoLocationModel" >
+    
+		<result property="driverGpsId" column="driver_gps_id" />
+		<result property="driverId" column="driver_id" />
+		<result property="tourId" column="tour_id" />
+		<result property="latitude" column="latitude" />
+		<result property="longitude" column="longitude" />
+		<result property="carLocation" column="car_location" />
+		<result property="createdBy" column="created_by" />
+		<result property="createdAt" column="created_at" />
+		<result property="updatedBy" column="updated_by" />
+		<result property="updatedAt" column="updated_at" />
+		
+		<result property="phoneNo" column="phone_no" />
+		<result property="driverName" column="driverName" />
+		<result property="photoUrl" column="photo_url" />
+		<result property="carTypeId" column="car_type_id" />
+		<result property="driverTourStatus" column="driverTourStatus" />
+		<result property="icon" column="icon" />
+		<result property="carType" column="car_type" />
+		<result property="carTypeIconImage" column="car_type_icon_image" />
+
+	</resultMap>
+	
+	<insert id="saveCarGeoLocation" useGeneratedKeys="true" parameterType="DriverGeoLocationModel">
+
+		INSERT INTO driver_gps
+			(
+				driver_gps_id, driver_id, tour_id, latitude, longitude, car_location, 
+				created_by, created_at, updated_by, updated_at
+			)
+		VALUES
+			(
+				#{driverGpsId}, #{driverId}, #{tourId}, #{latitude}, #{longitude}, ${carLocation},
+				#{createdBy}, #{sentAt}, #{updatedBy}, #{updatedAt}
+			)
+					
+	</insert>
+	
+	<select id="getCurrentDriverPosition" parameterType="String" resultMap="carResultMap">
+	    
+       SELECT
+	       	driver_id, tour_id, created_at, 
+	       	ST_Y(car_location::geometry) AS latitude,  ST_X(car_location::geometry) as longitude
+       FROM 
+       		driver_gps DG
+	   WHERE 
+		    driver_id = #{driverId}
+			   			    
+	</select>
+	
+	<select id="isSessionExists" parameterType="String" resultType="String">
+	
+		SELECT 
+			user_id 
+		FROM 
+			api_sessions 
+		WHERE 
+			api_session_id= #{sessionKey}
+		
+	</select>
+	
+	<update id="updateDriverGeoLocation" parameterType="DriverGeoLocationModel" >
+	
+		UPDATE
+	   		driver_gps
+	   	SET       
+            tour_id = #{tourId},
+			latitude = #{latitude},
+			longitude = #{longitude},
+			car_location = ${carLocation},
+			created_at = #{sentAt}
+       	WHERE 
+            driver_id = #{driverId}
+	   			    
+	</update>
+	
+	<select id="getIdealDriverListForCronJob" parameterType="map" resultMap="carResultMap">
+	    
+       	SELECT
+       		DISTINCT DG.driver_id, DG.created_at   
+       	FROM 
+            driver_gps DG
+       	INNER JOIN users U ON U.user_id = DG.driver_id 
+       	INNER JOIN driver_tour_status DTS ON DTS.driver_id = DG.driver_id
+	   	WHERE 
+	   		DG.created_at &lt; #{idealTimeInMillis}
+	   	AND
+			DTS.status = 'free'
+	   	AND
+			U.is_on_duty = TRUE
+		AND
+			U.is_active = TRUE
+		AND
+			U.is_deleted = FALSE
+	   			    
+	</select>
+	
+	<select id="checkDriverHasMultipleEntries" parameterType="String" resultType="boolean">
+	    
+       SELECT
+       		(count(driver_id)>0)
+       FROM 
+            driver_gps
+	   WHERE 
+		    driver_id = #{driverId}
+			   			    
+	</select>
+	
+	<select id="deleteDriverGeoLocations" parameterType="String">
+   		DELETE FROM driver_gps WHERE driver_id = #{driverId}
+	</select>
+	
+	<select id="getTotalAvailableDriver" parameterType="map"  resultType="int">
+	    
+       	SELECT
+              COUNT(DISTINCT DG.driver_id)
+       	FROM 
+             driver_gps DG
+       	INNER JOIN users U ON U.user_id = DG.driver_id 
+      	INNER JOIN driver_tour_status DTS ON DTS.driver_id = DG.driver_id
+      	INNER JOIN multicity_user_region MUR ON MUR.user_id = DG.driver_id
+      	INNER JOIN driver_vendors DV ON DV.driver_id = DG.driver_id
+		INNER JOIN user_info DVUI ON DVUI.user_id = DV.vendor_id
+      	<if test="isVendorDriverSubscriptionAppliedInBookingFlow==null">
+       	INNER JOIN user_account UA ON UA.user_id = DG.driver_id
+       	</if>
+       	<if test="isVendorDriverSubscriptionAppliedInBookingFlow!=null">
+        INNER JOIN driver_subscription_package_history dsph 
+        	ON 
+        	(
+        		dsph.driver_id = DG.driver_id
+        	AND
+        		dsph.package_start_time &lt;= #{time}
+        	AND
+        		dsph.package_end_time &gt;= #{time}
+        	)
+		</if>
+	  	WHERE 
+	  		U.is_active = TRUE
+	  	<if test="vendorId != null">
+		AND 
+			DV.vendor_id = #{vendorId} 
+		</if>
+		<if test="isRestrictDriverVendorSubscriptionExpiry!=null">
+		AND
+			DVUI.is_vendor_subscription_current_active = true 
+		</if>
+		AND
+	  		is_on_duty = TRUE
+	  	AND
+			DTS.status = 'free'
+		<if test="isVendorDriverSubscriptionAppliedInBookingFlow==null">
+		AND
+			UA.current_balance &gt;= #{minimumWalletAmount}
+		</if>
+		<if test="assignedRegionList != null">	
+		AND
+	    	MUR.multicity_city_region_id IN
+    		<foreach item="item" index="index" collection="assignedRegionList" open="(" separator="," close=")">
+				#{item}
+			</foreach>	
+		</if>
+      		   			    
+	</select>
+    
+    <select id="getVendorsTotalAvailableDriver" parameterType="map"  resultType="int">
+	    
+       	SELECT
+        	COUNT(DISTINCT DG.driver_id)
+       	FROM 
+             driver_gps DG
+       	INNER JOIN users U ON U.user_id = DG.driver_id 
+      	INNER JOIN driver_tour_status DTS ON DTS.driver_id = DG.driver_id
+      	INNER JOIN multicity_user_region MUR ON MUR.user_id = DG.driver_id
+       	INNER JOIN driver_vendors DV ON DG.driver_id = DV.driver_id
+       	INNER JOIN user_info DVUI ON DVUI.user_id = DV.vendor_id
+       	<if test="isVendorDriverSubscriptionAppliedInBookingFlow==null">
+       	INNER JOIN user_account UA ON UA.user_id = DG.driver_id
+       	</if>
+       	<if test="isVendorDriverSubscriptionAppliedInBookingFlow!=null">
+        INNER JOIN driver_subscription_package_history dsph 
+        	ON 
+        	(
+        		dsph.driver_id = DG.driver_id
+        	AND
+        		dsph.vendor_id = #{vendorId}
+        	AND
+        		dsph.package_start_time &lt;= #{time}
+        	AND
+        		dsph.package_end_time &gt;= #{time}
+        	)
+		</if>
+	  	WHERE 
+	  		U.is_active = TRUE
+		AND
+		  	DV.vendor_id = #{vendorId}
+		<if test="isRestrictDriverVendorSubscriptionExpiry!=null">
+		AND
+			DVUI.is_vendor_subscription_current_active = true 
+		</if>
+	  	AND
+	  		is_on_duty = TRUE
+	  	AND
+			DTS.status = 'free'
+		<if test="isVendorDriverSubscriptionAppliedInBookingFlow==null">
+		AND
+			UA.current_balance &gt;= #{minimumWalletAmount}
+		</if>
+		<if test="assignedRegionList != null">	
+		AND
+	    	MUR.multicity_city_region_id IN
+	    		
+	    		<foreach item="item" index="index" collection="assignedRegionList" open="(" separator="," close=")">
+					#{item}
+				</foreach>	
+		</if>
+      		   			    
+	</select>
+    
+    <select id="getNearByCarList" parameterType="map" resultMap="carResultMap">
+	    
+       	SELECT
+              DISTINCT DG.driver_id, tour_id, DG.created_at, UI.company_driver,
+              ST_Y(car_location::geometry) AS latitude,  ST_X(car_location::geometry) as longitude,
+              ${distance} as distance,
+              DCT.car_type_id, CT.car_type, CT.car_type_icon_image
+       	FROM 
+             driver_gps DG
+       	INNER JOIN users U ON U.user_id = DG.driver_id 
+       	INNER JOIN user_info UI ON UI.user_id = DG.driver_id
+       	INNER JOIN driver_tour_status DTS ON DTS.driver_id = DG.driver_id
+      	INNER JOIN multicity_user_region MUR ON MUR.user_id = DG.driver_id 
+       	INNER JOIN driver_car_types DCT ON DCT.driver_id = DG.driver_id 
+       	INNER JOIN driver_vendors DV ON DV.driver_id = DG.driver_id
+		INNER JOIN user_info DVUI ON DVUI.user_id = DV.vendor_id
+		INNER JOIN car_type CT ON CT.car_type_id = DCT.car_type_id 
+       	<if test="isVendorDriverSubscriptionAppliedInBookingFlow==null">
+       	INNER JOIN user_account UA ON UA.user_id = DG.driver_id
+       	</if>
+      	<if test="isVendorDriverSubscriptionAppliedInBookingFlow!=null">
+        INNER JOIN driver_subscription_package_history dsph 
+        	ON 
+        	(
+        		dsph.driver_id = DG.driver_id
+        	<if test="vendorId!=null">
+			AND
+        		dsph.vendor_id = #{vendorId}        	
+        	</if>
+        	AND
+        		dsph.package_start_time &lt;= #{time}
+        	AND
+        		dsph.package_end_time &gt;= #{time}
+        	)
+		</if>
+	   	WHERE 
+	   		U.is_active = TRUE
+		<if test="vendorId != null">
+		AND 
+			DV.vendor_id = #{vendorId} 
+		</if>
+		<if test="isRestrictDriverVendorSubscriptionExpiry!=null">
+		AND
+			DVUI.is_vendor_subscription_current_active = true 
+		</if>
+		AND
+	   		DG.created_at &gt; #{timeBeforeDriverIdealTimeInMillis}
+	   	AND
+	   		${latAndLong}
+	   	AND
+			is_on_duty = TRUE
+		AND
+			DTS.status = 'free'
+		<if test="isVendorDriverSubscriptionAppliedInBookingFlow==null">
+		AND
+			UA.current_balance &gt;= #{minimumWalletAmount} 
+		</if>
+<!-- 	   	<if test="carTypeId != null"> -->
+<!-- 	   	AND -->
+<!-- 	   		DCT.car_type_id = #{carTypeId} -->
+<!-- 	   	</if> -->
+	   	<if test="carTypeIds!=null">
+		AND
+			DCT.car_type_id IN
+			<foreach item="item" index="index" collection="carTypeIds" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+	   	<if test="transmissionTypeIdList != null">
+	   	AND
+	   		UI.drive_transmission_type_id IN
+	   		<foreach item="item" index="index" collection="transmissionTypeIdList" open="(" separator="," close=")">
+					#{item}
+			</foreach>
+	   	</if>
+		<if test="regionId != null">	
+		AND
+			MUR.multicity_city_region_id = #{regionId}	
+		</if>
+	   	ORDER BY UI.company_driver DESC, ${distance} ASC 
+	   			    
+	</select>
+	
+	<select id="getNearByAvailableCarListForWeb" parameterType="map" resultMap="carResultMap">
+		SELECT
+			DISTINCT DG.driver_id, tour_id, DG.created_at, UI.company_driver,
+			ST_Y(car_location::geometry) AS latitude,  ST_X(car_location::geometry) as longitude,
+			${distance} as distance,
+			concat(UI.first_name,' ',UI.last_name ) AS driverName,
+			DTS.status AS driverTourStatus, CT.icon
+		FROM 
+			driver_gps DG
+	    INNER JOIN users U ON U.user_id = DG.driver_id 
+	    INNER JOIN user_info UI ON UI.user_id = DG.driver_id
+	    INNER JOIN driver_tour_status DTS ON DTS.driver_id = DG.driver_id    
+	   	INNER JOIN multicity_user_region MUR ON MUR.user_id = DG.driver_id
+	   	INNER JOIN driver_vendors DV ON DV.driver_id = DG.driver_id
+		INNER JOIN user_info DVUI ON DVUI.user_id = DV.vendor_id
+		INNER JOIN car_drivers CD ON CD.driver_id = DG.driver_id
+		INNER JOIN cars C ON C.car_id = CD.car_id
+		INNER JOIN car_type CT ON CT.car_type_id = C.car_type_id 
+	   	<if test="isVendorDriverSubscriptionAppliedInBookingFlow==null">
+	   	INNER JOIN user_account UA ON UA.user_id = DG.driver_id
+	   	</if>
+	   	<if test="isVendorDriverSubscriptionAppliedInBookingFlow!=null">
+        INNER JOIN driver_subscription_package_history dsph 
+        	ON 
+        	(
+        		dsph.driver_id = DG.driver_id
+        	<if test="vendorId!=null">
+        	AND
+        		dsph.vendor_id = #{vendorId}
+        	</if>
+        	AND
+        		dsph.package_start_time &lt;= #{time}
+        	AND
+        		dsph.package_end_time &gt;= #{time}
+        	)
+		</if>
+		WHERE 
+			U.is_active = TRUE
+		<if test="vendorId!=null">
+		AND 
+			DV.vendor_id = #{vendorId} 
+		</if>
+		<if test="isRestrictDriverVendorSubscriptionExpiry!=null">
+		AND
+			DVUI.is_vendor_subscription_current_active = true 
+		</if>
+		AND
+			is_on_duty = TRUE 
+		<if test="isVendorDriverSubscriptionAppliedInBookingFlow==null">
+		AND
+			UA.current_balance &gt;= #{minimumWalletAmount}
+		</if>
+		<if test="regionList != null">
+	    AND
+	    	MUR.multicity_city_region_id IN
+    		<foreach item="item" index="index" collection="regionList" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+	    </if>
+		ORDER BY ${distance} ASC 
+		
+	</select>
+	
+	<select id="getNearestSingledriver" parameterType="map" resultMap="carResultMap">
+	
+		SELECT
+			DISTINCT DG.driver_id,  DG.created_at, UI.company_driver, 
+			ST_Y(car_location::geometry) AS latitude,  
+			ST_X(car_location::geometry) as longitude,
+			${distance} as distance
+			<if test="searchSubscribedDriver==true">
+			, ds.priority_number
+			</if>
+		FROM 
+			driver_gps DG 
+		INNER JOIN users U ON U.user_id = DG.driver_id
+		INNER JOIN user_info UI ON UI.user_id = DG.driver_id
+		INNER JOIN multicity_user_region MUR ON MUR.user_id = DG.driver_id 
+		INNER JOIN driver_car_types DCT ON DCT.driver_id = DG.driver_id 
+		INNER JOIN driver_vendors DV ON DV.driver_id = DG.driver_id
+		INNER JOIN user_info DVUI ON DVUI.user_id = DV.vendor_id
+		<if test="searchSubscribedDriver==true">
+		INNER JOIN driver_subscribers ds ON ds.driver_id = DG.driver_id AND ds.user_id = #{passengerId}
+		</if>
+		<if test="isVendorDriverSubscriptionAppliedInBookingFlow==null">
+		INNER JOIN user_account UA ON UA.user_id = DG.driver_id
+		</if>
+		LEFT JOIN driver_tour_status DTS ON DTS.driver_id = DG.driver_id
+		LEFT JOIN car_drivers CD ON CD.driver_id = DG.driver_id
+		LEFT JOIN cars C ON C.car_id = CD.car_id
+		<if test="isVendorDriverSubscriptionAppliedInBookingFlow!=null">
+        INNER JOIN driver_subscription_package_history dsph 
+        	ON 
+        	(
+        		dsph.driver_id = DG.driver_id
+        	<if test="vendorId!=null">
+        	AND
+        		dsph.vendor_id = #{vendorId}
+        	</if>
+        	AND
+        		dsph.package_start_time &lt;= #{time}
+        	AND
+        		dsph.package_end_time &gt;= #{time}
+        	)
+		</if>
+		WHERE 
+			U.is_active = TRUE
+		<if test="vendorId!=null">
+		AND 
+			DV.vendor_id = #{vendorId} 
+		</if>
+		<if test="isRestrictDriverVendorSubscriptionExpiry!=null">
+		AND
+			DVUI.is_vendor_subscription_current_active = true 
+		</if>
+		AND
+			DG.created_at &gt; #{timeBeforeDriverIdealTimeInMillis}
+		AND
+			DCT.car_type_id = #{carTypeId}
+		<if test="isVendorDriverSubscriptionAppliedInBookingFlow==null">
+		AND
+			UA.current_balance &gt;= #{minimumWalletAmount}
+		</if>
+		<if test="multicityCityRegionId != null">     
+		AND
+			MUR.multicity_city_region_id = #{multicityCityRegionId} 
+		</if>
+		<if test="multicityCountryId != null">	
+		AND
+			MUR.multicity_country_id = #{multicityCountryId}
+		</if>
+		<if test="transmissionTypeIdList != null">
+	   	AND
+	   		UI.drive_transmission_type_id IN
+	   		<foreach item="item" index="index" collection="transmissionTypeIdList" open="(" separator="," close=")">
+					#{item}
+			</foreach>
+	   	</if>
+		AND    
+			DG.driver_id NOT IN(SELECT driver_id from driver_tour_requests WHERE tour_id =#{tourId} )        	
+		AND	    
+	        ${latAndLong}
+		AND
+			is_on_duty = TRUE
+		AND
+			DTS.status = 'free'
+		<if test="searchSubscribedDriver==true">
+			ORDER BY ds.priority_number ASC, ${distance} ASC
+		</if>
+		<if test="searchSubscribedDriver==false">
+			ORDER BY UI.company_driver DESC, ${distance} ASC 
+		</if>
+		LIMIT #{recordOffset} OFFSET #{startOffSet}
+		
+	</select>
+	
+	<select id="getFavouriteNearestSingledriver" parameterType="map" resultMap="carResultMap">
+	
+		SELECT
+			DISTINCT DG.driver_id,  DG.created_at, UI.company_driver, 
+			ST_Y(car_location::geometry) AS latitude,  
+			ST_X(car_location::geometry) as longitude,
+			${distance} as distance
+		FROM 
+			driver_gps DG 
+		INNER JOIN users U ON U.user_id = DG.driver_id
+		INNER JOIN user_info UI ON UI.user_id = DG.driver_id
+		INNER JOIN multicity_user_region MUR ON MUR.user_id = DG.driver_id 
+		INNER JOIN driver_car_types DCT ON DCT.driver_id = DG.driver_id 
+		INNER JOIN driver_vendors DV ON DV.driver_id = DG.driver_id
+		INNER JOIN user_info DVUI ON DVUI.user_id = DV.vendor_id
+		<if test="isVendorDriverSubscriptionAppliedInBookingFlow==null">
+		INNER JOIN user_account UA ON UA.user_id = DG.driver_id
+		</if>
+		LEFT JOIN driver_tour_status DTS ON DTS.driver_id = DG.driver_id
+		LEFT JOIN car_drivers CD ON CD.driver_id = DG.driver_id
+		LEFT JOIN cars C ON C.car_id = CD.car_id
+		<if test="isVendorDriverSubscriptionAppliedInBookingFlow!=null">
+        INNER JOIN driver_subscription_package_history dsph 
+        	ON 
+        	(
+        		dsph.driver_id = DG.driver_id
+        	<if test="vendorId!=null">
+        	AND
+        		dsph.vendor_id = #{vendorId}
+        	</if>
+        	AND
+        		dsph.package_start_time &lt;= #{time}
+        	AND
+        		dsph.package_end_time &gt;= #{time}
+        	)
+		</if>
+		WHERE 
+			U.is_active = TRUE
+		<if test="vendorId!=null">
+		AND 
+			DV.vendor_id = #{vendorId} 
+		</if>
+		<if test="isRestrictDriverVendorSubscriptionExpiry!=null">
+		AND
+			DVUI.is_vendor_subscription_current_active = true 
+		</if>
+		AND
+			DG.created_at &gt; #{timeBeforeDriverIdealTimeInMillis}
+		AND
+			DCT.car_type_id = #{carTypeId}
+		<if test="isVendorDriverSubscriptionAppliedInBookingFlow==null">
+		AND
+			UA.current_balance &gt;= #{minimumWalletAmount}
+		</if>
+		<if test="multicityCityRegionId != null">     
+		AND
+			MUR.multicity_city_region_id = #{multicityCityRegionId} 
+		</if>
+		<if test="multicityCountryId != null">	
+		AND
+			MUR.multicity_country_id = #{multicityCountryId}
+		</if>
+		AND    
+		    DG.driver_id NOT IN
+		    	(
+		    		SELECT driver_id from driver_tour_requests WHERE tour_id =#{tourId} 
+		    	) 
+		AND    
+		    DG.driver_id IN
+		    	(
+		    		SELECT driver_id FROM favourite_driver WHERE passenger_id = #{passengerId} AND record_status = 'A' 
+		    	)
+		<if test="transmissionTypeIdList != null">
+	   	AND
+	   		UI.drive_transmission_type_id IN
+	   		<foreach item="item" index="index" collection="transmissionTypeIdList" open="(" separator="," close=")">
+					#{item}
+			</foreach>
+	   	</if>        	
+		AND	    
+	         ${latAndLong}
+		AND
+			is_on_duty = TRUE
+		AND
+			DTS.status = 'free'
+		ORDER BY UI.company_driver DESC, ${distance} ASC 
+		LIMIT #{recordOffset} OFFSET #{startOffSet}
+		
+	</select>
+	
+	<select id="getNearByCarDriverList" parameterType="map" resultMap="carResultMap">
+	    
+       	SELECT
+	        DISTINCT DG.driver_id, tour_id, DG.created_at, UI.company_driver,
+	        ST_Y(car_location::geometry) AS latitude,  ST_X(car_location::geometry) as longitude,
+	        ${distance} as distance,
+	        DCT.car_type_id
+       	FROM 
+        	driver_gps DG
+       	INNER JOIN users U ON U.user_id = DG.driver_id 
+       	INNER JOIN user_info UI ON UI.user_id = DG.driver_id
+       	INNER JOIN driver_tour_status DTS ON DTS.driver_id = DG.driver_id
+      	INNER JOIN multicity_user_region MUR ON MUR.user_id = DG.driver_id 
+       	INNER JOIN driver_car_types DCT  ON DCT.driver_id = DG.driver_id 
+       	INNER JOIN driver_vendors DV ON DV.driver_id = DG.driver_id
+       	INNER JOIN user_info DVUI ON DVUI.user_id = DV.vendor_id
+       	<if test="isVendorDriverSubscriptionAppliedInBookingFlow==null">
+       	INNER JOIN user_account UA ON UA.user_id = DG.driver_id
+       	</if>
+		<if test="isVendorDriverSubscriptionAppliedInBookingFlow!=null">
+        INNER JOIN driver_subscription_package_history dsph 
+        	ON 
+        	(
+        		dsph.driver_id = DG.driver_id
+        	<if test="vendorId!=null">
+        	AND
+        		dsph.vendor_id = #{vendorId}
+        	</if>
+        	AND
+        		dsph.package_start_time &lt;= #{time}
+        	AND
+        		dsph.package_end_time &gt;= #{time}
+        	)
+		</if>
+	   	WHERE
+	   		U.is_active = TRUE
+	   	<if test="vendorId!=null">
+	   	AND 
+	   		DV.vendor_id = #{vendorId} 
+	   	</if>
+	   	<if test="isRestrictDriverVendorSubscriptionExpiry!=null">
+		AND
+			DVUI.is_vendor_subscription_current_active = true 
+		</if>
+		AND 
+	   		DG.created_at &gt; #{timeBeforeDriverIdealTimeInMillis}
+	   	AND
+	   		${latAndLong}
+	   	AND
+			is_on_duty = TRUE
+		AND
+			DTS.status = 'free'
+		<if test="isVendorDriverSubscriptionAppliedInBookingFlow==null">
+		AND
+			UA.current_balance &gt;= #{minimumWalletAmount}
+		</if>
+	   	<if test="transmissionTypeIdList != null">
+	   	AND
+	   		UI.drive_transmission_type_id IN
+	   		<foreach item="item" index="index" collection="transmissionTypeIdList" open="(" separator="," close=")">
+					#{item}
+			</foreach>
+	   	</if>   
+	   	<if test="carTypeId != null">
+	   	AND
+	   		DCT.car_type_id = #{carTypeId}
+	   	</if>
+		<if test="regionId != null">	
+		AND
+			MUR.multicity_city_region_id = #{regionId}	
+		</if>
+	   	ORDER BY UI.company_driver DESC, ${distance} ASC 
+	   			    
+	</select>
+	
+	<select id="getVendorsNearByCarList" parameterType="map" resultMap="carResultMap">
+	    
+       	SELECT
+              DISTINCT DG.driver_id, tour_id, DG.created_at, UI.company_driver,
+              ST_Y(car_location::geometry) AS latitude,  ST_X(car_location::geometry) as longitude,
+              ${distance} as distance,
+              DCT.car_type_id
+       	FROM 
+             driver_gps DG
+       	INNER JOIN users U ON U.user_id = DG.driver_id 
+       	INNER JOIN user_info UI ON UI.user_id = DG.driver_id
+       	INNER JOIN driver_tour_status DTS ON DTS.driver_id = DG.driver_id
+      	INNER JOIN multicity_user_region MUR ON MUR.user_id = DG.driver_id 
+       	INNER JOIN driver_car_types DCT ON DCT.driver_id = DG.driver_id 
+       	INNER JOIN driver_vendors DV ON DV.driver_id = U.user_id
+       	INNER JOIN user_info DVUI ON DVUI.user_id = DV.vendor_id
+       	<if test="isVendorDriverSubscriptionAppliedInBookingFlow==null">
+       	INNER JOIN user_account UA ON UA.user_id = DG.driver_id
+       	</if>
+       	<if test="isVendorDriverSubscriptionAppliedInBookingFlow!=null">
+        INNER JOIN driver_subscription_package_history dsph 
+        	ON 
+        	(
+        		dsph.driver_id = DG.driver_id
+        	AND
+        		dsph.vendor_id = #{vendorId}
+        	AND
+        		dsph.package_start_time &lt;= #{time}
+        	AND
+        		dsph.package_end_time &gt;= #{time}
+        	)
+		</if>
+	   	WHERE 
+	   		U.is_active = TRUE
+	   	AND 
+	   		DV.vendor_id = #{vendorId}
+	   	<if test="isRestrictDriverVendorSubscriptionExpiry!=null">
+		AND
+			DVUI.is_vendor_subscription_current_active = true 
+		</if>
+		AND
+	   		DG.created_at &gt; #{timeBeforeDriverIdealTimeInMillis}
+	   	AND
+	   		${latAndLong}
+	   	AND
+			is_on_duty = TRUE
+		AND
+			DTS.status = 'free'
+		<if test="isVendorDriverSubscriptionAppliedInBookingFlow==null">
+		AND
+			UA.current_balance &gt;= #{minimumWalletAmount}
+		</if>
+	   	<if test="carTypeId != null">
+	   	AND
+	   		DCT.car_type_id = #{carTypeId}
+	   	</if>
+		<if test="regionId != null">	
+		AND
+			MUR.multicity_city_region_id = #{regionId}	
+		</if>
+	   	ORDER BY UI.company_driver DESC, ${distance} ASC 
+	   			    
+	</select>
+	
+	<select id="getNearestSingleDriverForOrders" parameterType="map" resultMap="carResultMap">
+	
+		SELECT
+			DISTINCT DG.driver_id, ${distance} as distance
+			<if test="searchSubscribedDriver==true">
+			, ds.priority_number
+			</if>
+		FROM 
+			driver_gps DG 
+		INNER JOIN users U ON U.user_id = DG.driver_id
+		INNER JOIN driver_vendors DV ON DV.driver_id = DG.driver_id
+		INNER JOIN user_info DVUI ON DVUI.user_id = DV.vendor_id
+		<if test="searchSubscribedDriver==true">
+		INNER JOIN driver_subscribers ds ON ds.driver_id = DG.driver_id AND ds.user_id = #{orderUserId}
+		</if>
+		INNER JOIN multicity_user_region MUR ON MUR.user_id = DG.driver_id 
+		INNER JOIN driver_car_types DCT ON DCT.driver_id = DG.driver_id 
+		LEFT JOIN driver_tour_status DTS ON DTS.driver_id = DG.driver_id
+		LEFT JOIN car_drivers CD ON CD.driver_id = DG.driver_id
+		LEFT JOIN cars C ON C.car_id = CD.car_id
+		<if test="isVendorDriverSubscriptionAppliedInBookingFlow!=null">
+        INNER JOIN driver_subscription_package_history dsph 
+        	ON 
+        	(
+        		dsph.driver_id = DG.driver_id
+        	<if test="vendorId!=null">
+        	AND
+        		dsph.vendor_id = #{vendorId}
+        	</if>
+        	AND
+        		dsph.package_start_time &lt;= #{time}
+        	AND
+        		dsph.package_end_time &gt;= #{time}
+        	)
+		</if>
+		WHERE 
+			U.is_active = TRUE
+		AND
+			DG.created_at &gt; #{timeBeforeDriverIdealTimeInMillis}
+		AND
+			DCT.car_type_id = #{carTypeId}
+		<if test="isRestrictDriverVendorSubscriptionExpiry!=null">
+		AND
+			DVUI.is_vendor_subscription_current_active = true 
+		</if>
+		<if test="vendorId!=null">
+		AND
+			DV.vendor_id = #{vendorId} 
+		</if>
+		<if test="multicityCityRegionId != null">     
+		AND
+			MUR.multicity_city_region_id = #{multicityCityRegionId} 
+		</if>
+		<if test="multicityCountryId != null">	
+		AND
+			MUR.multicity_country_id = #{multicityCountryId}
+		</if>
+		AND    
+			DG.driver_id NOT IN
+		    	(
+		    		SELECT driver_id from driver_order_requests WHERE order_id = #{orderId} 
+		    	) 
+		AND	    
+	    	${latAndLong}
+		AND
+			U.is_on_duty = TRUE
+		AND
+			DTS.status = 'free'
+		<if test="searchSubscribedDriver==true">
+			ORDER BY ds.priority_number ASC, ${distance} ASC
+		</if>
+		<if test="searchSubscribedDriver==false">
+			ORDER BY ${distance} ASC
+		</if>
+		LIMIT #{recordOffset} OFFSET #{startOffSet}
+		
+	</select>
+	
+</mapper>

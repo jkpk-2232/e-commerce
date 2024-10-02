@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.webapp.daos.RideLaterSettingsDao">
+
+	<resultMap id="rideLaterSettingsResultMap" type="RideLaterSettingsModel" >
+	    
+		<result property="rideLaterSettingsId" column="ride_later_settings_id" />
+		<result property="minBookingTime" column="min_booking_time" />
+		<result property="maxBookingTime" column="max_booking_time" />
+		<result property="driverJobRequestTime" column="driver_job_request_time" />
+		<result property="driverAllocateBeforeTime" column="driver_allocate_before_time" />
+		<result property="driverAllocateAfterTime" column="driver_allocate_after_time" />
+		<result property="passengerTourBeforeTime" column="passenger_tour_before_time" />
+		<result property="passengerTourAfterTime" column="passenger_tour_after_time" />
+		<result property="recordStatus" column="record_status" />
+		<result property="createdAt" column="created_at" />
+		<result property="updatedAt" column="updated_at" />
+		<result property="createdBy" column="created_by" />
+		<result property="updatedBy" column="updated_by" />
+		
+		<result property="takeBookingForNextXDays" column="take_booking_for_next_X_days" />
+		<result property="takeBookingMaxNumberAllowed" column="take_booking_max_number_allowed" />
+		
+	</resultMap>
+
+	<sql id="rideLaterSettingsColsWithOutTypeAlias">
+		ride_later_settings_id, min_booking_time, max_booking_time, driver_job_request_time,
+		driver_allocate_before_time, driver_allocate_after_time,
+		passenger_tour_before_time, passenger_tour_after_time,
+        record_status, created_by, created_at, updated_by, updated_at,
+        take_booking_for_next_X_days, take_booking_max_number_allowed
+	</sql>
+	
+	<select id="getRideLaterSettingsDetails" resultMap="rideLaterSettingsResultMap">
+	
+		SELECT
+			<include refid="rideLaterSettingsColsWithOutTypeAlias"></include>
+		FROM
+			ride_later_settings
+		LIMIT 1
+	
+	</select>
+	
+	<update id="updateRideLaterSettings" parameterType="RideLaterSettingsModel">
+	
+		UPDATE
+			ride_later_settings
+		SET
+			min_booking_time = #{minBookingTime},
+			max_booking_time = #{maxBookingTime},
+			driver_job_request_time = #{driverJobRequestTime},
+			driver_allocate_before_time = #{driverAllocateBeforeTime},
+			driver_allocate_after_time = #{driverAllocateAfterTime},
+			passenger_tour_before_time = #{passengerTourBeforeTime},
+			passenger_tour_after_time = #{passengerTourAfterTime},
+			take_booking_for_next_X_days = #{takeBookingForNextXDays},
+			take_booking_max_number_allowed = #{takeBookingMaxNumberAllowed}
+	
+	</update>
+	
+</mapper> 

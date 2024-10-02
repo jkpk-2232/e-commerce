@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.webapp.daos.GeoCityDao">
+
+	<resultMap id="geoCityResultMap" type="GeoCityModel" >
+	    
+		<result property="cityId" column="cty_id" />
+		<result property="stateId" column="sta_id" />
+		<result property="countryId" column="con_id" />
+		<result property="cityName" column="name" />
+		<result property="latitude" column="latitude" />
+		<result property="longitude" column="longitude" />
+		
+	</resultMap>
+	
+	<insert id="insertCity" parameterType="GeoCityModel"  useGeneratedKeys="true" keyColumn="cty_id">
+				
+		INSERT INTO geo_cities
+			(
+				sta_id, con_id, name
+			)
+		VALUES
+			(
+				#{stateId},#{countryId},#{cityName}
+			)
+           			
+	</insert>
+	
+	<select id="getAllCitesByStateId" parameterType="GeoCityModel"	resultMap="geoCityResultMap">
+		
+	    SELECT 
+	    	cty_id, sta_id, con_id, name 
+	    FROM 
+	    	geo_cities 
+	    WHERE 
+	    	sta_id=#{stateId} 
+	    ORDER BY name
+	    
+	</select>
+	
+	<select id="getCityNameByCityId" parameterType="long" resultType="String">
+	
+	    SELECT 
+	    	name 
+    	FROM 
+    		geo_cities 
+   		WHERE 
+   			cty_id = #{cityId}
+   			
+	</select>
+	
+</mapper> 

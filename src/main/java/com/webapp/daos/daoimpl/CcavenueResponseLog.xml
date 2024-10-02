@@ -1,0 +1,262 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.webapp.daos.CcavenueResponseLogDao">
+
+	<resultMap id="ccavenueResponseLogResultMap" type="CcavenueResponseLogModel" >
+	
+		<result property="ccavenueResponseLogId" column="ccavenue_response_log_id" />
+		<result property="tourId" column="tour_id" />
+		<result property="trackingId" column="tracking_id" />
+		<result property="amount" column="amount" />
+		<result property="orderStatus" column="order_status" />
+		<result property="failureMessage" column="failure_message" />
+		<result property="paymentMode" column="payment_mode" />
+		<result property="bankRefNo" column="bank_ref_no" />
+		<result property="retriedPayment" column="retried_payment" />
+		<result property="bankResponseCode" column="bank_response_code" />
+		<result property="cardName" column="card_name" />
+		<result property="currency" column="currency" />
+		<result property="ccavenueRsaRequestId" column="ccavenue_rsa_request_id" />
+		<result property="billingCountry" column="billing_country" />
+		<result property="billingTel" column="billing_tel" />
+		<result property="billingEmail" column="billing_email" />
+		
+		<result property="recordStatus" column="record_status" />
+		<result property="createdAt" column="created_at" />
+		<result property="updatedAt" column="updated_at" />
+		<result property="createdBy" column="created_by" />
+		<result property="updatedBy" column="updated_by" />
+		
+		<result property="orderId" column="order_id" />
+		<result property="userTourId" column="user_tour_id" />
+		<result property="shortSubscriptionId" column="short_subscription_id" />
+		<result property="subscriptionId" column="subscription_id" />
+		<result property="userId" column="user_id" />
+		<result property="paymentRequestType" column="payment_request_type" />
+		<result property="userFullName" column="userFullName" />
+		<result property="deliveryOrderId" column="delivery_order_id" />
+		<result property="orderUserId" column="order_user_id" />
+		
+	</resultMap>
+
+	<insert id="insertCcavenueResponseLog" parameterType="CcavenueResponseLogModel" useGeneratedKeys="false">
+	
+		INSERT INTO ccavenue_response_logs
+				(
+					ccavenue_response_log_id, tour_id, tracking_id, amount, order_status, failure_message, payment_mode, bank_ref_no, retried_payment, 
+					bank_response_code, card_name, currency, ccavenue_rsa_request_id, billing_country, billing_tel, billing_email,
+					record_status, created_at, created_by, updated_at, updated_by, subscription_id, user_id, order_id, delivery_order_id
+				)
+		VALUES
+				(
+					#{ccavenueResponseLogId}, #{tourId}, #{trackingId}, #{amount}, #{orderStatus}, #{failureMessage}, #{paymentMode}, #{bankRefNo}, #{retriedPayment}, 
+					#{bankResponseCode}, #{cardName}, #{currency}, #{ccavenueRsaRequestId}, #{billingCountry}, #{billingTel}, #{billingEmail},
+					#{recordStatus}, #{createdAt}, #{createdBy}, #{updatedAt}, #{updatedBy}, #{subscriptionId}, #{userId}, #{orderId}, #{deliveryOrderId}
+				)
+			
+	</insert>
+	
+	<select id="getCcavenueResponseLogDetailsByTripId" parameterType="string" resultMap="ccavenueResponseLogResultMap">
+	
+		SELECT
+			CRL.ccavenue_response_log_id, CRL.tour_id, CRL.tracking_id, CRL.amount, CRL.order_status, CRL.failure_message, CRL.payment_mode, 
+			CRL.bank_ref_no, CRL.retried_payment, CRL.bank_response_code, CRL.card_name, CRL.currency, CRL.ccavenue_rsa_request_id,
+			CRL.record_status, CRL.created_at, CRL.created_by, CRL.updated_at, CRL.updated_by, CRL.subscription_id, CRL.user_id,CRL.order_id,
+			T.user_tour_id
+		FROM 
+			ccavenue_response_logs CRL
+		LEFT JOIN tours T ON T.tour_id = CRL.tour_id
+		WHERE 
+			CRL.tour_id = #{tripId}
+		ORDER BY CRL.created_at DESC
+		LIMIT 1
+	    
+	</select>
+	
+	<select id="getCcavenueResponseLogDetailsBySubscriptionId" parameterType="string" resultMap="ccavenueResponseLogResultMap">
+	
+		SELECT
+			CRL.ccavenue_response_log_id, CRL.tour_id, CRL.tracking_id, CRL.amount, CRL.order_status, CRL.failure_message, CRL.payment_mode, 
+			CRL.bank_ref_no, CRL.retried_payment, CRL.bank_response_code, CRL.card_name, CRL.currency, CRL.ccavenue_rsa_request_id,
+			CRL.record_status, CRL.created_at, CRL.created_by, CRL.updated_at, CRL.updated_by, CRL.subscription_id, CRL.user_id, CRL.order_id,
+			SP.short_subscription_id
+		FROM 
+			ccavenue_response_logs CRL
+		INNER JOIN subscription_packages SP ON SP.subscription_package_id = CRL.subscription_id
+		WHERE 
+			CRL.order_id = #{subscriptionOrderId}
+		AND
+			CRL.user_id = #{userId}
+		ORDER BY CRL.created_at DESC LIMIT 1
+	    
+	</select>
+	
+	<select id="getCcavenueResponseLogDetailsByDeliveryOrderId" parameterType="string" resultMap="ccavenueResponseLogResultMap">
+	
+		SELECT
+			CRL.ccavenue_response_log_id, CRL.tour_id, CRL.tracking_id, CRL.amount, CRL.order_status, CRL.failure_message, CRL.payment_mode, 
+			CRL.bank_ref_no, CRL.retried_payment, CRL.bank_response_code, CRL.card_name, CRL.currency, CRL.ccavenue_rsa_request_id,
+			CRL.record_status, CRL.created_at, CRL.created_by, CRL.updated_at, CRL.updated_by, CRL.subscription_id, CRL.user_id, CRL.order_id,
+			O.order_user_id
+		FROM 
+			ccavenue_response_logs CRL
+		INNER JOIN orders O ON O.order_id = CRL.delivery_order_id
+		WHERE 
+			CRL.order_id = #{deliveryOrderId}
+		AND
+			CRL.user_id = #{userId}
+		ORDER BY CRL.created_at DESC LIMIT 1
+	    
+	</select>
+	
+	<select id="getCcavenueResponseLogListCount" parameterType="map" resultType="int">
+	
+		SELECT
+			count(*)
+		FROM 
+			ccavenue_response_logs CRL
+		INNER JOIN ccavenue_rsa_requests CRR ON CRR.ccavenue_rsa_request_id = CRL.ccavenue_rsa_request_id
+		INNER JOIN ccavenue_rsa_orders CRO ON CRO.ccavenue_rsa_order_id = CRR.ccavenue_rsa_order_id
+		INNER JOIN user_info UI ON UI.user_id = CRO.user_id
+		LEFT JOIN tours T ON T.tour_id = CRO.tour_id
+		LEFT JOIN subscription_packages SP ON SP.subscription_package_id = CRO.subscription_id		
+		LEFT JOIN orders O ON O.order_id = CRO.delivery_order_id		
+		WHERE
+			CRL.created_at &lt; #{endDate}	    
+		AND	
+			CRL.created_at &gt; #{startDate} 
+		AND
+			CRL.record_status = 'A'
+		AND
+	    	CRL.order_status IN
+			<foreach item="item" index="index" collection="ccavenueStatusArray" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		<if test="assignedRegionList != null">
+	    AND
+	    	T.multicity_city_region_id IN
+    		<foreach item="item" index="index" collection="assignedRegionList" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+	    </if>
+				
+	</select>
+	
+	<select id="getCcavenueResponseLogListBySearch" parameterType="map" resultMap="ccavenueResponseLogResultMap">
+	
+		SELECT
+			CRL.ccavenue_response_log_id, CRL.tour_id, CRL.tracking_id, CRL.amount, CRL.order_status, CRL.failure_message, CRL.payment_mode, 
+			CRL.bank_ref_no, CRL.retried_payment, CRL.bank_response_code, CRL.card_name, CRL.currency, CRL.ccavenue_rsa_request_id,
+			CRL.record_status, CRL.created_at, CRL.created_by, CRL.updated_at, CRL.updated_by, CRL.subscription_id, CRL.user_id, CRL.order_id,
+			T.user_tour_id, SP.short_subscription_id, O.order_user_id, CRO.payment_request_type, concat(UI.first_name,' ',UI.last_name ) AS userFullName
+		FROM 
+			ccavenue_response_logs CRL
+		INNER JOIN ccavenue_rsa_requests CRR ON CRR.ccavenue_rsa_request_id = CRL.ccavenue_rsa_request_id
+		INNER JOIN ccavenue_rsa_orders CRO ON CRO.ccavenue_rsa_order_id = CRR.ccavenue_rsa_order_id
+		INNER JOIN user_info UI ON UI.user_id = CRO.user_id
+		LEFT JOIN tours T ON T.tour_id = CRO.tour_id
+		LEFT JOIN subscription_packages SP ON SP.subscription_package_id = CRO.subscription_id		
+		LEFT JOIN orders O ON O.order_id = CRO.delivery_order_id
+		WHERE
+			( 
+			 		CAST (T.user_tour_id AS character varying) iLIKE #{globalSearchString}
+			 	OR 
+			 		CAST (SP.short_subscription_id AS character varying) iLIKE #{globalSearchString}
+			 	OR 
+			 		CRL.tracking_id iLIKE #{globalSearchString} 
+			 	OR 
+			 		CRL.order_status iLIKE #{globalSearchString} 
+			 	OR 
+			 		CRL.failure_message iLIKE #{globalSearchString} 
+			 	OR	
+			 		CRL.payment_mode iLIKE #{globalSearchString} 
+			 	OR	
+			 		CRL.bank_ref_no iLIKE #{globalSearchString}  
+			 	OR	
+			 		CRL.bank_response_code iLIKE #{globalSearchString} 
+			 	OR	
+			 		CRL.card_name iLIKE #{globalSearchString}
+			 	OR	
+			 		CRL.currency iLIKE #{globalSearchString}  
+			 	OR
+			 		CAST (CRL.amount AS character varying) iLIKE #{globalSearchString}
+			 )
+		AND
+			CRL.created_at &lt; #{endDate}	    
+		AND	
+			CRL.created_at &gt; #{startDate} 
+		AND
+			CRL.record_status = 'A'
+		AND
+	    	CRL.order_status IN
+			<foreach item="item" index="index" collection="ccavenueStatusArray" open="(" separator="," close=")">
+				#{item}
+			</foreach> 
+		<if test="assignedRegionList != null">
+	    AND
+	    	T.multicity_city_region_id IN
+    		<foreach item="item" index="index" collection="assignedRegionList" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+	    </if>
+		ORDER BY CRL.updated_at DESC
+	    LIMIT #{length} OFFSET #{start}   
+	    
+	</select>
+	
+	<select id="getCcavenueLogsReport" parameterType="map" resultMap="ccavenueResponseLogResultMap">
+	
+		SELECT
+			CRL.ccavenue_response_log_id, CRL.tour_id, CRL.tracking_id, CRL.amount, CRL.order_status, CRL.failure_message, CRL.payment_mode, 
+			CRL.bank_ref_no, CRL.retried_payment, CRL.bank_response_code, CRL.card_name, CRL.currency, CRL.ccavenue_rsa_request_id,
+			CRL.record_status, CRL.created_at, CRL.created_by, CRL.updated_at, CRL.updated_by, CRL.subscription_id, CRL.user_id, CRL.order_id,
+			T.user_tour_id, SP.short_subscription_id, O.order_user_id, CRO.payment_request_type, concat(UI.first_name,' ',UI.last_name ) AS userFullName
+		FROM 
+			ccavenue_response_logs CRL
+		INNER JOIN ccavenue_rsa_requests CRR ON CRR.ccavenue_rsa_request_id = CRL.ccavenue_rsa_request_id
+		INNER JOIN ccavenue_rsa_orders CRO ON CRO.ccavenue_rsa_order_id = CRR.ccavenue_rsa_order_id
+		INNER JOIN user_info UI ON UI.user_id = CRO.user_id
+		LEFT JOIN tours T ON T.tour_id = CRO.tour_id
+		LEFT JOIN subscription_packages SP ON SP.subscription_package_id = CRO.subscription_id
+		LEFT JOIN orders O ON O.order_id = CRO.delivery_order_id
+		WHERE
+			( 
+			 		CRL.tracking_id iLIKE #{globalSearchString} 
+			 	OR 
+			 		CRL.order_status iLIKE #{globalSearchString} 
+			 	OR 
+			 		CRL.failure_message iLIKE #{globalSearchString} 
+			 	OR	
+			 		CRL.payment_mode iLIKE #{globalSearchString} 
+			 	OR	
+			 		CRL.bank_ref_no iLIKE #{globalSearchString}  
+			 	OR	
+			 		CRL.bank_response_code iLIKE #{globalSearchString} 
+			 	OR	
+			 		CRL.card_name iLIKE #{globalSearchString}
+			 	OR	
+			 		CRL.currency iLIKE #{globalSearchString}  
+			 )
+		<if test="endDate > 0">	 
+		AND
+			CRL.created_at &lt; #{endDate}	
+		</if>
+		<if test="startDate > 0">    
+		AND	
+			CRL.created_at &gt; #{startDate} 
+		</if>
+		AND
+			CRL.record_status = 'A'
+		<if test="assignedRegionList != null">
+	    AND
+	    	T.multicity_city_region_id IN
+    		<foreach item="item" index="index" collection="assignedRegionList" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+	    </if>
+		ORDER BY CRL.created_at DESC
+		
+	</select>
+	
+</mapper>

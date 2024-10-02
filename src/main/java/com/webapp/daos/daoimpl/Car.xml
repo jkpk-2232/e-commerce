@@ -1,0 +1,326 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.webapp.daos.CarDao">
+
+	<resultMap id="carResultMap" type="CarModel" >
+	    
+		<result property="carId" column="car_id" />
+		<result property="modelName" column="car_model" />
+		<result property="carColor" column="car_color" />
+		<result property="carPlateNo" column="car_plate_no" />
+		<result property="carYear" column="car_year" />
+		<result property="noOfPassenger" column="no_of_passenger" />
+		<result property="driverId" column="driver_id" />
+		<result property="carTypeId" column="car_type_id" />
+		<result property="owner" column="owner" />
+		<result property="make" column="make" />
+		<result property="backImgUrl" column="back_img_url" />
+		<result property="frontImgUrl" column="front_img_url" />
+		<result property="carTitle" column="car_title" />
+		<result property="createdAt" column="created_at" />
+		<result property="updatedAt" column="updated_at" />
+		<result property="createdBy" column="created_by" />
+		<result property="updatedBy" column="updated_by" />
+		<result property="registrationPhotoUrl" column="registration_photo_url" />
+		<result property="insurancePhotoUrl" column="insurance_photo_url" />
+		<result property="inspectionReportPhotoUrl" column="inspection_report_photo_url" />
+		<result property="vehicleCommercialLicencePhotoUrl" column="vehicle_commercial_licence_photo_url" />
+		<result property="approvelStatus" column="approvel_status" />
+		
+		<result property="carType" column="car_type" />
+		<result property="carTypeIconImage" column="car_type_icon_image" />
+		
+	</resultMap>
+	
+	<sql id="CarColumns">
+		c.car_id, c.car_model, c.car_color, c.car_plate_no, 
+		c.car_year, c.no_of_passenger, c.driver_id, c.car_type_id, 
+		c.is_active, c.is_deleted, c.owner, c.make, c.front_img_url, 
+		c.back_img_url, c.car_title, c.registration_photo_url, 
+		c.insurance_photo_url, c.inspection_report_photo_url, 
+		c.vehicle_commercial_licence_photo_url, c.approvel_status, 
+		c.created_by, c.created_at, c.updated_by, c.updated_at
+	</sql>
+	
+	<sql id="CarTypeColumns">
+		ct.car_type, ct.car_type_icon_image
+	</sql>
+
+	<insert id="insertCar" parameterType="CarModel">
+
+		INSERT INTO cars
+			(
+				car_id, car_model, car_color, car_plate_no,car_title,
+				car_year, no_of_passenger, driver_id, car_type_id,owner, make, back_img_url, front_img_url,
+				registration_photo_url,insurance_photo_url,inspection_report_photo_url,
+				vehicle_commercial_licence_photo_url,
+				created_by,created_at,updated_by,updated_at,approvel_status
+			)
+		VALUES
+			(
+				#{carId}, #{modelName}, #{carColor}, #{carPlateNo},#{carTitle},
+				#{carYear}, #{noOfPassenger}, #{driverId}, #{carTypeId}, #{owner}, #{make}, #{backImgUrl}, #{frontImgUrl},
+				#{registrationPhotoUrl},#{insurancePhotoUrl},#{inspectionReportPhotoUrl},
+				#{vehicleCommercialLicencePhotoUrl},
+				#{createdBy},#{createdAt},#{updatedBy},#{updatedAt},#{approvelStatus}
+			)
+				
+	</insert>
+	
+	<update id="updateCarDetails" parameterType="CarModel"> 
+        	
+		UPDATE 
+			cars 
+		SET 
+			car_model = #{modelName},
+			make = #{make},
+			owner = #{owner},
+			car_type_id = #{carTypeId},
+			car_color = #{carColor},
+			car_plate_no = #{carPlateNo},
+			car_year = #{carYear},
+			no_of_passenger = #{noOfPassenger},
+			driver_id = #{driverId},
+			updated_at = #{updatedAt},
+			updated_by = #{updatedBy}
+		WHERE 
+			car_id = #{carId}
+			
+	</update>
+	
+	<update id="updateCarImages" parameterType="CarModel"> 
+        	
+		UPDATE 
+			cars 
+		SET 
+			back_img_url = #{backImgUrl},
+			front_img_url = #{frontImgUrl},
+			car_title = #{carTitle},
+			insurance_photo_url = #{insurancePhotoUrl},
+			inspection_report_photo_url = #{inspectionReportPhotoUrl},
+			vehicle_commercial_licence_photo_url = #{vehicleCommercialLicencePhotoUrl},
+			registration_photo_url = #{registrationPhotoUrl},
+			updated_at = #{updatedAt},
+			updated_by = #{updatedBy}
+		WHERE 
+			car_id = #{carId}
+			
+	</update>
+	
+	<update id="approvedCarByAdmin" parameterType="CarModel"  > 
+		
+		UPDATE 
+			cars 
+		SET 
+		    approvel_status = #{approvelStatus},
+			updated_at = #{updatedAt}
+		WHERE
+			car_id = #{carId}
+			
+	</update>
+	
+	<select id="isCarPlateExists" parameterType="String" resultType="boolean">
+	
+		SELECT
+			(count(*) > 0)
+		FROM
+			cars
+		WHERE
+			car_plate_no = #{carPlateNo}
+		<if test="carId != null">
+		AND
+			car_id != #{carId}
+		</if>
+			
+	</select>
+	
+	<select id="getCarDetailsByCarId" parameterType="String" resultMap="carResultMap">
+	    
+		SELECT
+			<include refid="CarColumns"></include>,
+			<include refid="CarTypeColumns"></include>
+		FROM 
+			cars c
+		INNER JOIN car_type ct ON ct.car_type_id = c.car_type_id
+		WHERE 
+			c.car_id = #{carId}
+			
+	</select>
+	
+	<select id="getCarActiveDeativeDetailsById" parameterType="String" resultMap="carResultMap">
+	 
+		SELECT 
+			approvel_status
+		FROM 
+			cars
+		WHERE 
+			car_id = #{carId}
+		     
+ 	</select>
+	
+	<select id="getViewModeVendorsCarListByCarTypeIds" parameterType="map" resultMap="carResultMap">
+	
+		SELECT
+			<include refid="CarColumns"></include>,
+			<include refid="CarTypeColumns"></include>
+		FROM 
+			cars c
+		INNER JOIN car_type ct ON ct.car_type_id = c.car_type_id
+		INNER JOIN car_drivers cd ON cd.car_id = c.car_id
+		WHERE
+			cd.driver_id = #{driverId}
+			
+	</select>
+	
+	<select id="getCarList" parameterType="String" resultMap="carResultMap">
+		
+		SELECT
+			<include refid="CarColumns"></include>,
+			<include refid="CarTypeColumns"></include>
+		FROM 
+			cars c
+		INNER JOIN car_type ct ON ct.car_type_id = c.car_type_id
+		
+	</select>
+	
+	<select id="getCarListByCarTypeIds" parameterType="map" resultMap="carResultMap">
+	    
+		SELECT
+			<include refid="CarColumns"></include>,
+			<include refid="CarTypeColumns"></include>
+		FROM 
+			cars c
+		INNER JOIN car_type ct ON ct.car_type_id = c.car_type_id
+		<if test="vendorId!=null">
+		INNER JOIN car_vendors cv ON cv.car_id = c.car_id AND cv.vendor_id = #{vendorId} 
+		</if>
+		<if test="carTypeList != null">	
+		WHERE
+			c.car_type_id IN
+			<foreach item="item" index="index" collection="carTypeList" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+			
+	</select>
+	
+	<select id="getTotalCarCount" resultType="int">
+	
+		SELECT
+			count(c.car_id)
+		FROM 
+			cars c
+		WHERE
+			c.created_at &gt; #{startDatelong}
+		AND
+			c.created_at &lt; #{endDatelong}
+			
+	</select>
+	
+	<select id="getCarListForSearch" parameterType="map" resultMap="carResultMap">
+		
+		SELECT
+			<include refid="CarColumns"></include>,
+			<include refid="CarTypeColumns"></include>
+		FROM 
+			cars c
+		INNER JOIN car_type ct ON ct.car_type_id = c.car_type_id 
+		LEFT JOIN users u ON c.driver_id = u.user_id
+		LEFT JOIN user_info ui ON c.driver_id = ui.user_id
+ 		WHERE  
+        	(
+               	c.car_model iLIKE #{globalSearchString} 
+            OR 
+               	c.car_color iLIKE #{globalSearchString} 
+            OR 
+               	ct.car_type iLIKE #{globalSearchString} 
+		 	OR 
+		 		c.car_plate_no iLIKE #{globalSearchString}
+		 	OR 
+		 		CONCAT(ui.first_name,CONCAT(' ',ui.last_name)) iLIKE #{globalSearchString} 
+		 	OR 
+		 		CAST (c.car_year AS character varying) =  replace(#{globalSearchString}, '%', '')
+		 	OR 
+		 		CAST (c.no_of_passenger AS character varying) =  replace(#{globalSearchString}, '%', '')
+		 	OR 
+		 		c.owner iLIKE #{globalSearchString}
+			)
+		AND
+			c.created_at &gt; #{startDatelong}
+		AND
+			c.created_at &lt; #{endDatelong}
+		<if test="approvelCheck != null">
+		AND
+			c.approvel_status = #{approvelStatus}
+		</if>
+		ORDER BY c.updated_at DESC
+		LIMIT  #{length}  OFFSET  #{start}   
+        
+	</select>
+	
+	<select id="getVendorTotalCarCount" resultType="int">
+	
+		SELECT
+			count(c.car_id)
+		FROM 
+			cars c
+		INNER JOIN car_type ct ON ct.car_type_id = c.car_type_id 
+		LEFT JOIN users u ON c.driver_id = u.user_id
+		LEFT JOIN user_info ui ON c.driver_id = ui.user_id
+		INNER JOIN car_vendors cv ON cv.car_id = c.car_id AND cv.vendor_id = #{loggedInUserId} 
+		WHERE
+			c.created_at &gt; #{startDatelong}
+		AND
+			c.created_at &lt; #{endDatelong}
+		<if test="approvelCheck != null">
+		AND
+			c.approvel_status = #{approvelStatus}
+		</if>
+		
+	</select>
+	
+	<select id="getVendorCarListForSearch"  parameterType="map"  resultMap="carResultMap">
+		
+		SELECT
+			<include refid="CarColumns"></include>,
+			<include refid="CarTypeColumns"></include>, 
+			ui.first_name,ui.last_name
+		FROM 
+			cars c
+		INNER JOIN car_type ct ON ct.car_type_id = c.car_type_id
+		LEFT JOIN users u ON c.driver_id = u.user_id
+		LEFT JOIN user_info ui ON c.driver_id = ui.user_id
+		INNER JOIN car_vendors cv ON cv.car_id = c.car_id AND cv.vendor_id = #{loggedInUserId} 
+ 		WHERE  
+ 			c.created_at &gt; #{startDatelong}
+		AND
+			c.created_at &lt; #{endDatelong}
+		AND
+               (
+                	c.car_model iLIKE #{globalSearchString} 
+                OR 
+                	c.car_color iLIKE #{globalSearchString} 
+                OR 
+                	ct.car_type iLIKE #{globalSearchString} 
+			 	OR 
+			 		c.car_plate_no iLIKE #{globalSearchString}
+			 	OR 
+			 		CONCAT(ui.first_name,CONCAT(' ',ui.last_name)) iLIKE #{globalSearchString} 
+			 	OR 
+			 		CAST (c.car_year AS character varying) =  replace(#{globalSearchString}, '%', '')
+			 	OR 
+			 		CAST (c.no_of_passenger AS character varying) =  replace(#{globalSearchString}, '%', '')
+			 	OR 
+			 		c.owner iLIKE #{globalSearchString}
+			   )
+		<if test="approvelCheck != null">
+		AND
+			c.approvel_status = #{approvelStatus}
+		</if>
+		ORDER BY c.updated_at DESC
+		LIMIT  #{length}  OFFSET  #{start}   
+        
+	</select>
+	
+</mapper> 

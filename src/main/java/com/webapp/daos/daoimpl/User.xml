@@ -1,0 +1,2628 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.webapp.daos.UserDao">
+
+	<resultMap id="userResultMap" type="UserModel" >
+	
+		<result property="userId" column="user_id" />
+		<result property="email" column="email" />
+		<result property="password" column="password" />
+		<result property="photoUrl" column="photo_url" />		
+		<result property="firstName" column="first_name" />
+		<result property="lastName" column="last_name" />
+		<result property="phoneNo" column="phone_no" />
+		<result property="phoneNoCode" column="phone_no_code" />
+		<result property="gender" column="gender" />
+		<result property="roleId" column="role_id" />
+		<result property="userRole" column="userRole" />
+		<result property="isNotificationStatus" column="is_notification_send_status" />
+		<result property="isOnDuty" column="is_on_duty" />
+		<result property="isActive" column="is_active" />
+		<result property="tip" column="tip" />
+		<result property="isVerified" column="is_verified" />
+		<result property="createdAt" column="created_at" />
+		<result property="updatedAt" column="updated_at" />
+		<result property="createdBy" column="created_by" />
+		<result property="updatedBy" column="updated_by" />
+		<result property="companyName" column="company_name" />
+		<result property="companyAddress" column="company_address" />
+		
+		<result property="invoiceTotal" column="invoiceTotal" />
+		<result property="driverAmountTotal" column="driverAmountTotal" />
+		<result property="driverBookingFees" column="driverBookingFees" />
+		<result property="driverReceivableAmount" column="driverReceivableAmount" />
+		<result property="driverCashAmountCollected" column="driverCashAmountCollected" />
+		<result property="driverCashIncome" column="driverCashIncome" />
+		<result property="driverCardIncome" column="driverCardIncome" />  
+		<result property="adminSettlementAmount" column="adminSettlementAmount" />
+		
+		<result property="driverDistanceTotal" column="driverDistanceTotal"/>
+		
+		<result property="credit" column="credit" />
+		<result property="referralCode" column="referral_code" />
+		
+		<result property="isFirstTime" column="is_first_time" />
+		
+		<result property="noOfRefer" column="no_of_refer" />
+		<result property="totalReferralBenefits" column="total_referral_benefits" />
+		
+		<result property="promoDiscount" column="promo_discount" />
+		<result property="taxAmount" column="tax_amount" />
+		
+		<result property="latitude" column="latitude" />
+		<result property="longitude" column="longitude" />
+		
+		<result property="carCount" column="carCount" />
+		<result property="driverCount" column="driverCount" />
+		
+		<result property="isApprovelStatus" column="approvel_status" />
+		<result property="vendorName" column="vendor_name" />
+		<result property="markupFare" column="markupFare" /> 
+		
+		<result property="userAccountId" column="user_account_id" /> 
+		<result property="urlId" column="url_id" />
+		<result property="isVendorDriverSubscriptionAppliedInBookingFlow" column="is_vendor_driver_subscription_applied_in_booking_flow" />
+		
+		<result property="agentNumber" column="agent_number" />
+		
+		<result property="serviceId" column="service_id" />
+		<result property="serviceName" column="service_name" />
+		<result property="categoryId" column="category_id" />
+		<result property="categoryName" column="category_name" />
+		<result property="serviceTypeId" column="service_type_id" />
+		
+		<result property="vendorMonthlySubscriptionFee" column="vendor_monthly_subscription_fee" />
+	    <result property="isVendorSubscriptionFreeActive" column="is_vendor_subscription_free_active" />
+	    <result property="isVendorSubscriptionCurrentActive" column="is_vendor_subscription_current_active" />
+	    <result property="vendorFreeSubscriptionStartDateTime" column="vendor_free_subscription_start_date_time" />
+	    <result property="vendorFreeSubscriptionEndDateTime" column="vendor_free_subscription_end_date_time" />
+	    <result property="vendorCurrentSubscriptionStartDateTime" column="vendor_current_subscription_start_date_time" />
+	    <result property="vendorCurrentSubscriptionEndDateTime" column="vendor_current_subscription_end_date_time" />
+	    <result property="vendorMonthlySubscriptionHistoryId" column="vendor_monthly_subscription_history_id" />
+	    <result property="isVendorSubscriptionMarkedExpiredByCronJob" column="is_vendor_subscription_marked_expired_by_cronjob" />
+	    <result property="vendorSubscriptionMarkedExpiredByCronJobTiming" column="vendor_subscription_marked_expired_by_cronjob_timing" />
+	    
+	    <result property="driverReferralCodeLogId" column="driver_referral_code_log_id" />
+	    <result property="driverReferralDriverName" column="driverReferralDriverName" />
+	    
+	    <result property="driverLicenseCardNumber" column="driver_license_card_number" />
+	    
+	    <result property="dob" column="dob" />
+	    <result property="phoneNum" column="phone_num"/>
+	    
+	    <result property="vendorBrandName" column="vendor_brand_name"/>
+		
+	</resultMap>
+	
+	<sql id="vendorNewColumns">
+		vendor_monthly_subscription_fee, is_vendor_subscription_free_active, 
+		is_vendor_subscription_current_active, vendor_free_subscription_start_date_time, 
+		vendor_free_subscription_end_date_time, vendor_current_subscription_start_date_time, 
+		vendor_current_subscription_end_date_time, vendor_monthly_subscription_history_id,
+		is_vendor_subscription_marked_expired_by_cronjob, vendor_subscription_marked_expired_by_cronjob_timing,
+		vendor_brand_name
+	</sql>
+
+	<insert id="addUser" parameterType="UserModel" useGeneratedKeys="false">
+	
+		INSERT INTO 
+			users
+				(
+					user_id, email, password, photo_url, role_id,
+					created_at, created_by, updated_at, updated_by
+				)
+		VALUES
+				(
+					#{userId}, #{email}, #{password}, #{photoUrl}, #{roleId},
+					#{createdAt}, #{createdBy}, #{updatedAt}, #{updatedBy}
+				)
+				
+	</insert>
+	
+	<insert id="addDriver" parameterType="UserModel" useGeneratedKeys="false">
+	
+		INSERT INTO 
+			users
+				(
+					user_id, email, password, photo_url, is_active, is_deleted, role_id,
+					created_at, created_by, updated_at, updated_by
+				)
+		VALUES
+				(
+					#{userId}, #{email}, #{password}, #{photoUrl}, #{isActive}, #{isDeleted}, #{roleId},
+					#{createdAt}, #{createdBy}, #{updatedAt}, #{updatedBy}
+				)
+				
+	</insert>
+	
+	<insert id="addDriverWeb" parameterType="UserModel" useGeneratedKeys="false">
+	
+		INSERT INTO 
+			users
+				(
+					user_id,email,password,photo_url,is_active,
+					created_at,created_by,
+					updated_at,updated_by,role_id,approvel_status
+				)
+		VALUES
+				(
+					#{userId},#{email},#{password},#{photoUrl},#{isActive},
+					#{createdAt},#{createdBy},
+					#{updatedAt},#{updatedBy},#{roleId},#{isApprovelStatus}
+				)
+				
+	</insert>
+	
+	<select id="getUserAccountDetailsByEmailId" parameterType="String" resultMap="userResultMap">
+	
+		SELECT 
+			* 
+		FROM 
+			users 
+		WHERE 
+			email ilike #{emailId}
+			
+	</select>
+	
+	<select id="getUserAccountDetailsByRoleIdAndEmailId" resultMap="userResultMap">
+	
+		SELECT 
+			* 
+		FROM 
+			users 
+		WHERE
+			email ilike #{emailId}
+		AND
+			role_id IN
+			<foreach item="item" index="index" collection="roleIds" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+			
+	</select>
+			
+	<select id="getUserAccountDetailsById" parameterType="String" resultMap="userResultMap">
+	
+		SELECT 
+			U.user_id,U.email,U.created_at,U.updated_at,U.password,U.photo_url, U.is_notification_send_status,
+			U.is_on_duty, U.is_active, UI.first_name, UI.last_name, UI.phone_no,UI.phone_no_code,UI.tip,U.is_active,UI.gender,
+			R.role_id,R.role as userRole, UI.is_verified, UI.created_by, UI.created_at, UI.updated_by, UI.updated_at,UI.company_name, UI.company_address,
+			concat(UI.first_name,' ',UI.last_name ) AS fullName, UI.credit, UI.referral_code, UI.is_first_time, UI.agent_number,
+			U.is_vendor_driver_subscription_applied_in_booking_flow,
+	    	<include refid="vendorNewColumns"></include>
+		FROM 
+			users U
+		INNER JOIN user_info UI ON UI.user_id=U.user_id
+		INNER JOIN roles R ON R.role_id=U.role_id
+		WHERE 
+		     is_deleted = 'FALSE' 
+	    AND 
+		     U.user_id = #{actorId}
+ 	</select>
+ 	
+ 	<select id="getUserActiveDeativeDetailsById" parameterType="String" resultMap="userResultMap">
+ 	
+		SELECT 
+			U.user_id,U.email,U.created_at,U.updated_at,U.password,U.photo_url, U.is_notification_send_status,
+			U.is_on_duty, U.is_active, UI.first_name, UI.last_name, UI.phone_no,UI.phone_no_code,UI.tip,U.is_active,UI.gender,
+			R.role as userRole, UI.is_verified, UI.created_by, UI.created_at, UI.updated_by, UI.updated_at,UI,company_name, UI.company_address,
+			concat(UI.first_name,' ',UI.last_name ) AS fullName, U.role_id, UI.credit, UI.referral_code, UI.agent_number,
+			UI.is_first_time,U.approvel_status,U.approvel_status,
+			U.is_vendor_driver_subscription_applied_in_booking_flow, UI.gender, UI.dob,
+	    	<include refid="vendorNewColumns"></include>
+		FROM 
+			users U
+		INNER JOIN user_info UI ON UI.user_id=U.user_id
+		INNER JOIN roles R ON R.role_id=U.role_id
+		WHERE 
+		     U.user_id = #{actorId}
+		     
+ 	</select>
+
+	<update id="updateNotificationStatus" parameterType="UserModel"  > 
+		
+		UPDATE 
+			users 
+		SET 
+			is_notification_send_status =#{isNotificationStatus}
+		WHERE 
+			user_id=#{userId}
+			
+	</update>
+	
+	<update id="driverOnOffDuty" parameterType="UserModel"  > 
+		
+		UPDATE 
+			users 
+		SET 
+			is_on_duty =#{isOnDuty}
+		WHERE 
+			user_id=#{userId}
+			
+	</update>
+	
+	<update id="deleteUser" parameterType="String"  > 
+		
+		UPDATE 
+			users 
+		SET 
+			is_deleted = 'TRUE'
+		WHERE 
+			user_id=#{userId}
+			
+	</update>
+		
+	<update id="updatePassword" parameterType="UserModel" >
+	
+		UPDATE 
+			users 
+		SET 
+			password = #{password}, 
+			updated_at = #{updatedAt}
+		WHERE  
+			user_id = #{userId} 
+		AND 
+			is_deleted = 'FALSE'
+		
+	</update>
+
+	<update id="updateDriverUpdatedAt" parameterType="UserModel" >
+	
+		UPDATE 
+			users 
+		SET 
+			email = #{email},			
+			photo_url = #{photoUrl},
+			updated_at = #{updatedAt}
+		WHERE  
+			user_id = #{userId} 
+			
+	</update>
+	
+	<select id="isEmailIdExists" parameterType="String"	resultType="boolean">
+	
+		SELECT 
+			(count(u.user_id)>0) 
+		FROM 
+			users u
+		<if test="vendorId!=null">
+		INNER JOIN driver_vendors dv ON dv.driver_id = u.user_id AND dv.vendor_id = #{vendorId} AND dv.role_id = #{passengerRoleId}
+		</if>
+		WHERE 
+			u.email ilike #{emailId} 
+			
+	</select>
+	
+	<update id="deleteUserById" parameterType="UserModel" >
+	
+		UPDATE 
+			users 
+		SET 
+			record_status = 'D', 
+			updated_at = #{updatedAt}
+		WHERE  
+			user_id = #{userId} 
+		AND 
+			record_status = 'A'
+			
+	</update>
+	
+
+	<select id="getUserModel" parameterType="map" resultMap="userResultMap">
+	
+		SELECT 
+			* 
+		FROM 
+			users 
+		WHERE 
+			email ilike #{email} 
+		AND 
+			password = #{password}
+		AND 
+			is_active = TRUE
+			
+	</select>
+	
+	<select id="getUserModelWithRoleIds" parameterType="map" resultMap="userResultMap">
+	
+		SELECT 
+			* 
+		FROM 
+			users 
+		WHERE 
+			email ilike #{email} 
+		AND 
+			password = #{password}
+		AND 
+			is_active = TRUE
+		AND
+			role_id IN
+			<foreach item="item" index="index" collection="roleIdList" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+			
+	</select>
+	
+	<select id="checkLoginCredentials" parameterType="UserModel" resultType="String"> 
+			
+		SELECT 
+			user_id
+		FROM 
+			users 
+		WHERE 
+			email ilike #{email} 
+		AND 
+			password=#{password} 
+		AND 
+			is_active = TRUE
+		
+	</select>
+	
+	<select id="checkLoginCredentialsRoleWise" parameterType="UserModel" resultType="String"> 
+			
+		SELECT 
+			user_id
+		FROM 
+			users 
+		WHERE 
+			email ilike #{email} 
+		AND 
+			password = #{password} 
+		AND 
+		 	is_active = TRUE
+		AND
+			role_id = #{roleId}
+			
+	</select>
+	
+	
+	<select id="checkLoginCredentialsNoActiveCheck" parameterType="UserModel" resultType="String"> 
+			
+		SELECT 
+			user_id
+		FROM 
+			users 
+		WHERE 
+			email ilike #{email} 
+		AND 
+			password=#{password}
+			
+	</select>
+	
+	<select id="checkLoginCredentialsRoleWiseNoActiveCheck" parameterType="UserModel" resultType="String">
+	 		
+		SELECT 
+			user_id
+		FROM 
+			users 
+		WHERE 
+			email ilike #{email} 
+		AND 
+			password = #{password} 
+		AND
+			role_id = #{roleId}
+			
+	</select>
+	
+	<select id="checkLoginCredentialsRoleWiseOwnerOperator" parameterType="UserModel" resultType="String"> 	
+		
+		SELECT 
+			user_id
+		FROM 
+			users 
+		WHERE 
+			email ilike #{email} 
+		AND 
+			password = #{password} 
+		AND 
+		 	is_active = TRUE
+		AND
+			(
+				role_id = '3'
+			OR
+				role_id = '4'
+			)
+			
+	</select>
+		
+	<select id="getRoleByUserId" parameterType="String"	resultType="String"> 	
+		
+		SELECT 
+			role_id
+		FROM 
+			users 
+		WHERE 
+			user_id = #{userId}
+			
+	</select>
+	
+	<select id="getTotalUserCount" parameterType="map" resultType="int"> 		
+		
+	    SELECT 
+			count(DISTINCT U.user_id)
+		FROM 
+			users U
+		LEFT JOIN multicity_user_region MUR ON MUR.user_id = U.user_id
+		<if test="vendorId!=null">
+		INNER JOIN driver_vendors dv ON dv.driver_id = u.user_id AND dv.vendor_id = #{vendorId} 
+		</if>
+		WHERE 	
+			U.role_id = #{roleId}
+		<if test="startDate > 0">	
+		AND
+			U.created_at &gt; #{startDate}
+		</if>
+		<if test="endDate > 0">	
+		AND
+			U.created_at &lt; #{endDate}
+		</if>	
+		<if test="ownUserId != null">	
+		AND
+			U.user_id != #{ownUserId}
+		</if>
+		<if test="assignedRegionList != null">
+		AND
+	    	MUR.multicity_city_region_id IN
+    		<foreach item="item" index="index" collection="assignedRegionList" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+	    </if>
+		
+	</select>
+	
+	<select id="getTotalOperatorCountByBusinessOwnerId" parameterType="String" resultType="int"> 		
+		
+	    SELECT 
+			count(DISTINCT bo.business_operator_id)
+		FROM 
+			business_operator bo
+		LEFT JOIN multicity_user_region MUR ON MUR.user_id = bo.business_owner_id	
+        WHERE 
+       		bo.operator_id != #{logggedInUserId}
+       	AND
+        	bo.is_deleted = false
+       <if test="startDate > 0">	
+		AND
+			bo.created_at &gt; #{startDate}
+		AND
+			bo.created_at &lt; #{endDate}
+		</if>	
+        <if test="userId != null">
+		AND
+         	bo.business_owner_id = #{userId}
+         </if>
+        <if test="assignedRegionList != null">
+		AND
+	    	MUR.multicity_city_region_id IN
+    		<foreach item="item" index="index" collection="assignedRegionList" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+	    </if>
+		
+	</select>
+	
+	<select id="getTotalPassengerUserCount" parameterType="map" resultType="int"> 		
+		
+	    SELECT 
+			count(DISTINCT U.user_id)
+		FROM 
+			users u
+		INNER JOIN user_info ui ON ui.user_id=u.user_id
+		LEFT JOIN multicity_user_region MUR ON MUR.user_id = ui.user_id
+		<if test="userId != null">
+		INNER JOIN
+				 driver_vendors DV
+		    ON
+		    	DV.driver_id = u.user_id AND DV.vendor_id = #{userId} 
+		</if>
+		WHERE 
+			u.role_id = #{roleId}   
+		AND
+			ui.created_at &gt; #{startDate}
+		AND
+			ui.created_at &lt; #{endDate} 
+		<if test="statusCheck!=null">
+			<if test="statusCheck==1">
+			AND
+				u.is_active = true
+			</if>
+			<if test="statusCheck==2">
+			AND
+				u.is_active = false
+			</if>
+		</if>
+		
+		<if test="assignedRegionList != null">
+	    AND
+	    	MUR.multicity_city_region_id IN
+	    		
+	    		<foreach item="item" index="index" collection="assignedRegionList" open="(" separator="," close=")">
+					#{item}
+				</foreach>
+	    </if>
+		
+	</select>
+	
+	<select id="getUserListForSearch" parameterType="map" resultMap="userResultMap">
+		
+		SELECT 
+			DISTINCT u.user_id,u.email,ui.first_name, ui.last_name, ui.phone_no,ui.phone_no_code,u.password,
+			u.created_at,u.updated_at, u.photo_url,u.is_active, ui.company_name, ui.company_address, 
+			ui.credit, ui.referral_code, ui.is_first_time, ui.is_verified,u.approvel_status, ui.agent_number,
+			u.is_vendor_driver_subscription_applied_in_booking_flow, u.phone_num,
+			DRCL.driver_referral_code_log_id, CONCAT(DRD.first_name, CONCAT(' ', DRD.last_name)) AS driverReferralDriverName
+		FROM 
+			users u
+		INNER JOIN user_info ui ON ui.user_id=u.user_id
+		LEFT JOIN multicity_user_region MUR ON MUR.user_id = ui.user_id
+		LEFT JOIN driver_referral_code_logs DRCL ON DRCL.passenger_id = ui.user_id AND DRCL.record_status='A'
+		LEFT JOIN user_info DRD ON DRD.user_id = DRCL.driver_id
+    	WHERE  
+                  (
+                  		u.email iLIKE #{globalSearchString} 
+                  	OR 
+                  		ui.first_name iLIKE #{globalSearchString} 
+			 		OR 
+			 			ui.last_name iLIKE #{globalSearchString} 
+			 		OR 
+			 			ui.company_name iLIKE #{globalSearchString} 
+			 		OR 
+			 			ui.company_address iLIKE #{globalSearchString} 
+			 		OR 
+			 			ui.phone_no iLIKE #{globalSearchString}
+			 		OR 
+			 			CONCAT(ui.first_name,CONCAT(' ',ui.last_name)) iLIKE #{globalSearchString} 
+			 		) 
+		AND 
+			u.role_id = #{roleId} 
+		<if test="startDatelong>0">  
+		AND
+			ui.created_at &gt; #{startDatelong}
+		AND
+			ui.created_at &lt; #{endDatelong} 
+		</if>
+		<if test="statusCheck!=null">
+			<if test="statusCheck==1">
+			AND
+				u.is_active = true
+			</if>
+			<if test="statusCheck==2">
+			AND
+				u.is_active = false
+			</if>
+		</if>
+		
+		<if test="assignedRegionList != null">
+	    AND
+	    	MUR.multicity_city_region_id IN
+	    		
+	    		<foreach item="item" index="index" collection="assignedRegionList" open="(" separator="," close=")">
+					#{item}
+				</foreach>
+	    </if>
+	    ORDER BY u.updated_at DESC
+	    <if test="length>0">
+        LIMIT #{length} OFFSET #{start}          
+        </if>
+        
+	</select>
+	
+	<select id="getUserListForSearchBasedOnVendorId"  parameterType="map"  resultMap="userResultMap">
+		
+		SELECT 
+			DISTINCT u.user_id,u.email,ui.first_name, ui.last_name, ui.phone_no,ui.phone_no_code,u.password,
+			u.created_at,u.updated_at, u.photo_url,u.is_active, ui.company_name, ui.company_address, 
+			ui.credit, ui.referral_code, ui.is_first_time, ui.is_verified,u.approvel_status, ui.agent_number,
+			u.is_vendor_driver_subscription_applied_in_booking_flow, u.phone_num
+		FROM 
+			users u
+	     INNER JOIN user_info ui ON ui.user_id=u.user_id
+		 LEFT JOIN multicity_user_region MUR ON MUR.user_id = ui.user_id
+	     <if test="vendorId != null">
+		 INNER JOIN
+				 driver_vendors DV
+		    ON
+		    	DV.driver_id = U.user_id AND DV.vendor_id = #{vendorId} AND DV.role_id = #{roleId}
+		 </if>
+	     WHERE  
+                  (
+                  		u.email iLIKE #{globalSearchString} 
+                  	OR 
+                  		ui.first_name iLIKE #{globalSearchString} 
+			 		OR 
+			 			ui.last_name iLIKE #{globalSearchString} 
+			 		OR 
+			 			ui.company_name iLIKE #{globalSearchString} 
+			 		OR 
+			 			ui.company_address iLIKE #{globalSearchString} 
+			 		OR 
+			 			ui.phone_no iLIKE #{globalSearchString}
+			 		OR 
+			 			CONCAT(ui.first_name,CONCAT(' ',ui.last_name)) iLIKE #{globalSearchString} 
+			 		) 
+		AND 
+			u.role_id = #{roleId}   
+		AND
+			ui.created_at &gt; #{startDatelong}
+		AND
+			ui.created_at &lt; #{endDatelong} 
+		<if test="statusCheck!=null">
+			<if test="statusCheck==1">
+			AND
+				u.is_active = true
+			</if>
+			<if test="statusCheck==2">
+			AND
+				u.is_active = false
+			</if>
+		</if>
+		<if test="assignedRegionList != null">
+	    AND
+	    	MUR.multicity_city_region_id IN
+	    		
+	    		<foreach item="item" index="index" collection="assignedRegionList" open="(" separator="," close=")">
+					#{item}
+				</foreach>
+	    </if>
+	    
+		ORDER BY u.updated_at DESC
+		
+        LIMIT  #{length}  OFFSET  #{start}          
+        
+	</select>
+	
+	<select id="getDriverReportAdminListForSearch"  parameterType="map"  resultMap="userResultMap">
+		
+		SELECT 
+			DISTINCT u.user_id,u.email,ui.first_name, ui.last_name, ui.phone_no,ui.phone_no_code,
+			u.created_at,u.updated_at, u.photo_url,u.is_active, ui.company_name, ui.company_address,
+			ui.credit, ui.referral_code, ui.is_first_time,u.is_on_duty, ui.agent_number,
+			COALESCE(SUM(inv.total), 0) AS invoiceTotal, 
+			COALESCE(SUM(inv.driver_amount), 0) AS driverAmountTotal, 
+			COALESCE(SUM(inv.booking_fees), 0) AS driverBookingFees, 
+			COALESCE(SUM(inv.final_amount_collected), 0) AS driverReceivableAmount, 
+			COALESCE(SUM(inv.admin_settlement_amount),0) AS adminSettlementAmount, 
+			COALESCE(SUM(inv.promo_discount), 0) AS promo_discount, 
+			COALESCE(SUM(inv.total_tax_amount), 0) AS tax_amount, 
+			COALESCE(SUM(inv.markup_fare), 0) AS markupFare,
+			(SELECT COALESCE(sum(inv.final_amount_collected), 0) FROM invoices inv INNER JOIN tours t ON t.tour_id = inv.tour_id WHERE t.driver_id= u.user_id AND t.created_at &gt; #{startDate} AND t.created_at &lt; #{endDate} AND t.payment_type = '1') AS driverCashAmountCollected,
+			(SELECT COALESCE(sum(inv.driver_amount), 0) FROM invoices inv INNER JOIN tours t ON t.tour_id = inv.tour_id WHERE t.driver_id= u.user_id AND t.created_at &gt; #{startDate} AND t.created_at &lt; #{endDate} AND t.payment_type = '1') AS driverCashIncome,
+			(SELECT COALESCE(sum(inv.driver_amount), 0) FROM invoices inv INNER JOIN tours t ON t.tour_id = inv.tour_id WHERE t.driver_id= u.user_id AND t.created_at &gt; #{startDate} AND t.created_at &lt; #{endDate} AND t.payment_type = '2') AS driverCardIncome
+		FROM 
+			users u
+		INNER JOIN user_info ui ON ui.user_id = u.user_id
+		LEFT JOIN multicity_user_region MUR ON MUR.user_id = ui.user_id
+		<if test="vendorId!=null">
+		INNER JOIN driver_vendors DV ON DV.driver_id = U.user_id AND DV.vendor_id = #{vendorId} 
+		</if>
+		LEFT JOIN tours t ON (t.driver_id=u.user_id AND t.created_at &gt; #{startDate} AND t.created_at &lt; #{endDate})
+		LEFT JOIN invoices inv ON inv.tour_id = t.tour_id
+        WHERE  
+        	u.role_id = #{roleId}   
+        AND
+        <if test="assignedRegionList != null">
+	    	MUR.multicity_city_region_id IN
+    		<foreach item="item" index="index" collection="assignedRegionList" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		AND
+	    </if>
+	       	(
+	        	u.email iLIKE #{globalSearchString} 
+	        OR 
+	        	ui.first_name iLIKE #{globalSearchString} 
+	 		OR 
+	 			ui.last_name iLIKE #{globalSearchString} 
+	 		OR 
+	 			ui.phone_no iLIKE #{globalSearchString}
+	 		OR 
+	 			CONCAT(ui.first_name,CONCAT(' ',ui.last_name)) iLIKE #{globalSearchString} 
+	 		) 
+	 	GROUP BY u.user_id,u.email,ui.first_name, ui.last_name, ui.phone_no,ui.phone_no_code,
+				 u.created_at,u.updated_at, u.photo_url,u.is_active, ui.company_name, ui.company_address,
+				 ui.credit, ui.referral_code, ui.is_first_time,u.is_on_duty, ui.agent_number
+		ORDER BY u.updated_at DESC
+		<if test="length>0">
+        LIMIT #{length} OFFSET #{start}        
+        </if>
+        
+	</select>
+	
+	<select id="getDriverReportAdminListForSearchCount" parameterType="map" resultType="int">
+		
+		SELECT 
+			count(DISTINCT ui.user_id)
+		FROM 
+			users u
+		INNER JOIN  user_info ui  ON  ui.user_id = u.user_id
+		LEFT JOIN multicity_user_region MUR ON MUR.user_id = ui.user_id
+		<if test="vendorId!=null">
+		INNER JOIN driver_vendors DV ON DV.driver_id = U.user_id AND DV.vendor_id = #{vendorId} 
+		</if>
+        WHERE  
+        	u.role_id = #{roleId}
+        AND
+        <if test="assignedRegionList != null">
+	    	MUR.multicity_city_region_id IN
+    		<foreach item="item" index="index" collection="assignedRegionList" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		AND
+	    </if>       
+           	(
+	        	u.email iLIKE #{globalSearchString} 
+	        OR 
+	        	ui.first_name iLIKE #{globalSearchString} 
+	 		OR 
+	 			ui.last_name iLIKE #{globalSearchString} 
+	 		OR 
+	 			ui.phone_no iLIKE #{globalSearchString}
+	 		OR 
+	 			CONCAT(ui.first_name,CONCAT(' ',ui.last_name)) iLIKE #{globalSearchString} 
+	 		) 
+        
+	</select>
+	
+	<select id="getDriverKmReportAdminListForSearch"  parameterType="map"  resultMap="userResultMap">
+		
+		SELECT
+			DISTINCT u.user_id,u.email,ui.first_name, ui.last_name, ui.phone_no,ui.phone_no_code, 
+			SUM(t.distance) AS driverDistanceTotal
+		FROM 
+			users u 
+		INNER JOIN user_info ui ON u.user_id=ui.user_id
+		LEFT JOIN multicity_user_region MUR ON MUR.user_id = ui.user_id
+		LEFT JOIN tours t ON (u.user_id=t.driver_id AND t.status=#{tourStatus} AND t.distance &gt; 0 AND t.created_at &gt; #{startDate} AND t.created_at &lt; #{endDate})
+		<if test="vendorId!=null">
+		INNER JOIN driver_vendors DV ON  DV.driver_id = U.user_id AND DV.vendor_id = #{vendorId}
+		</if>
+		WHERE 
+			u.role_id = #{roleId}   
+		AND 
+			(
+            	u.email iLIKE #{globalSearchString} 
+            OR 
+                ui.first_name iLIKE #{globalSearchString} 
+	 		OR 
+	 			ui.last_name iLIKE #{globalSearchString} 
+	 		OR 
+	 			ui.phone_no iLIKE #{globalSearchString}
+	 		OR 
+		 		ui.agent_number iLIKE #{globalSearchString}
+	 		OR 
+	 			CONCAT(ui.first_name,CONCAT(' ',ui.last_name)) iLIKE #{globalSearchString} 
+	 		)
+		<if test="assignedRegionList != null">
+	    AND
+	    	MUR.multicity_city_region_id IN
+    		<foreach item="item" index="index" collection="assignedRegionList" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+	    </if>   
+		GROUP BY u.user_id,ui.first_name,ui.last_name,ui.phone_no,ui.phone_no_code
+		<if test="length>0">
+        LIMIT #{length} OFFSET #{start}        
+        </if>
+        
+	</select>
+	
+	<select id="getDriverListForSearch" parameterType="map" resultMap="userResultMap">
+		
+		SELECT 
+			u.user_id, u.email, u.photo_url, u.is_active, 
+			ui.first_name, ui.last_name, ui.phone_no,ui.phone_no_code, 
+			ui.company_name, ui.company_address, ui.credit, ui.referral_code, 
+			ui.is_first_time, u.is_on_duty, ui.agent_number,
+			DG.created_at , DDL.created_at AS updated_at,
+			u.is_vendor_driver_subscription_applied_in_booking_flow
+		FROM 
+			users u
+		INNER JOIN user_info ui ON ui.user_id = u.user_id
+		LEFT JOIN driver_gps DG ON DG.driver_id = ui.user_id
+		LEFT JOIN driver_duty_logs DDL ON (DDL.driver_id = ui.user_id AND DDL.created_at = (SELECT MAX(created_at) FROM driver_duty_logs WHERE driver_id = ui.user_id))
+        <if test="vendorId!=null">
+        INNER JOIN driver_vendors dv ON dv.driver_id = u.user_id AND dv.vendor_id = #{vendorId}
+        </if>
+        WHERE  
+			u.role_id = #{roleId} 
+		AND
+		<if test="onOffStatusForCheck != null">  
+			u.is_on_duty = #{onOffStatus}
+		AND
+		</if>
+		<if test="startDatelong > 0">  
+			DG.created_at &gt; #{startDatelong}
+		AND
+		</if>
+		<if test="endDatelong > 0">
+			DG.created_at &lt; #{endDatelong}
+		AND
+		</if>
+			( 	
+            	u.email iLIKE #{globalSearchString} 
+           	OR 
+                ui.first_name iLIKE #{globalSearchString} 
+	 		OR 
+	 			ui.last_name iLIKE #{globalSearchString} 
+	 		OR 
+	 			ui.phone_no iLIKE #{globalSearchString}
+	 		OR 
+	 			ui.agent_number iLIKE #{globalSearchString}
+	 		OR 
+	 			CONCAT(ui.first_name,CONCAT(' ',ui.last_name)) iLIKE #{globalSearchString}
+	 		)
+		ORDER BY u.updated_at DESC
+        LIMIT  #{length}  OFFSET  #{start}          
+        
+	</select>
+	
+	<select id="getDriverListForSearchCount" parameterType="map" resultType="int">
+		
+		SELECT 
+			count(ui.user_id)
+		FROM 
+			users u
+		INNER JOIN user_info ui ON ui.user_id = u.user_id
+        WHERE
+        	role_id = #{roleId}      
+        AND
+	        (
+	        	u.email iLIKE #{globalSearchString} 
+	        OR 
+	            ui.first_name iLIKE #{globalSearchString} 
+	 		OR 
+	 			ui.last_name iLIKE #{globalSearchString} 
+	 		OR 
+	 			ui.phone_no iLIKE #{globalSearchString}
+	 		OR 
+	 			ui.agent_number iLIKE #{globalSearchString}
+	 		OR 
+	 			CONCAT(ui.first_name,CONCAT(' ',ui.last_name)) iLIKE #{globalSearchString} 
+	 		) 
+        
+	</select>
+	
+	<select id="getTotalDriverUserCount" parameterType="map" resultType="int"> 		
+		
+	    SELECT 
+			count(DISTINCT U.user_id)
+		FROM 
+			users U
+		LEFT JOIN multicity_user_region MUR ON MUR.user_id = U.user_id
+		LEFT JOIN  driver_gps DG ON DG.driver_id = U.user_id
+		<if test="vendorId != null">
+		INNER JOIN  driver_vendors DV ON DV.driver_id = U.user_id AND DV.vendor_id = #{vendorId} 
+		</if>
+		WHERE 
+			U.role_id = #{roleId} 
+		<if test="onOffStatusForCheck != null">  
+		AND
+			U.is_on_duty = #{onOffStatus}
+		</if>
+		<if test="startDate > 0">  
+		AND
+			DG.created_at &gt; #{startDate}
+		</if>
+		<if test="endDate > 0">
+		AND
+			DG.created_at &lt; #{endDate}
+		</if>
+		<if test="assignedRegionList != null">
+		AND
+	    	MUR.multicity_city_region_id IN
+    		<foreach item="item" index="index" collection="assignedRegionList" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+	    </if>
+		
+	</select>
+	
+	<select id="getActiveUserListForSearch"  parameterType="map"  resultMap="userResultMap">
+		
+		SELECT 
+			DISTINCT u.user_id,u.email,ui.first_name, ui.last_name, ui.phone_no,ui.phone_no_code,u.password,
+			u.created_at,u.updated_at, u.photo_url,u.is_active, ui.company_name, ui.company_address,
+			ui.credit, ui.referral_code, ui.is_first_time, ui.is_verified, ui.agent_number,
+			u.is_vendor_driver_subscription_applied_in_booking_flow
+		FROM 
+			users u
+		INNER JOIN 
+		          user_info ui 
+		ON 
+			ui.user_id=u.user_id
+		LEFT JOIN
+				multicity_user_region MUR
+		ON
+			MUR.user_id = ui.user_id
+        WHERE  
+                  (
+                  		u.email iLIKE #{globalSearchString} 
+                  	OR 
+                  		ui.first_name iLIKE #{globalSearchString} 
+			 		OR 
+			 			ui.last_name iLIKE #{globalSearchString} 
+			 		OR 
+			 			ui.company_name iLIKE #{globalSearchString} 
+			 		OR 
+			 			ui.company_address iLIKE #{globalSearchString} 
+			 		OR 
+			 			ui.phone_no iLIKE #{globalSearchString}
+			 		OR 
+			 			CONCAT(ui.first_name,CONCAT(' ',ui.last_name)) iLIKE #{globalSearchString} 
+			 		) 
+		AND 
+			u.is_deleted ='FALSE'
+		AND 
+			u.is_active = 'TRUE'
+		AND 
+			u.role_id = #{roleId}  
+		<if test="startDatelong>0">
+		AND
+			ui.created_at &gt; #{startDatelong}
+		AND
+			ui.created_at &lt; #{endDatelong} 
+		</if>
+		<if test="assignedRegionList != null">
+	    AND
+	    	MUR.multicity_city_region_id IN
+	    		<foreach item="item" index="index" collection="assignedRegionList" open="(" separator="," close=")">
+					#{item}
+				</foreach>
+	    </if>
+	    
+		ORDER BY u.updated_at DESC
+		<if test="length>0">
+        LIMIT  #{length}  OFFSET  #{start}          
+        </if>
+        
+	</select>
+	
+	<select id="getDeactiveUserListForSearch"  parameterType="map"  resultMap="userResultMap">
+		
+		SELECT 
+			DISTINCT u.user_id,u.email,ui.first_name, ui.last_name, ui.phone_no,ui.phone_no_code,u.password,
+			u.created_at,u.updated_at, u.photo_url,u.is_active,ui.company_name, ui.company_address,
+			ui.credit, ui.referral_code	, ui.is_first_time, ui.is_verified, ui.agent_number,
+			u.is_vendor_driver_subscription_applied_in_booking_flow	
+			   
+		FROM 
+			users u
+			
+		INNER JOIN 
+		          user_info ui 
+		ON 
+			ui.user_id=u.user_id
+			
+		LEFT JOIN
+				multicity_user_region MUR
+		ON
+			MUR.user_id = ui.user_id
+			
+         WHERE  
+                  (
+                  		u.email iLIKE #{globalSearchString} 
+                  	OR 
+                  		ui.first_name iLIKE #{globalSearchString} 
+			 		OR 
+			 			ui.last_name iLIKE #{globalSearchString} 
+			 		OR 
+			 			ui.company_name iLIKE #{globalSearchString} 
+			 		OR 
+			 			ui.company_address iLIKE #{globalSearchString} 
+			 		OR 
+			 			ui.phone_no iLIKE #{globalSearchString}
+			 		OR 
+			 			CONCAT(ui.first_name,CONCAT(' ',ui.last_name)) iLIKE #{globalSearchString} 
+			 		) 
+		AND 
+			u.is_deleted = 'TRUE'
+		AND 
+			u.is_active = 'FALSE'			
+		AND 
+			u.role_id = #{roleId}   
+		AND
+			ui.created_at &gt; #{startDatelong}
+		AND
+			ui.created_at &lt; #{endDatelong} 
+		
+		<if test="assignedRegionList != null">
+	    AND
+	    	MUR.multicity_city_region_id IN
+	    		
+	    		<foreach item="item" index="index" collection="assignedRegionList" open="(" separator="," close=")">
+					#{item}
+				</foreach>
+	    </if>
+	    
+		ORDER BY u.updated_at DESC
+        LIMIT  #{length}  OFFSET  #{start}          
+        
+	</select>
+	
+	<select id="getAdminUserListForSearch"  parameterType="map"  resultMap="userResultMap">
+		
+		SELECT 
+			DISTINCT u.user_id, u.email, ui.first_name, ui.last_name, ui.phone_no, ui.phone_no_code,
+			u.created_at, u.updated_at, u.photo_url, u.is_active,
+			ui.credit, ui.referral_code, ui.is_first_time, ui.agent_number,
+			u.is_vendor_driver_subscription_applied_in_booking_flow					   
+		FROM 
+			users u
+			
+		INNER JOIN 
+		          user_info ui 
+		ON 
+			ui.user_id = u.user_id
+		
+		LEFT JOIN
+				multicity_user_region MUR
+		ON
+			MUR.user_id = ui.user_id
+		          
+        WHERE  
+                  (
+                  		u.email iLIKE #{globalSearchString} 
+                  	OR 
+                  		ui.first_name iLIKE #{globalSearchString} 
+			 		OR 
+			 			ui.last_name iLIKE #{globalSearchString}
+			 		OR 
+			 			ui.company_name iLIKE #{globalSearchString} 
+			 		OR 
+			 			ui.company_address iLIKE #{globalSearchString}  
+			 		OR 
+			 			ui.phone_no iLIKE #{globalSearchString}
+			 		OR 
+			 			CONCAT(ui.first_name,CONCAT(' ',ui.last_name)) iLIKE #{globalSearchString} ) 
+		AND 
+			u.role_id = #{roleId}   
+		AND
+			ui.created_at &gt; #{startDatelong}
+		AND
+			ui.created_at &lt; #{endDatelong}
+			
+		<if test="assignedRegionList != null">
+	    AND
+	    	MUR.multicity_city_region_id IN
+	    		
+	    		<foreach item="item" index="index" collection="assignedRegionList" open="(" separator="," close=")">
+					#{item}
+				</foreach>
+	    </if>
+	    
+	    <if test="ownUserId != null">
+		AND	
+			u.user_id != #{ownUserId}
+		</if>
+		
+		ORDER BY u.updated_at DESC
+        LIMIT  #{length}  OFFSET  #{start}          
+        
+	</select>
+	
+	<select id="getTotalUserCountBySearch" parameterType="map" resultType="int"> 		
+		
+	    SELECT 
+			count(DISTINCT u.user_id)
+		FROM 
+			users u
+		INNER JOIN user_info ui ON ui.user_id = u.user_id
+		LEFT JOIN multicity_user_region MUR ON MUR.user_id = ui.user_id
+        WHERE  
+             	(
+                	u.email iLIKE #{globalSearchString} 
+                OR 
+                	ui.first_name iLIKE #{globalSearchString} 
+		 		OR 
+		 			ui.last_name iLIKE #{globalSearchString}
+		 		OR 
+		 			ui.phone_no iLIKE #{globalSearchString}
+		 		OR 
+		 			CONCAT(ui.first_name,CONCAT(' ',ui.last_name)) iLIKE #{globalSearchString} 
+		 		) 
+		AND 
+			u.role_id = #{roleId}   
+		AND
+			ui.created_at &gt; #{startDatelong}
+		AND
+			ui.created_at &lt; #{endDatelong} 
+		<if test="assignedRegionList != null">
+	    AND
+	    	MUR.multicity_city_region_id IN
+    		<foreach item="item" index="index" collection="assignedRegionList" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+	    </if>
+				
+	</select>
+	
+	<select id="getTotalActiveUserCountBySearch" parameterType="map" resultType="int"> 		
+		
+	    SELECT 
+			count(DISTINCT u.user_id)
+		FROM 
+			users u
+			
+		INNER JOIN 
+		          user_info ui 
+		ON 
+			ui.user_id=u.user_id
+			
+		LEFT JOIN
+				multicity_user_region MUR
+		ON
+			MUR.user_id = ui.user_id
+			
+        WHERE  
+              (
+                	u.email iLIKE #{globalSearchString} 
+                OR 
+                 	ui.first_name iLIKE #{globalSearchString} 
+		 		OR 
+		 			ui.last_name iLIKE #{globalSearchString}
+		 		OR 
+		 			ui.phone_no iLIKE #{globalSearchString}
+		 		OR 
+		 			CONCAT(ui.first_name,CONCAT(' ',ui.last_name)) iLIKE #{globalSearchString} 
+		 		) 
+		AND 
+			u.role_id = #{roleId}   
+		AND 
+			u.is_deleted = 'FALSE'
+		AND 
+			u.is_active = 'TRUE'
+		AND
+			ui.created_at &gt; #{startDatelong}
+		AND
+			ui.created_at &lt; #{endDatelong} 
+		<if test="assignedRegionList != null">
+	    AND
+	    	MUR.multicity_city_region_id IN
+	    		<foreach item="item" index="index" collection="assignedRegionList" open="(" separator="," close=")">
+					#{item}
+				</foreach>
+	    </if>
+	    
+	</select>
+	
+	<select id="getTotalDeactiveUserCountBySearch" parameterType="map" resultType="int"> 		
+		
+	    SELECT 
+			count(DISTINCT u.user_id)
+		FROM 
+			users u
+			
+		INNER JOIN 
+		          user_info ui 
+		ON 
+			ui.user_id=u.user_id
+			
+		LEFT JOIN
+				multicity_user_region MUR
+		ON
+			MUR.user_id = ui.user_id
+			
+        WHERE  
+              (
+                	u.email iLIKE #{globalSearchString} 
+                 OR 
+                 		ui.first_name iLIKE #{globalSearchString} 
+		 		OR 
+		 			ui.last_name iLIKE #{globalSearchString}
+		 		OR 
+		 			ui.phone_no iLIKE #{globalSearchString}
+		 		OR 
+		 			CONCAT(ui.first_name,CONCAT(' ',ui.last_name)) iLIKE #{globalSearchString} 
+		 		) 
+		AND 
+			u.role_id = #{roleId}
+		AND 
+			u.is_deleted = 'TRUE'
+		AND 
+			u.is_active = 'FALSE'   
+		AND
+			ui.created_at &gt; #{startDatelong}
+		AND
+			ui.created_at &lt; #{endDatelong} 
+		
+		<if test="assignedRegionList != null">
+	    AND
+	    	MUR.multicity_city_region_id IN
+	    		
+	    		<foreach item="item" index="index" collection="assignedRegionList" open="(" separator="," close=")">
+					#{item}
+				</foreach>
+	    </if>
+			
+	</select>
+	
+	<select id="getBusinessOpertorListForSearch"  parameterType="map"  resultMap="userResultMap">
+
+        SELECT 
+        	DISTINCT u.user_id,u.email,concat(ui.first_name,' ',ui.last_name ) AS fullName, 
+        	ui.phone_no,ui.phone_no_code, bo.is_deleted, u.created_at, u.photo_url, 
+        	u.updated_at,u.is_active, ui.credit, ui.referral_code, ui.is_first_time, 
+        	u.is_vendor_driver_subscription_applied_in_booking_flow, ui.agent_number,
+        	ui.first_name, ui.last_name
+        FROM 
+		    users u
+		INNER JOIN user_info ui ON ui.user_id=u.user_id
+		INNER JOIN business_operator bo ON bo.operator_id=u.user_id
+		LEFT JOIN multicity_user_region MUR ON MUR.user_id = bo.business_owner_id
+        WHERE  
+            (
+                	u.email iLIKE #{globalSearchString} 
+                OR 
+                 	ui.first_name iLIKE #{globalSearchString} 
+		 		OR 
+		 			ui.last_name iLIKE #{globalSearchString}
+		 		OR 
+		 			company_name iLIKE #{globalSearchString} 
+		 		OR 
+		 			ui.phone_no iLIKE #{globalSearchString}
+		 		OR 
+		 			CONCAT(ui.first_name,CONCAT(' ',ui.last_name)) iLIKE #{globalSearchString} 
+		 		) 
+		AND 
+			u.role_id = #{roleId}
+		AND
+			bo.operator_id != #{logggedInUserId}
+		<if test="startDate > 0">	
+		AND
+			bo.created_at &gt; #{startDate}
+		AND
+			bo.created_at &lt; #{endDate}
+		</if>	
+		<if test="userId != null">
+		AND
+        	bo.business_owner_id = #{userId}
+       	</if>	
+		<if test="assignedRegionList != null">
+		AND
+	    	MUR.multicity_city_region_id IN
+    		<foreach item="item" index="index" collection="assignedRegionList" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+	    </if>
+		ORDER BY u.updated_at DESC
+        LIMIT #{length} OFFSET #{start}          
+        
+	</select>
+	
+	<select id="getTotalBusinessOperatorCountBySearch" parameterType="map" resultType="int"> 		
+			
+		 SELECT count(*)
+					   
+		FROM 
+		           users u
+		INNER JOIN user_info ui 
+			ON ui.user_id=u.user_id
+		INNER JOIN business_operator bo
+			ON bo.operator_id=u.user_id
+		          
+        WHERE  
+                  (
+                	u.email iLIKE #{globalSearchString} 
+                 OR 
+                 		ui.first_name iLIKE #{globalSearchString} 
+		 		OR 
+		 			ui.last_name iLIKE #{globalSearchString}
+		 		OR 
+		 			company_name iLIKE #{globalSearchString} 
+		 		OR 
+		 			ui.phone_no iLIKE #{globalSearchString}
+		 		OR 
+		 			CONCAT(ui.first_name,CONCAT(' ',ui.last_name)) iLIKE #{globalSearchString} 
+		 		) 
+<!-- 		AND          -->
+<!-- 			u.is_deleted ='FALSE' -->
+		AND 
+			u.role_id = #{roleId}
+		<if test="userId != null">
+         AND 
+            business_owner_id = #{userId}
+       </if>
+				
+	</select>
+	
+	<update id="updateDriverInfoPhoto" parameterType="UserModel"  > 
+		
+		UPDATE 
+			users 
+		SET 
+			photo_url = #{photoUrl},
+			updated_at = #{updatedAt},
+			updated_by = #{updatedBy}
+		WHERE 
+			user_id=#{userId}
+			
+	</update>
+	
+	<update id="updateUser" parameterType="UserModel"  > 
+		
+		UPDATE 
+			users 
+		SET 
+			email = #{email},
+			is_active = #{isActive},
+			photo_url = #{photoUrl},
+			updated_at = #{updatedAt},
+			updated_by = #{updatedBy}
+		WHERE 
+			user_id = #{userId}
+			
+	</update>
+	
+	<update id="updateDriverActiveStatus" parameterType="UserModel"  > 	
+	
+		UPDATE 
+			users 
+		SET 
+			is_active = #{isActive},
+			updated_at = #{updatedAt},
+			updated_by = #{updatedBy}
+		WHERE 
+			user_id = #{userId}
+			
+	</update>
+	
+	<select id="isEmailIdExistsForOtherUser" parameterType="map" resultType="boolean">
+		
+		SELECT 
+			(count(*)>0) 
+		FROM 
+			users 
+		WHERE 
+<!-- 			is_deleted = FALSE -->
+<!-- 		AND -->
+			email ilike #{email} 
+	    AND 
+	        user_id != #{userId}
+	    AND
+	    	role_id = #{roleId}     
+	        		
+	</select>
+	
+	<update id="updateProfile" parameterType="UserModel" > 
+		
+		UPDATE 
+			users 
+		SET 
+			email = #{email},
+			photo_url = #{photoUrl},
+			updated_at = #{updatedAt},
+			updated_by = #{updatedBy}
+		WHERE 
+			user_id = #{userId}
+			
+	</update>
+	
+	<update id="updatePhoneNumber" parameterType="UserModel"  > 
+		
+		UPDATE 
+			user_info 
+		SET 
+			phone_no = #{phoneNo},
+			phone_no_code = #{phoneNoCode}
+		WHERE 
+			user_id = #{userId}
+			
+	</update>
+	
+	<update id="activateDeactivateUserByAdmin" parameterType="UserModel"  > 
+		
+		UPDATE 
+			users 
+		SET 
+			is_deleted = #{isDeleted},
+			is_active = #{isActive},
+			updated_at = #{updatedAt}
+		WHERE
+			user_id = #{userId}
+			
+	</update>
+	
+	<select id="getNetIncreaseInPassengerUser" resultType="int">
+	
+		SELECT 
+			count(*)
+		FROM 
+			users 
+		WHERE 
+			created_at &gt; #{createdAt} 
+	    AND 
+	        role_id = #{roleId}
+	        
+	</select>
+	
+	<update id="deleteProfileImageByUserId" parameterType="UserModel"  > 
+		
+		UPDATE 
+			users 
+		SET 
+			photo_url = #{photoUrl},
+			updated_at = #{updatedAt},
+			updated_by = #{updatedBy}
+		WHERE 
+			user_id = #{userId}
+			
+	</update>
+	
+	<select id="isPhoneNumberExistsForRole" parameterType="String"	resultType="boolean">
+	
+		SELECT 
+			(count(*)>0) 
+		FROM 
+			users U
+		INNER JOIN 
+			user_info UI ON U.user_id = UI.user_id	
+		<if test="vendorId!=null">
+		INNER JOIN driver_vendors dv ON dv.driver_id = U.user_id AND dv.vendor_id = #{vendorId} AND dv.role_id = #{roleId}
+		</if>
+		WHERE 
+			UI.phone_no = #{phoneNo} 
+		AND
+			UI.phone_no_code = #{phoneNoCode}
+		AND
+			U.role_id = #{roleId}
+		<if test="userId != null">
+		AND
+			U.user_id != #{userId}
+		</if>		
+		
+	</select>
+	
+	<select id="checkLoginCredentialsForLogin" parameterType="map" resultType="String">
+	 		
+		SELECT 
+			U.user_id
+		FROM 
+			users U
+		INNER JOIN user_info UI ON (UI.user_id = U.user_id )	
+		<if test="vendorId!=null">
+		INNER JOIN driver_vendors dv ON (UI.user_id = dv.driver_id AND dv.vendor_id = #{vendorId}) 		
+		</if>
+		WHERE 
+			U.is_active = TRUE
+		AND
+			U.is_deleted = FALSE
+		
+		<if test="password != null">
+		AND
+			U.password = #{password}
+		</if>	
+			
+		<if test="phoneNoCode != null">
+		AND
+			UI.phone_no = #{phoneNo}
+		AND 
+			UI.phone_no_code = #{phoneNoCode}
+		</if>
+		
+		<if test="email != null">
+		AND
+			U.email ilike #{email}
+		</if>
+			
+		<if test="roleId != null">
+<!-- 		AND -->
+<!-- 			U.role_id = #{roleId} -->
+		AND
+			U.role_id IN
+			<foreach item="item" index="index" collection="roleId" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>	
+		
+	</select>
+	
+	<select id="getDriverListForReferBenefitsReportsSearch"  parameterType="map"  resultMap="userResultMap">
+		
+		SELECT 
+			DISTINCT u.user_id, u.created_at, u.updated_at, ui.agent_number,  
+			ui.first_name, ui.last_name, ui.phone_no, ui.phone_no_code, ui.credit, ui.referral_code, ui.is_first_time,
+			(SELECT count(driver_referral_code_log_id) FROM driver_referral_code_logs WHERE record_status='A' AND driver_id = u.user_id AND created_at &gt; #{startDate} AND created_at &lt; #{endDate}) AS no_of_refer,
+			(SELECT COALESCE(SUM(TRB.referrer_driver_benefit),0) FROM tour_referrer_benefits TRB INNER JOIN driver_referral_code_logs DRCL ON (DRCL.driver_referral_code_log_id = TRB.driver_referral_code_log_id)WHERE DRCL.driver_id = u.user_id AND TRB.created_at &gt; #{startDate} AND TRB.created_at &lt; #{endDate}) AS total_referral_benefits
+		FROM 
+			users u
+		INNER JOIN user_info ui ON ui.user_id = u.user_id
+		LEFT JOIN multicity_user_region MUR ON MUR.user_id = ui.user_id
+        WHERE  
+	        (
+	        	ui.first_name iLIKE #{globalSearchString} 
+	 		OR 
+	 			ui.last_name iLIKE #{globalSearchString} 
+	 		OR 
+	 			ui.phone_no iLIKE #{globalSearchString}
+	 		OR 
+	 			ui.phone_no_code iLIKE #{globalSearchString}
+	 		OR 
+	 			ui.agent_number iLIKE #{globalSearchString}
+	 		OR 
+	 			CONCAT(ui.first_name,CONCAT(' ',ui.last_name)) iLIKE #{globalSearchString} 
+	 		OR 
+	 			CONCAT(ui.phone_no_code,CONCAT(' ',ui.phone_no)) iLIKE #{globalSearchString}
+	 		) 
+		AND 
+			u.role_id = #{roleId} 
+		AND
+			(SELECT count(driver_referral_code_log_id) FROM driver_referral_code_logs WHERE record_status='A' AND driver_id = u.user_id) &gt; 0  
+		<if test="assignedRegionList != null">
+	    AND
+	    	MUR.multicity_city_region_id IN
+    		<foreach item="item" index="index" collection="assignedRegionList" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+	    </if>
+		ORDER BY u.updated_at DESC
+		<if test="length>0">
+        LIMIT #{length} OFFSET #{start}        
+        </if>
+	</select>
+	
+	<select id="getTotalDriverCountForReferBenefitsReportsSearch"  parameterType="map"  resultType="int">
+		
+		SELECT 
+			count(DISTINCT u.user_id)
+		FROM 
+			users u
+		INNER JOIN user_info ui ON ui.user_id = u.user_id
+		LEFT JOIN multicity_user_region MUR ON MUR.user_id = ui.user_id
+        WHERE  
+			u.role_id = #{roleId} 
+		AND
+			(SELECT count(driver_referral_code_log_id) FROM driver_referral_code_logs WHERE record_status='A' AND driver_id = u.user_id) &gt; 0  
+		<if test="assignedRegionList != null">
+	    AND
+	    	MUR.multicity_city_region_id IN
+    		<foreach item="item" index="index" collection="assignedRegionList" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+	    </if>
+        
+	</select>
+	
+	<select id="getDriverListForLoggedInTimeCronJob"  parameterType="map"  resultMap="userResultMap">
+		
+		SELECT
+			U.user_id, U.is_on_duty,
+			DDL.created_at, DDL.latitude, DDL.longitude 
+		FROM 
+			users U
+		INNER JOIN 
+		    driver_duty_logs DDL 
+		ON 
+			DDL.driver_id = u.user_id
+        WHERE  
+			U.role_id = #{roleId} 
+		AND
+			U.is_on_duty = #{isOnDuty}
+		AND
+			DDL.created_at = (SELECT MAX(created_at) FROM driver_duty_logs WHERE driver_id = u.user_id AND duty_status = #{isOnDuty})
+        
+	</select>
+	
+	<select id="getDriverDetailsForLoggedInTimeReportById"  parameterType="map"  resultMap="userResultMap">
+		
+		SELECT 
+			u.user_id, u.is_active, u.is_on_duty,
+			DG.created_at , 
+			DDL.created_at AS updated_at
+		FROM 
+			users u
+		LEFT JOIN 
+				driver_gps DG 
+		ON 
+			DG.driver_id = u.user_id
+		LEFT JOIN 
+				driver_duty_logs DDL 
+		ON 
+			(DDL.driver_id = u.user_id AND DDL.created_at = (SELECT MAX(created_at) FROM driver_duty_logs WHERE driver_id = #{driverId}))
+        WHERE  
+        	u.user_id = #{driverId}
+        
+	</select>
+	
+	<select id="getVendorTotalUserCount" parameterType="map" resultType="int"> 		
+		
+	    SELECT 
+			count(DISTINCT U.user_id)
+		FROM 
+			users U
+		LEFT JOIN multicity_user_region MUR ON MUR.user_id = U.user_id
+		INNER JOIN vendor_service_categories vsc ON vsc.vendor_id = u.user_id
+		WHERE 	
+			U.role_id = #{roleId}
+		<if test="serviceId!=null">
+		AND
+			vsc.service_id = #{serviceId}
+		</if>
+		<if test="categoryId!=null">
+		AND
+			vsc.category_id = #{categoryId}
+		</if>
+		<if test="startDate > 0">	
+		AND
+			U.created_at &gt; #{startDate}
+		</if>
+		<if test="endDate > 0">	
+		AND
+			U.created_at &lt; #{endDate}
+		</if>	
+		<if test="ownUserId != null">	
+		AND
+			U.user_id != #{ownUserId}
+		</if>
+		<if test="assignedRegionList != null">
+		AND
+	    	MUR.multicity_city_region_id IN
+	    		<foreach item="item" index="index" collection="assignedRegionList" open="(" separator="," close=")">
+					#{item}
+				</foreach>
+	    </if>
+		
+	</select>
+	
+	<select id="getVendorListForSearch"  parameterType="map"  resultMap="userResultMap">
+		
+		SELECT 
+			DISTINCT u.user_id, u.email, ui.first_name, ui.last_name, ui.phone_no, ui.phone_no_code,
+			<include refid="vendorNewColumns"></include>,
+			u.created_at, u.updated_at, u.photo_url, u.is_active,
+			ui.credit, ui.referral_code, ui.is_first_time,u.is_vendor_driver_subscription_applied_in_booking_flow,
+			vsc.service_id, vsc.category_id, c.category_name, s.service_name, s.service_type_id,
+			( SELECT count(*) 
+			FROM 
+				driver_vendors
+			WHERE 
+				driver_vendors.vendor_id=u.user_id
+			AND
+				driver_vendors.role_id=#{driverRoleId}
+			)
+			AS driverCount,
+			
+			( SELECT count(*) 
+			FROM 
+				car_vendors
+			WHERE 
+				car_vendors.vendor_id=u.user_id
+			)
+			AS carCount
+									   
+		FROM 
+			users u
+		INNER JOIN user_info ui ON ui.user_id = u.user_id
+		INNER JOIN vendor_service_categories vsc ON vsc.vendor_id = u.user_id
+		INNER JOIN services s ON s.service_id = vsc.service_id
+		INNER JOIN categories c ON c.category_id = vsc.category_id
+		LEFT JOIN multicity_user_region MUR ON MUR.user_id = ui.user_id
+		LEFT JOIN car_vendors cv ON u.user_id = cv.vendor_id
+        WHERE  
+                  (
+                  		u.email iLIKE #{globalSearchString} 
+                  	OR 
+                  		ui.first_name iLIKE #{globalSearchString} 
+			 		OR 
+			 			ui.last_name iLIKE #{globalSearchString}
+			 		OR 
+			 			ui.company_name iLIKE #{globalSearchString} 
+			 		OR 
+			 			ui.company_address iLIKE #{globalSearchString}  
+			 		OR 
+			 			ui.phone_no iLIKE #{globalSearchString}
+			 		OR 
+			 			CONCAT(ui.first_name,CONCAT(' ',ui.last_name)) iLIKE #{globalSearchString} ) 
+		AND 
+			u.role_id = #{roleId}   
+		AND
+			ui.created_at &gt; #{startDatelong}
+		AND
+			ui.created_at &lt; #{endDatelong}
+		<if test="serviceId!=null">
+		AND
+			vsc.service_id = #{serviceId}
+		</if>
+		<if test="categoryId!=null">
+		AND
+			vsc.category_id = #{categoryId}
+		</if>
+		<if test="assignedRegionList != null">
+	    AND
+	    	MUR.multicity_city_region_id IN
+    		<foreach item="item" index="index" collection="assignedRegionList" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+	    </if>
+	    
+	    <if test="ownUserId != null">
+		AND	
+			u.user_id != #{ownUserId}
+		</if>
+		 GROUP BY u.user_id,u.email, ui.first_name, ui.last_name, ui.phone_no, 
+		 		<include refid="vendorNewColumns"></include>,
+		          ui.phone_no_code, u.created_at, u.updated_at, u.photo_url, u.is_active,
+			      ui.credit, ui.referral_code, ui.is_first_time, u.is_vendor_driver_subscription_applied_in_booking_flow,
+			      vsc.service_id, vsc.category_id, c.category_name, s.service_name, s.service_type_id
+		ORDER BY u.updated_at DESC
+        LIMIT  #{length}  OFFSET  #{start}          
+        
+	</select>
+	
+	<update id="approvedUserByAdmin" parameterType="UserModel"  > 
+		
+		UPDATE 
+			users 
+		SET 
+		    approvel_status = #{isApprovelStatus},
+			updated_at = #{updatedAt}
+		WHERE
+			user_id = #{userId}
+			
+	</update>
+	
+	<select id="getDriverList"  parameterType="map"  resultMap="userResultMap">
+		
+		SELECT 
+			DISTINCT u.user_id,u.email,ui.first_name, ui.last_name, ui.phone_no,ui.phone_no_code,u.password,
+			u.created_at,u.updated_at, u.photo_url,u.is_active, ui.company_name, ui.company_address, 
+			ui.credit, ui.referral_code, ui.is_first_time, ui.is_verified,u.approvel_status, ui.agent_number,
+			(vui.first_name || ' ' || vui.last_name) AS vendor_name, dli.driver_license_card_number
+		FROM 
+			users u
+		INNER JOIN user_info ui  ON ui.user_id=u.user_id
+		LEFT JOIN multicity_user_region MUR ON MUR.user_id = ui.user_id
+		LEFT JOIN driver_vendors dv ON dv.driver_id = u.user_id 
+	 	LEFT JOIN user_info vui ON (vui.user_id = dv.vendor_id)
+	 	LEFT JOIN driving_license_info dli ON dli.user_id = u.user_id
+         WHERE  
+            (
+            	u.email iLIKE #{globalSearchString} 
+            OR 
+                ui.first_name iLIKE #{globalSearchString} 
+	 		OR 
+	 			ui.last_name iLIKE #{globalSearchString} 
+	 		OR 
+	 			ui.company_name iLIKE #{globalSearchString} 
+	 		OR 
+	 			ui.company_address iLIKE #{globalSearchString} 
+	 		OR 
+	 			ui.phone_no iLIKE #{globalSearchString}
+	 		OR 
+	 			ui.agent_number iLIKE #{globalSearchString}
+	 		OR 
+	 			CONCAT(ui.first_name,CONCAT(' ',ui.last_name)) iLIKE #{globalSearchString} 
+	 		) 
+		AND 
+			u.role_id = #{driverRoleId}
+		AND
+			ui.created_at &gt; #{startDatelong}
+		AND
+			ui.created_at &lt; #{endDatelong} 
+		<if test="statusCheck != null">
+		AND
+			U.is_active = #{status}
+		</if>
+		<if test="vendorId != null and role == null">
+		AND
+			dv.vendor_id = #{vendorId}
+		</if>
+		<if test="approvelCheck != null">
+		AND
+			U.approvel_status = #{approvelStatus}
+		</if>
+		<if test="assignedRegionList != null">
+	    AND
+	    	MUR.multicity_city_region_id IN
+	    	<foreach item="item" index="index" collection="assignedRegionList" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+	    </if>
+		ORDER BY u.updated_at DESC
+        LIMIT #{length} OFFSET #{start}          
+        
+	</select>
+	
+	<select id="getVendorList"  parameterType="map"  resultMap="userResultMap">
+	
+	   SELECT 
+	   		u.user_id,u.email,ui.first_name, ui.last_name
+					   
+		FROM 
+			users u
+			
+		INNER JOIN 
+		          user_info ui 
+		ON 
+			ui.user_id=u.user_id
+		WHERE
+			u.role_id=#{roleId}
+	
+	</select>
+	
+	<select id="getDriverVendor" parameterType="map"  resultMap="userResultMap">
+	
+		SELECT 
+	 		ui.user_id,ui.first_name, ui.last_name
+		FROM
+			user_info ui
+		INNER JOIN
+			driver_vendors dv
+		ON
+			ui.user_id = dv.vendor_id
+		WHERE
+			dv.driver_id= #{driverId}	
+			
+	</select>	
+	
+	<select id="getVendorForCar" parameterType="map"  resultMap="userResultMap">
+	
+		SELECT 
+	 		ui.user_id,ui.first_name, ui.last_name
+		FROM
+			user_info ui
+		INNER JOIN
+			car_vendors cv
+		ON
+			ui.user_id = cv.vendor_id
+		WHERE
+			cv.car_id= #{carId}	
+			
+	</select>
+	
+	<select id="getVendorDriverListForSearch"  parameterType="map"  resultMap="userResultMap">
+		
+		SELECT 
+			u.user_id, u.email, u.photo_url, u.is_active, ui.agent_number, 
+			ui.first_name, ui.last_name, ui.phone_no,ui.phone_no_code, ui.company_name, ui.company_address, ui.credit, ui.referral_code, 
+			ui.is_first_time, u.is_on_duty, u.is_vendor_driver_subscription_applied_in_booking_flow,
+			DG.created_at , DDL.created_at AS updated_at
+		FROM 
+			users u
+		INNER JOIN user_info ui ON ui.user_id = u.user_id
+		LEFT JOIN driver_gps DG ON DG.driver_id = ui.user_id
+		LEFT JOIN driver_duty_logs DDL ON (DDL.driver_id = ui.user_id AND DDL.created_at = (SELECT MAX(created_at) FROM driver_duty_logs WHERE driver_id = ui.user_id))
+		INNER JOIN driver_vendors dv ON dv.driver_id = u.user_id AND dv.vendor_id = #{userId} 
+        WHERE  
+                  ( 	u.email iLIKE #{globalSearchString} 
+                  	OR 
+                  		ui.first_name iLIKE #{globalSearchString} 
+			 		OR 
+			 			ui.last_name iLIKE #{globalSearchString} 
+			 		OR 
+			 			ui.phone_no iLIKE #{globalSearchString}
+			 		OR 
+			 			CONCAT(ui.first_name,CONCAT(' ',ui.last_name)) iLIKE #{globalSearchString} ) 
+		AND 
+			u.role_id = #{roleId} 
+		<if test="onOffStatusForCheck != null">  
+			AND
+				u.is_on_duty = #{onOffStatus}
+		</if>
+		<if test="startDatelong > 0">  
+			AND
+				DG.created_at &gt; #{startDatelong}
+		</if>
+		<if test="endDatelong > 0">
+			AND
+				DG.created_at &lt; #{endDatelong}
+		</if>
+		ORDER BY u.updated_at DESC
+        LIMIT  #{length}  OFFSET  #{start}          
+        
+	</select>
+	
+	<select id="getVendorsTotalActiveUserCountBySearch" parameterType="map" resultType="int"> 		
+		
+	    SELECT 
+			count(DISTINCT u.user_id)
+		FROM 
+			users u
+			
+		INNER JOIN 
+		          user_info ui 
+		ON 
+			ui.user_id=u.user_id
+			
+		LEFT JOIN
+				multicity_user_region MUR
+		ON
+			MUR.user_id = ui.user_id
+			
+			INNER JOIN
+				 driver_vendors dv
+		    ON
+		    	dv.driver_id = u.user_id AND dv.vendor_id = #{userId} 
+			
+        WHERE  
+              (
+                	u.email iLIKE #{globalSearchString} 
+                OR 
+                 	ui.first_name iLIKE #{globalSearchString} 
+		 		OR 
+		 			ui.last_name iLIKE #{globalSearchString}
+		 		OR 
+		 			ui.phone_no iLIKE #{globalSearchString}
+		 		OR 
+		 			CONCAT(ui.first_name,CONCAT(' ',ui.last_name)) iLIKE #{globalSearchString} 
+		 		) 
+		AND 
+			u.role_id = #{roleId}   
+		AND 
+			u.is_deleted = 'FALSE'
+		AND 
+			u.is_active = 'TRUE'
+			
+		<if test="statusCheck != null">
+		AND
+			U.is_active = #{status}
+		</if>
+		
+		<if test="approvelCheck != null">
+		AND
+			U.approvel_status = #{approvelStatus}
+		</if>
+		
+		<if test="assignedRegionList != null">
+	    AND
+	    	MUR.multicity_city_region_id IN
+	    		
+	    		<foreach item="item" index="index" collection="assignedRegionList" open="(" separator="," close=")">
+					#{item}
+				</foreach>
+	    </if>
+	    
+	</select>
+	
+	<select id="getVendorsTotalDeactiveUserCountBySearch" parameterType="map" resultType="int"> 		
+		
+	    SELECT 
+			count(DISTINCT u.user_id)
+		FROM 
+			users u
+			
+		INNER JOIN 
+		          user_info ui 
+		ON 
+			ui.user_id=u.user_id
+			
+		LEFT JOIN
+				multicity_user_region MUR
+		ON
+			MUR.user_id = ui.user_id
+			
+			INNER JOIN
+				 driver_vendors dv
+		    ON
+		    	dv.driver_id = u.user_id AND dv.vendor_id = #{userId} 
+		
+        WHERE  
+              (
+                	u.email iLIKE #{globalSearchString} 
+                 OR 
+                 		ui.first_name iLIKE #{globalSearchString} 
+		 		OR 
+		 			ui.last_name iLIKE #{globalSearchString}
+		 		OR 
+		 			ui.phone_no iLIKE #{globalSearchString}
+		 		OR 
+		 			CONCAT(ui.first_name,CONCAT(' ',ui.last_name)) iLIKE #{globalSearchString} 
+		 		) 
+		AND 
+			u.role_id = #{roleId}
+		AND 
+			u.is_deleted = 'TRUE'
+		AND 
+			u.is_active = 'FALSE'   
+			
+		<if test="statusCheck != null">
+		AND
+			U.is_active = #{status}
+		</if>
+		
+		<if test="approvelCheck != null">
+		AND
+			U.approvel_status = #{approvelStatus}
+		</if> 
+		
+		<if test="assignedRegionList != null">
+	    AND
+	    	MUR.multicity_city_region_id IN
+	    		
+	    		<foreach item="item" index="index" collection="assignedRegionList" open="(" separator="," close=")">
+					#{item}
+				</foreach>
+	    </if>
+			
+	</select>
+	
+	<select id="getVendorsTotalUserCountBySearch" parameterType="map" resultType="int"> 		
+		
+	    SELECT 
+			count(DISTINCT u.user_id)
+		FROM 
+			users u
+			
+		INNER JOIN 
+		          user_info ui 
+		ON 
+			ui.user_id = u.user_id
+		
+		LEFT JOIN
+				multicity_user_region MUR
+		ON
+			MUR.user_id = ui.user_id
+	
+			INNER JOIN
+				 driver_vendors dv
+		    ON
+		    	dv.driver_id = u.user_id AND dv.vendor_id = #{userId} 
+		
+			
+        WHERE  
+              (
+                	u.email iLIKE #{globalSearchString} 
+                 OR 
+                 		ui.first_name iLIKE #{globalSearchString} 
+		 		OR 
+		 			ui.last_name iLIKE #{globalSearchString}
+		 		OR 
+		 			ui.phone_no iLIKE #{globalSearchString}
+		 		OR 
+		 			CONCAT(ui.first_name,CONCAT(' ',ui.last_name)) iLIKE #{globalSearchString} 
+		 		) 
+		AND 
+			u.role_id = #{roleId}   
+					
+		<if test="statusCheck != null">
+		AND
+			U.is_active = #{status}
+		</if>
+		
+		<if test="approvelCheck != null">
+		AND
+			U.approvel_status = #{approvelStatus}
+		</if>
+		<if test="assignedRegionList != null">
+	    AND
+	    	MUR.multicity_city_region_id IN
+	    		
+	    		<foreach item="item" index="index" collection="assignedRegionList" open="(" separator="," close=")">
+					#{item}
+				</foreach>
+	    </if>
+				
+	</select>
+	
+	<select id="getTotalActiveDriverCountBySearch" parameterType="map" resultType="int"> 		
+		
+	    SELECT 
+			count(DISTINCT u.user_id)
+		FROM 
+			users u
+		INNER JOIN  user_info ui ON ui.user_id=u.user_id
+		LEFT JOIN multicity_user_region MUR ON MUR.user_id = ui.user_id
+		LEFT JOIN driver_vendors dv ON dv.driver_id = u.user_id 
+	 	LEFT JOIN  user_info vui  ON  (vui.user_id = dv.vendor_id)
+        WHERE  
+            (
+            	u.email iLIKE #{globalSearchString} 
+            OR 
+            	ui.first_name iLIKE #{globalSearchString} 
+	 		OR 
+	 			ui.last_name iLIKE #{globalSearchString}
+	 		OR 
+	 			ui.phone_no iLIKE #{globalSearchString}
+	 		OR 
+	 			CONCAT(ui.first_name,CONCAT(' ',ui.last_name)) iLIKE #{globalSearchString} 
+	 		) 
+		AND 
+			u.role_id = #{roleId}   
+		AND 
+			u.is_deleted = 'FALSE'
+		AND 
+			u.is_active = 'TRUE'
+		AND
+			ui.created_at &gt; #{startDatelong}
+		AND
+			ui.created_at &lt; #{endDatelong} 
+		<if test="statusCheck != null">
+		AND
+			U.is_active = #{status}
+		</if>
+		<if test="approvelCheck != null">
+		AND
+			U.approvel_status = #{approvelStatus}
+		</if> 
+		<if test="vendorId != null and role == null">
+		AND
+			dv.vendor_id = #{vendorId}
+		</if>
+		<if test="assignedRegionList != null">
+	    AND
+	    	MUR.multicity_city_region_id IN
+    		<foreach item="item" index="index" collection="assignedRegionList" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+	    </if>
+	    
+	</select>
+		
+	<select id="getTotalDeactiveDriverCountBySearch" parameterType="map" resultType="int"> 		
+		
+	    SELECT 
+			count(DISTINCT u.user_id)
+		FROM 
+			users u
+		INNER JOIN user_info ui ON ui.user_id=u.user_id
+		LEFT JOIN multicity_user_region MUR ON MUR.user_id = ui.user_id
+		LEFT JOIN driver_vendors dv ON dv.driver_id = u.user_id 
+		LEFT JOIN user_info vui ON (vui.user_id = dv.vendor_id)
+        WHERE  
+	        (
+	            u.email iLIKE #{globalSearchString} 
+	        OR 
+	        	ui.first_name iLIKE #{globalSearchString} 
+	 		OR 
+	 			ui.last_name iLIKE #{globalSearchString}
+	 		OR 
+	 			ui.phone_no iLIKE #{globalSearchString}
+	 		OR 
+	 			CONCAT(ui.first_name,CONCAT(' ',ui.last_name)) iLIKE #{globalSearchString} 
+	 		) 
+		AND 
+			u.role_id = #{roleId}
+		AND 
+			u.is_deleted = 'TRUE'
+		AND 
+			u.is_active = 'FALSE'   
+		AND
+			ui.created_at &gt; #{startDatelong}
+		AND
+			ui.created_at &lt; #{endDatelong}
+		<if test="statusCheck != null">
+		AND
+			U.is_active = #{status}
+		</if>
+		<if test="vendorId != null and role == null">
+		AND
+			dv.vendor_id = #{vendorId}
+		</if>
+		<if test="approvelCheck != null">
+		AND
+			U.approvel_status = #{approvelStatus}
+		</if> 
+		<if test="assignedRegionList != null">
+	    AND
+	    	MUR.multicity_city_region_id IN
+    		<foreach item="item" index="index" collection="assignedRegionList" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+	    </if>
+			
+	</select>
+	
+	<select id="getTotalDriverCountBySearch" parameterType="map" resultType="int"> 		
+		
+	    SELECT 
+			count(DISTINCT u.user_id)
+		FROM 
+			users u
+		INNER JOIN user_info ui ON ui.user_id = u.user_id
+		LEFT JOIN multicity_user_region MUR ON MUR.user_id = ui.user_id
+		LEFT JOIN driver_vendors dv ON dv.driver_id = u.user_id 
+	 	LEFT JOIN user_info vui ON (vui.user_id = dv.vendor_id)
+        WHERE  
+            (
+            	u.email iLIKE #{globalSearchString} 
+            OR 
+             	ui.first_name iLIKE #{globalSearchString} 
+	 		OR 
+	 			ui.last_name iLIKE #{globalSearchString}
+	 		OR 
+	 			ui.phone_no iLIKE #{globalSearchString}
+	 		OR 
+	 			CONCAT(ui.first_name,CONCAT(' ',ui.last_name)) iLIKE #{globalSearchString} 
+	 		) 
+		AND 
+			u.role_id = #{roleId}   
+		AND
+			ui.created_at &gt; #{startDatelong}
+		AND
+			ui.created_at &lt; #{endDatelong} 
+		<if test="statusCheck != null">
+		AND
+			U.is_active = #{status}
+		</if>
+		<if test="vendorId != null and role == null">
+		AND
+			dv.vendor_id = #{vendorId}
+		</if>
+		<if test="approvelCheck != null">
+		AND
+			U.approvel_status = #{approvelStatus}
+		</if>
+		<if test="assignedRegionList != null">
+	    AND
+	    	MUR.multicity_city_region_id IN
+    		<foreach item="item" index="index" collection="assignedRegionList" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+	    </if>
+				
+	</select>
+	
+	<select id="getVendorDriverList"  parameterType="map"  resultMap="userResultMap">
+		
+		SELECT 
+			DISTINCT u.user_id,u.email,ui.first_name, ui.last_name, ui.phone_no,ui.phone_no_code,u.password,
+			u.created_at,u.updated_at, u.photo_url,u.is_active, ui.company_name, ui.company_address, 
+			ui.credit, ui.referral_code, ui.is_first_time, ui.is_verified,u.approvel_status, ui.agent_number,
+			u.is_vendor_driver_subscription_applied_in_booking_flow
+		FROM 
+			users u
+		INNER JOIN 
+		          user_info ui 
+		ON 
+			ui.user_id=u.user_id
+		INNER JOIN
+			driver_vendors dv
+		ON
+		    dv.driver_id = u.user_id AND dv.vendor_id = #{userId} 
+        WHERE  
+                  (
+                  		u.email iLIKE #{globalSearchString} 
+                  	OR 
+                  		ui.first_name iLIKE #{globalSearchString} 
+			 		OR 
+			 			ui.last_name iLIKE #{globalSearchString} 
+			 		OR 
+			 			ui.company_name iLIKE #{globalSearchString} 
+			 		OR 
+			 			ui.company_address iLIKE #{globalSearchString} 
+			 		OR 
+			 			ui.phone_no iLIKE #{globalSearchString}
+			 		OR 
+			 			CONCAT(ui.first_name,CONCAT(' ',ui.last_name)) iLIKE #{globalSearchString} 
+			 		) 
+		AND 
+			u.role_id = #{driverRoleId}
+
+		<if test="statusCheck != null">
+		AND
+			U.is_active = #{status}
+		</if>
+		<if test="approvelCheck != null">
+		AND
+			U.approvel_status = #{approvelStatus}
+		</if>
+		<if test="startDatelong > 0">  
+		AND
+			U.created_at &gt; #{startDatelong}
+		AND
+			U.created_at &lt; #{endDatelong}
+		</if>
+		ORDER BY u.updated_at DESC
+        LIMIT  #{length}  OFFSET  #{start}          
+        
+	</select>
+	
+	<select id="getVendorTotalDriverCount" parameterType="map" resultType="int"> 		
+		
+	    SELECT 
+			count(DISTINCT U.user_id)
+		FROM 
+			users U
+		LEFT JOIN
+			multicity_user_region MUR
+		ON
+			MUR.user_id = U.user_id
+	
+		LEFT JOIN
+			 driver_vendors DV
+		ON
+		   	DV.driver_id = U.user_id 
+	 	LEFT JOIN 
+			user_info VUI 
+		ON 
+			(VUI.user_id = DV.vendor_id)	
+		WHERE 	
+			U.role_id = #{roleId}
+			 
+		<if test="startDate > 0">	
+		AND
+			U.created_at &gt; #{startDate}
+		</if>
+		
+		<if test="endDate > 0">	
+		AND
+			U.created_at &lt; #{endDate}
+		</if>	
+		
+		<if test="ownUserId != null">	
+		AND
+			U.user_id != #{ownUserId}
+		</if>
+		
+		<if test="assignedRegionList != null">
+		AND
+	    	MUR.multicity_city_region_id IN
+	    		<foreach item="item" index="index" collection="assignedRegionList" open="(" separator="," close=")">
+					#{item}
+				</foreach>
+	    </if>
+		
+	</select>
+	
+	<select id="getDriverListCount" parameterType="map" resultType="int"> 
+		
+		SELECT 
+			count(DISTINCT u.user_id)
+		FROM 
+			users u
+		INNER JOIN 
+		          user_info ui 
+		ON 
+			ui.user_id=u.user_id
+		LEFT JOIN
+				multicity_user_region MUR
+		ON
+			MUR.user_id = ui.user_id
+		LEFT JOIN
+			 driver_vendors dv
+		ON
+		   	dv.driver_id = u.user_id 
+	 	LEFT JOIN 
+			user_info vui 
+		ON 
+			(vui.user_id = dv.vendor_id)
+        WHERE  
+			u.role_id = #{driverRoleId}
+		AND
+			ui.created_at &gt; #{startDatelong}
+		AND
+			ui.created_at &lt; #{endDatelong} 
+		<if test="statusCheck != null">
+		AND
+			U.is_active = #{status}
+		</if>
+		<if test="vendor != null and role == null">
+		AND
+			dv.vendor_id = #{vendor}
+		</if>
+		<if test="role != null">
+		AND
+			(dv.vendor_id = #{vendor} OR dv.vendor_id IS NULL)
+		</if>
+		<if test="approvelCheck != null">
+		AND
+			U.approvel_status = #{approvelStatus}
+		</if>
+		<if test="assignedRegionList != null">
+	    AND
+	    	MUR.multicity_city_region_id IN
+	    		
+	    		<foreach item="item" index="index" collection="assignedRegionList" open="(" separator="," close=")">
+					#{item}
+				</foreach>
+	    </if>
+	</select>
+	
+	<select id="isEmailIdExistsForRoleIds" parameterType="String"	resultType="boolean">
+	
+		SELECT 
+			(count(*)>0) 
+		FROM 
+			users 
+		WHERE 
+			email ilike #{emailId} 
+		AND
+			role_id IN
+			<foreach item="item" index="index" collection="roleIdList" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		<if test="userId != null">
+		AND
+			user_id != #{userId}
+		</if>	
+			
+	</select>
+	
+	<select id="getUserWithAccountDetailsListByRoleIds" parameterType="map"	resultMap="userResultMap">
+	
+		SELECT 
+			U.user_id, U.role_id, U.email, U.is_active, U.is_deleted,
+			UA.user_account_id,
+			URLA.url_id
+		FROM 
+			users U
+		LEFT JOIN
+			user_account UA
+		ON
+			UA.user_id = U.user_id
+		LEFT JOIN
+			url_accesses URLA
+		ON
+			(URLA.user_id = U.user_id AND URLA.url_id = #{urlId})
+		WHERE 
+			U.role_id IN
+				<foreach item="item" index="index" collection="roleIdList" open="(" separator="," close=")">
+					#{item}
+				</foreach>
+			
+	</select>
+	
+	<select id="getScriptAssignDefaultVendorUsers" resultMap="userResultMap">
+		
+		SELECT 
+			user_id
+		FROM 
+			users 
+		WHERE 
+			role_id='5' 
+		AND
+			user_id NOT IN 
+			(
+				SELECT user_id FROM multicity_user_region WHERE record_status='A' AND role_id='5'
+			)
+		ORDER BY user_id ASC
+		LIMIT #{limit} OFFSET #{offset}
+		
+	</select>
+	
+	<select id="getUserAccountDetailsByPhoneNumAndRoleId" parameterType="String" resultMap="userResultMap">
+	
+		SELECT first_name, last_name, phone_no_code, u.phone_num as phone_no,* 
+		FROM 
+			users u
+		INNER JOIN user_info ui ON ui.user_id = u.user_id
+		WHERE 
+			ui.phone_no =  #{phoneNum}
+		AND
+			u.role_id = #{roleId}	
+			
+	</select>
+	
+	<insert id="addMartUser" parameterType="UserModel" useGeneratedKeys="false">
+	
+		INSERT INTO 
+			users
+				(
+					user_id, email, role_id, phone_num,
+					created_at, created_by, updated_at, updated_by
+				)
+		VALUES
+				(
+					#{userId}, #{email}, #{roleId}, #{phoneNo}, 
+					#{createdAt}, #{createdBy}, #{updatedAt}, #{updatedBy}
+				)
+				
+	</insert>
+	
+	<select id="isEmailIdExistsByRoleId" parameterType="String"	resultType="boolean">
+	
+		SELECT 
+			(count(u.user_id)>0) 
+		FROM 
+			users u
+		
+		WHERE 
+			u.email ilike #{emailId}
+		AND
+			u.role_id = #{roleId}	 
+			
+	</select>
+	
+	<select id="getUsersListByRoleIds" parameterType="map"	resultType="java.lang.String">
+	
+		SELECT 
+			U.user_id
+		FROM 
+			users U
+		WHERE 
+			U.role_id IN
+				<foreach item="item" index="index" collection="roleIdList" open="(" separator="," close=")">
+					#{item}
+				</foreach>
+			
+	</select>
+	
+	<update id="updatePhoneNum" parameterType="UserModel"  > 
+		
+		UPDATE 
+			users 
+		SET 
+			phone_num = #{phoneNo}
+		WHERE 
+			user_id = #{userId}
+			
+	</update>
+	
+	<select id="getErpTotalUserCount" parameterType="map" resultType="int"> 		
+		
+	    SELECT 
+			count(DISTINCT U.user_id)
+		FROM 
+			users U
+		LEFT JOIN multicity_user_region MUR ON MUR.user_id = U.user_id
+		WHERE 	
+			U.role_id = #{roleId}
+		
+		<if test="startDate > 0">	
+		AND
+			U.created_at &gt; #{startDate}
+		</if>
+		<if test="endDate > 0">	
+		AND
+			U.created_at &lt; #{endDate}
+		</if>	
+		<if test="ownUserId != null">	
+		AND
+			U.user_id != #{ownUserId}
+		</if>
+		<if test="assignedRegionList != null">
+		AND
+	    	MUR.multicity_city_region_id IN
+	    		<foreach item="item" index="index" collection="assignedRegionList" open="(" separator="," close=")">
+					#{item}
+				</foreach>
+	    </if>
+		
+	</select>
+	
+	<select id="getErpListForSearch"  parameterType="map"  resultMap="userResultMap">
+		
+		SELECT 
+			DISTINCT u.user_id, u.email, ui.first_name, ui.last_name, ui.phone_no, ui.phone_no_code,
+			<include refid="vendorNewColumns"></include>,
+			u.created_at, u.updated_at, u.photo_url, u.is_active,
+			ui.credit, ui.referral_code, ui.is_first_time,u.is_vendor_driver_subscription_applied_in_booking_flow
+									   
+		FROM 
+			users u
+		INNER JOIN user_info ui ON ui.user_id = u.user_id
+		LEFT JOIN multicity_user_region MUR ON MUR.user_id = ui.user_id
+        WHERE  
+                  (
+                  		u.email iLIKE #{globalSearchString} 
+                  	OR 
+                  		ui.first_name iLIKE #{globalSearchString} 
+			 		OR 
+			 			ui.last_name iLIKE #{globalSearchString}
+			 		OR 
+			 			ui.company_name iLIKE #{globalSearchString} 
+			 		OR 
+			 			ui.company_address iLIKE #{globalSearchString}  
+			 		OR 
+			 			ui.phone_no iLIKE #{globalSearchString}
+			 		OR 
+			 			CONCAT(ui.first_name,CONCAT(' ',ui.last_name)) iLIKE #{globalSearchString} ) 
+		AND 
+			u.role_id = #{roleId}   
+		AND
+			ui.created_at &gt; #{startDatelong}
+		AND
+			ui.created_at &lt; #{endDatelong}
+		
+		<if test="assignedRegionList != null">
+	    AND
+	    	MUR.multicity_city_region_id IN
+    		<foreach item="item" index="index" collection="assignedRegionList" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+	    </if>
+	    
+	    <if test="ownUserId != null">
+		AND	
+			u.user_id != #{ownUserId}
+		</if>
+		 GROUP BY u.user_id,u.email, ui.first_name, ui.last_name, ui.phone_no, 
+		 		<include refid="vendorNewColumns"></include>,
+		          ui.phone_no_code, u.created_at, u.updated_at, u.photo_url, u.is_active,
+			      ui.credit, ui.referral_code, ui.is_first_time, u.is_vendor_driver_subscription_applied_in_booking_flow
+			      
+		ORDER BY u.updated_at DESC
+        LIMIT  #{length}  OFFSET  #{start}          
+        
+	</select>
+	
+</mapper> 

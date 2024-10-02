@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.webapp.daos.LoginDao">
+
+	<select id="getUserIdByRememberMeKeyId" parameterType="long" resultType="String">
+	
+		SELECT 
+			user_id 
+		FROM 
+			remembered_login_sessions 
+		WHERE 
+			remembered_login_id = #{keyId}
+		
+	</select>
+	
+	<select id="isLoggedIn" parameterType="String" resultType="long">
+	
+		SELECT 
+			count(login_trail_id) 
+		FROM 
+			login_trails 
+		WHERE 
+			actor_id = #{userId} 
+		AND 
+			logged_out_at IS NULL
+		
+	</select>
+
+	<update id="closeLoginTrail" parameterType="map">
+	
+		UPDATE 
+			login_trails 
+		SET 
+			logged_out_at = #{loggedOutAt} 
+		WHERE 
+			logged_out_at IS NULL 
+		AND 
+			actor_id = #{userId} 
+		AND 
+			session_id = #{sessionId}
+				
+	</update>
+
+	<insert id="addLoginTrail" parameterType="map">
+
+		INSERT INTO	
+			login_trails
+				(
+					login_trail_id, actor_id, logged_in_at, session_id
+				)
+		VALUES
+				(
+					#{loginTrailId}, #{userId}, #{loggedInAt}, #{sessionId}
+				)
+				
+	</insert>
+
+	<select id="isValidLoginCredeitials" parameterType="map" resultType="String">
+	
+			SELECT 
+				user_id 
+			FROM 
+				users 
+			WHERE 
+				record_status = 'A' 
+			AND 
+				active = true 
+			AND 
+				(lower(username) = #{lowerusername}  OR email LIKE #{username})
+			AND 
+				password = #{password}
+			
+	</select>
+	
+	<insert id="addRememberMeKey" parameterType="map">
+
+		INSERT INTO	
+			remembered_login_sessions
+				(
+					remembered_login_id,user_id,created_at
+				)
+		VALUES
+				(
+					#{rememberedLoginId},#{userId},#{createdAt}
+				)
+				
+	</insert>
+	
+	<delete id="deleteRememberMeKey" parameterType="String">
+	
+		DELETE FROM 
+		 	remembered_login_sessions  
+	 	WHERE
+	 		remembered_login_id = #{rememberMeKey} 
+
+	</delete>
+	
+	<delete id="deleteApiSessionKey" parameterType="String">
+	
+		 DELETE FROM 
+			 api_sessions 
+		 WHERE 
+			 user_id=#{userId}
+		 
+	</delete>
+
+	<insert id="insertApiSessionKey" parameterType="map">
+	
+		INSERT INTO	
+			api_sessions
+				(
+					api_session_id,user_id ,created_at
+				)
+		VALUES
+				(
+					#{apiSessionId},#{userId},#{createdAt}
+				)
+		
+	</insert>
+	
+	<select id="isSessionExists" parameterType="String" resultType="String">
+	
+		SELECT 
+			user_id 
+		FROM 
+			api_sessions 
+		WHERE 
+			api_session_id= #{apiSessionId}
+		
+	</select>
+	
+	<select id="getSessionKey" parameterType="String" resultType="String">
+	
+		SELECT 
+			api_session_id 
+		FROM 
+			api_sessions 
+		WHERE 
+			user_id= #{userId}
+		
+	</select>
+	
+	<select id="getTotalPeopleOpeneedAppCount" resultType="int">
+	
+		SELECT 
+			count(api_session_id)
+		FROM 
+			api_sessions
+			
+	</select>
+	
+</mapper>

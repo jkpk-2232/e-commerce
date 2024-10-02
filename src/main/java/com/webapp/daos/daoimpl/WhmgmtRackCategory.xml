@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.webapp.daos.WhmgmtRackCategoryDao">
+
+	<resultMap id="WhmgmtRackCategoryMap" type="WhmgmtRackCategoryModel">
+	
+			<result property="categoryId" column="categoryId" />
+			<result property="categoryName" column="categoryName" />
+			<result property="slotHeight" column="slotHeight" />
+			<result property="slotWidth" column="slotWidth" />
+			<result property="maxWeight" column="maxWeight" />
+			<result property="catStatus" column="catStatus" />
+			<result property="chargePerSlot" column="chargePerSlot" />
+			<result property="noOfSlots" column="noOfSlots" />
+			<result property="numberOfDays" column="numberOfDays" />
+			
+	</resultMap>
+	
+	<sql id="WhmgmtRackCategoryColumns">
+		"wrc"."categoryId", "wrc"."categoryName", "wrc"."slotHeight", "wrc"."slotWidth",
+		"wrc"."maxWeight", "wrc"."catStatus", "wrc"."chargePerSlot", "wrc"."noOfSlots",
+		"wrc"."numberOfDays"
+	</sql>
+	
+	<select id="getRackCategoryList" resultMap="WhmgmtRackCategoryMap">
+	
+		SELECT
+			<include refid="WhmgmtRackCategoryColumns"></include>
+		FROM
+			whmgmt_rackcategories wrc
+		WHERE
+			"wrc"."catStatus" = true
+	
+	</select>
+	
+	<select id="getRackCategoryDetailsByCategoryId" resultMap="WhmgmtRackCategoryMap">
+	
+		SELECT
+			<include refid="WhmgmtRackCategoryColumns"></include>
+		FROM
+			whmgmt_rackcategories wrc
+		WHERE
+			"wrc"."categoryId" = #{rackCategoryId}	
+	
+	</select>
+	
+	<insert id="insertRackCategory" parameterType="WhmgmtRackCategoryModel">
+	
+		INSERT INTO whmgmt_rackcategories
+			(
+				"categoryId", "categoryName", "slotHeight", "slotWidth",
+				"maxWeight", "catStatus", "chargePerSlot", "noOfSlots",
+				"numberOfDays"
+			)
+		VALUES 
+			(
+				#{categoryId}, #{categoryName}, #{slotHeight}, #{slotWidth}, 
+				#{maxWeight}, #{catStatus}, #{chargePerSlot}, #{noOfSlots},
+				#{numberOfDays}
+			)
+	
+	</insert>
+	
+	<select id="isCategoryNameExists" resultType="boolean">
+		
+		SELECT
+			(count(*)>0)
+		FROM
+			whmgmt_rackcategories wrc
+		WHERE
+			"wrc"."categoryName" = #{categoryName}
+		<if test="categoryId!=null">
+		AND
+			"wrc"."categoryId" != #{categoryId}
+		</if>
+		
+	</select>
+	
+	<update id="updateRackCategory" parameterType="WhmgmtRackCategoryModel">
+		
+		UPDATE 
+			whmgmt_rackcategories
+		SET 
+			"categoryName" = #{categoryName}, 
+			"slotHeight" = #{slotHeight},
+			"slotWidth" = #{slotWidth},
+			"maxWeight" = #{maxWeight}, 
+			"catStatus" = #{catStatus},
+			"chargePerSlot" = #{chargePerSlot},
+			"noOfSlots" = #{noOfSlots}, 
+			"numberOfDays" = #{numberOfDays}
+		WHERE 
+			"categoryId" = #{categoryId}
+		
+	</update>
+	
+	<select id="getRackCategorySearch" resultMap="WhmgmtRackCategoryMap">
+	
+		SELECT
+		
+			<include refid="WhmgmtRackCategoryColumns"></include>
+			
+		FROM
+			whmgmt_rackcategories wrc
+			
+		WHERE
+		
+			"wrc"."categoryName" ilike #{searchKey}
+		
+		
+		<if test="length>0">
+		ORDER BY "wrc"."categoryName" ASC
+		LIMIT #{length} OFFSET #{start}
+		</if>
+		
+		<if test="length==0">
+		ORDER BY "wrc"."categoryName" ASC
+		</if>
+
+	</select>
+	
+	<select id="getRackCategorySearchCount" resultType="int">
+	
+		SELECT
+			count("wrc"."categoryId")
+		FROM
+			whmgmt_rackcategories wrc
+		WHERE
+			"wrc"."categoryName" ilike #{searchKey}
+			
+	
+	</select>
+	
+</mapper>

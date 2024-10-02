@@ -1,0 +1,64 @@
+# Local Properties
+
+local/
+
+# Eclipse 
+
+.project
+.classpath
+.settings/*
+.loadpath
+
+# Maven
+
+target/
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+dependency-reduced-pom.xml
+buildNumber.properties
+.mvn/timing.properties
+
+# OS X
+
+.DS_Store
+.AppleDouble
+.LSOverride
+
+
+# Linux
+
+*~
+
+# KDE directory preferences
+.directory
+
+# Linux trash folder which might appear on any partition or disk
+.Trash-*
+
+# Windows
+
+# Windows image file caches
+Thumbs.db
+ehthumbs.db
+
+# Folder config file
+Desktop.ini
+
+# Compressions #
+################
+
+*.zip
+*.zipx
+*.tar
+*.bz2
+*.7z
+*.gz
+/target/
+/target/
+/target/
+/target/
+/target/
+/bin/

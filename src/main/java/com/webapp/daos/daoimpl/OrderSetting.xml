@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.webapp.daos.OrderSettingDao">
+
+	<resultMap id="OrderSettingResultMap" type="OrderSettingModel">
+	
+		<result property="orderSettingId" column="order_setting_id" />
+		<result property="serviceId" column="service_id" />
+		<result property="maxNumberOfItems" column="max_number_of_items" />
+		<result property="maxWeightAllowed" column="max_weight_allowed" />
+		<result property="freeCancellationTimeMins" column="free_cancellation_time_mins" />
+		<result property="deliveryBaseFee" column="delivery_base_fee" />
+		<result property="deliveryBaseKm" column="delivery_base_km" />
+		<result property="deliveryFeePerKm" column="delivery_fee_per_km" />
+		<result property="orderJobCancellationTimeHours" column="order_job_cancellation_time_hours" />
+		<result property="orderNewCancellationTimeHours" column="order_new_cancellation_time_hours" />
+		
+		<result property="createdBy" column="created_by" />
+		<result property="createdAt" column="created_at" />
+		<result property="updatedBy" column="updated_by" />
+		<result property="updatedAt" column="updated_at" />
+		
+		<result property="serviceName" column="service_name" />
+		
+	</resultMap>
+	
+	<sql id="OrderSettingColumns">
+		os.order_setting_id, os.service_id, os.max_number_of_items, os.max_weight_allowed, 
+		os.free_cancellation_time_mins, os.delivery_base_fee, os.delivery_base_km, 
+		os.delivery_fee_per_km, os.created_by, os.created_at, os.updated_by, os.updated_at,
+		os.order_job_cancellation_time_hours, os.order_new_cancellation_time_hours
+	</sql>
+	
+	<insert id="insertOrderSettings" parameterType="OrderSettingModel">
+	
+		INSERT INTO order_settings
+			(
+				order_setting_id, service_id, max_number_of_items, max_weight_allowed, 
+				free_cancellation_time_mins, delivery_base_fee, delivery_base_km, 
+				delivery_fee_per_km, created_by, created_at, updated_by, updated_at,
+				order_job_cancellation_time_hours, order_new_cancellation_time_hours
+			)
+		VALUES 
+			(
+				#{orderSettingId}, #{serviceId}, #{maxNumberOfItems}, #{maxWeightAllowed}, 
+				#{freeCancellationTimeMins}, #{deliveryBaseFee}, #{deliveryBaseKm}, 
+				#{deliveryFeePerKm}, #{createdBy}, #{createdAt}, #{updatedBy}, #{updatedAt},
+				#{orderJobCancellationTimeHours}, #{orderNewCancellationTimeHours}
+			);
+	
+	</insert>
+	
+	<update id="updateOrderSettings" parameterType="OrderSettingModel">
+		
+		UPDATE 
+			order_settings
+		SET 
+			max_number_of_items = #{maxNumberOfItems}, 
+			max_weight_allowed = #{maxWeightAllowed}, 
+			free_cancellation_time_mins = #{freeCancellationTimeMins}, 
+			delivery_base_fee = #{deliveryBaseFee}, 
+			delivery_base_km = #{deliveryBaseKm}, 
+			delivery_fee_per_km = #{deliveryFeePerKm}, 
+			order_job_cancellation_time_hours = #{orderJobCancellationTimeHours},
+			order_new_cancellation_time_hours = #{orderNewCancellationTimeHours},
+			updated_by = #{updatedBy}, 
+			updated_at = #{updatedAt}
+		WHERE 
+			service_id = #{serviceId}
+		
+	</update>
+	
+	<select id="getOrderSettingCount" resultType="int">
+	
+		SELECT
+			count(os.order_setting_id)
+		FROM
+			order_settings os
+		INNER JOIN services s ON s.service_id = os.service_id
+		<if test="serviceId!=null">
+		WHERE
+			os.service_id = #{serviceId}
+		</if>
+	
+	</select>
+	
+	<select id="getOrderSettingSearch" resultMap="OrderSettingResultMap">
+	
+		SELECT
+			<include refid="OrderSettingColumns"></include>, s.service_name
+		FROM
+			order_settings os
+		INNER JOIN services s ON s.service_id = os.service_id
+		WHERE
+			(
+				s.service_name ilike #{searchKey}
+			)
+		<if test="serviceId!=null">
+		AND
+			os.service_id = #{serviceId}
+		</if>
+		ORDER BY os.updated_at DESC
+		<if test="length>0">
+		LIMIT #{length} OFFSET #{start}
+		</if>
+	
+	</select>
+	
+	<select id="getOrderSettingSearchCount" resultType="int">
+	
+		SELECT
+			count(os.order_setting_id)
+		FROM
+			order_settings os
+		INNER JOIN services s ON s.service_id = os.service_id
+		WHERE
+			(
+				s.service_name ilike #{searchKey}
+			)
+		<if test="serviceId!=null">
+		AND
+			os.service_id = #{serviceId}
+		</if>
+	
+	</select>
+	
+	<select id="getOrderSettingDetailsByServiceId" resultMap="OrderSettingResultMap">
+		
+		SELECT
+			<include refid="OrderSettingColumns"></include>, s.service_name
+		FROM
+			order_settings os
+		INNER JOIN services s ON s.service_id = os.service_id
+		WHERE
+			os.service_id = #{serviceId}
+		
+	</select>
+
+</mapper>

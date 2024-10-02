@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.webapp.daos.ServiceDao">
+
+	<resultMap id="ServiceResultMap" type="ServiceModel">
+	
+		<result property="serviceId" column="service_id" />
+		<result property="serviceName" column="service_name" />
+		<result property="serviceDescription" column="service_description" />
+		<result property="isDefault" column="is_default" />
+		<result property="isActive" column="is_active" />
+		<result property="isDeleted" column="is_deleted" />
+		<result property="servicePriority" column="service_priority" />
+		<result property="serviceImage" column="service_image" />
+		
+		<result property="createdBy" column="created_by" />
+		<result property="createdAt" column="created_at" />
+		<result property="updatedBy" column="updated_by" />
+		<result property="updatedAt" column="updated_at" />
+		
+		<result property="serviceTypeId" column="service_type_id" />
+		<result property="serviceTypeName" column="service_type_name" />
+		
+	</resultMap>
+	
+	<sql id="ServiceColumns">
+		s.service_id, s.service_name, s.service_description, s.is_default, s.is_active, 
+		s.is_deleted, s.created_by, s.created_at, s.updated_by, s.updated_at, s.service_type_id,
+		s.service_priority, s.service_image
+	</sql>
+	
+	<insert id="insertServices" parameterType="ServiceModel">
+	
+		INSERT INTO services
+			(
+				service_id, service_name, service_description, service_type_id, is_active, 
+				is_deleted, created_by, created_at, updated_by, updated_at, service_priority,
+				service_image
+			)
+		VALUES 
+			(
+				#{serviceId}, #{serviceName}, #{serviceDescription}, #{serviceTypeId}, #{isActive}, 
+				#{isDeleted}, #{createdBy}, #{createdAt}, #{updatedBy}, #{updatedAt}, #{servicePriority},
+				#{serviceImage}
+			);
+	
+	</insert>
+	
+	<update id="updateServices" parameterType="ServiceModel">
+		
+		UPDATE 
+			services
+		SET 
+			service_name = #{serviceName}, 
+			service_description = #{serviceDescription}, 
+			service_type_id = #{serviceTypeId}, 
+			updated_by = #{updatedBy}, 
+			updated_at = #{updatedAt},
+			service_priority = #{servicePriority},
+			service_image = #{serviceImage}
+		WHERE 
+			service_id = #{serviceId}
+		
+	</update>
+	
+	<select id="getServiceCount" resultType="int">
+	
+		SELECT
+			count(s.service_id)
+		FROM
+			services s
+		INNER JOIN service_types st ON st.service_type_id = s.service_type_id
+		WHERE
+			s.created_at &gt;= #{startDatelong}
+		AND
+			s.created_at &lt;= #{endDatelong}
+		<if test="serviceTypeId!=null">
+		AND
+			s.service_type_id = #{serviceTypeId}
+		</if>
+	
+	</select>
+	
+	<select id="getServiceSearch" resultMap="ServiceResultMap">
+	
+		SELECT
+			<include refid="ServiceColumns"></include>, st.service_type_name
+		FROM
+			services s
+		INNER JOIN service_types st ON st.service_type_id = s.service_type_id
+		WHERE
+			(
+				s.service_name ilike #{searchKey}
+			OR
+				s.service_description ilike #{searchKey}
+			OR
+				st.service_type_name ilike #{searchKey}
+			)
+		<if test="startDatelong>0">
+		AND
+			s.created_at &gt;= #{startDatelong}
+		AND
+			s.created_at &lt;= #{endDatelong}
+		</if>
+		<if test="displayType==1">
+		AND
+			s.is_active = true
+		AND
+			s.is_deleted = false
+		</if>
+		<if test="serviceTypeId!=null">
+		AND
+			s.service_type_id = #{serviceTypeId}
+		</if>
+		ORDER BY ${orderColumn}
+		<if test="length>0">
+		LIMIT #{length} OFFSET #{start}
+		</if>
+	
+	</select>
+	
+	<select id="getServiceSearchCount" resultType="int">
+	
+		SELECT
+			count(s.service_id)
+		FROM
+			services s
+		INNER JOIN service_types st ON st.service_type_id = s.service_type_id
+		WHERE
+			(
+				s.service_name ilike #{searchKey}
+			OR
+				s.service_description ilike #{searchKey}
+			OR
+				st.service_type_name ilike #{searchKey}
+			)
+		<if test="startDatelong>0">
+		AND
+			s.created_at &gt;= #{startDatelong}
+		AND
+			s.created_at &lt;= #{endDatelong}
+		</if>
+		<if test="serviceTypeId!=null">
+		AND
+			s.service_type_id = #{serviceTypeId}
+		</if>
+	
+	</select>
+	
+	<update id="updateServiceStatus" parameterType="ServiceModel">
+	
+		UPDATE 
+			services
+		SET
+			is_active = #{isActive},
+			is_deleted = #{isDeleted}
+		WHERE
+			service_id = #{serviceId}
+	
+	</update>
+	
+	<select id="isServiceNameExists" resultType="boolean">
+		
+		SELECT
+			(count(*)>0)
+		FROM
+			services s
+		WHERE
+			s.service_name = #{serviceName}
+		<if test="serviceId!=null">
+		AND
+			s.service_id != #{serviceId}
+		</if>
+		
+	</select>
+	
+	<select id="getServiceDetailsByServiceId" resultMap="ServiceResultMap">
+		
+		SELECT
+			<include refid="ServiceColumns"></include>, st.service_type_name
+		FROM
+			services s
+		INNER JOIN service_types st ON st.service_type_id = s.service_type_id
+		WHERE
+			s.service_id = #{serviceId}
+		
+	</select>
+	
+	<select id="getDefaultServiceModel" resultMap="ServiceResultMap">
+		
+		SELECT
+			<include refid="ServiceColumns"></include>, st.service_type_name
+		FROM
+			services s
+		INNER JOIN service_types st ON st.service_type_id = s.service_type_id
+		WHERE
+			s.is_default = true
+		ORDER BY s.created_at ASC LIMIT 1
+		
+	</select>
+	
+	<select id="getAllActiveServices" resultMap="ServiceResultMap">
+		
+		SELECT
+			<include refid="ServiceColumns"></include>, st.service_type_name
+		FROM
+			services s
+		INNER JOIN service_types st ON st.service_type_id = s.service_type_id
+		WHERE
+			s.is_active = true
+		ORDER BY s.service_name ASC
+		
+	</select>
+	
+</mapper>

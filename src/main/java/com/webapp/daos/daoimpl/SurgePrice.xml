@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.webapp.daos.SurgePriceDao">
+
+	<resultMap id="surgePriceResultMap" type="SurgePriceModel" >
+  
+		<result property="surgePriceId" column="surge_price_id" />
+		<result property="multicityCityRegionId" column="multicity_city_region_id" />
+		<result property="surgePrice" column="surge_price" />
+		<result property="startTime" column="start_time" />
+		<result property="endTime" column="end_time" />
+		<result property="isActive" column="is_active" />
+		
+		<result property="recordStatus" column="record_status" />
+		<result property="createdAt" column="created_at" />
+		<result property="updatedAt" column="updated_at" />
+		<result property="createdBy" column="created_by" />
+		<result property="updatedBy" column="updated_by" />
+		
+		<result property="cityDisplayName" column="city_display_name" />
+		
+	</resultMap>
+	
+	<insert id="addSurgePriceDetails" parameterType="SurgePriceModel">
+
+		INSERT INTO 
+			surge_prices
+				(
+	           		surge_price_id, multicity_city_region_id, surge_price, start_time, end_time, 
+	           		is_active, record_status, created_by, created_at, updated_by, updated_at
+	           	)
+	   	VALUES 
+				(
+					#{surgePriceId}, #{multicityCityRegionId}, #{surgePrice}, #{startTime}, #{endTime},
+					#{isActive}, #{recordStatus}, #{createdBy}, #{createdAt}, #{updatedBy}, #{updatedAt}
+				)
+	</insert>
+	
+	<update id="updateSurgePriceDetails" parameterType="SurgePriceModel"  > 	
+	
+		UPDATE 
+			surge_prices 
+			
+		SET 
+			multicity_city_region_id = #{multicityCityRegionId},
+			surge_price = #{surgePrice},
+			start_time = #{startTime},
+			end_time = #{endTime},
+			updated_at = #{updatedAt},
+			updated_by = #{updatedBy}
+			
+		WHERE
+			surge_price_id = #{surgePriceId}
+			
+	</update>
+	
+	<update id="activateDeactivateSurgePrice" parameterType="SurgePriceModel"  > 	
+	
+		UPDATE 
+			surge_prices 
+			
+		SET 
+			is_active = #{isActive},
+			updated_at = #{updatedAt},
+			updated_by = #{updatedBy}
+			
+		WHERE
+			surge_price_id = #{surgePriceId}
+			
+	</update>
+	
+	<update id="deleteSurgePrice" parameterType="SurgePriceModel"  > 	
+	
+		UPDATE 
+			surge_prices 
+			
+		SET 
+			is_active = #{isActive},
+			record_status = #{recordStatus},
+			updated_at = #{updatedAt},
+			updated_by = #{updatedBy}
+			
+		WHERE
+			surge_price_id = #{surgePriceId}
+			
+	</update>
+	
+	<select id="getSurgePriceDetailsByIdAndActiveStatus" parameterType="map" resultMap="surgePriceResultMap"> 		
+		
+	   	SELECT     
+			surge_price_id, multicity_city_region_id, surge_price, start_time, end_time, 
+	        is_active, record_status, created_by, created_at, updated_by, updated_at
+	        
+		FROM 
+			surge_prices
+			
+ 		WHERE  
+          	surge_price_id = #{surgePriceId}
+        AND
+        	is_active = #{isActive}
+        AND
+        	record_status = 'A'
+				
+	</select>
+	
+	<select id="getSurgePriceDetailsById" parameterType="map" resultMap="surgePriceResultMap"> 		
+		
+	   	SELECT     
+			surge_price_id, multicity_city_region_id, surge_price, start_time, end_time, 
+	        is_active, record_status, created_by, created_at, updated_by, updated_at
+	        
+		FROM 
+			surge_prices
+			
+ 		WHERE  
+          	surge_price_id = #{surgePriceId}
+        AND
+        	record_status = 'A'
+				
+	</select>
+	
+	<select id="getSurgePriceCount" resultType="int">
+	
+		SELECT 
+			count(*)
+			
+		FROM 
+			surge_prices
+			
+		WHERE
+			record_status = 'A'
+		
+		<if test="surgePriceInDouble > 0">
+		AND
+			surge_price = #{surgePriceInDouble}
+		</if>
+		
+		<if test="multicityCityRegionId != null">
+		AND
+			multicity_city_region_id = #{multicityCityRegionId}
+		</if>
+	
+	</select>
+	
+	<select id="getSurgePriceListForSearch" parameterType="map" resultMap="surgePriceResultMap">
+		
+		SELECT     
+			SP.surge_price_id, SP.multicity_city_region_id, SP.surge_price, SP.start_time, SP.end_time, 
+	        SP.is_active, SP.record_status, SP.created_by, SP.created_at, SP.updated_by, SP.updated_at,
+	        MCR.city_display_name
+	        
+		FROM 
+			surge_prices SP
+		
+		INNER JOIN
+				multicity_city_region MCR
+		ON
+			MCR.multicity_city_region_id = SP.multicity_city_region_id
+			
+ 		WHERE 
+ 			(
+ 				CAST(SP.surge_price AS character varying) iLIKE #{globalSearchString}
+ 			) 
+ 		AND
+ 			SP.record_status = 'A'
+ 			
+ 		<if test="surgePriceInDouble > 0">
+		AND
+			SP.surge_price = #{surgePriceInDouble}
+		</if>
+		
+		<if test="multicityCityRegionId != null">
+		AND
+			SP.multicity_city_region_id = #{multicityCityRegionId}
+		</if>
+		
+		ORDER BY SP.updated_at DESC
+		
+		LIMIT  #{length}  OFFSET  #{start}         
+        
+	</select>
+	
+	<select id="getSurgePriceListByMulticityCityRegionId" parameterType="map" resultMap="surgePriceResultMap">
+	
+		SELECT 
+			surge_price_id, multicity_city_region_id, surge_price, start_time, end_time, 
+	        is_active, record_status, created_by, created_at, updated_by, updated_at
+			
+		FROM 
+			surge_prices 
+			
+		WHERE 
+			multicity_city_region_id = #{multicityCityRegionId}		
+		AND
+			record_status = 'A'
+			
+	</select>
+	
+	<select id="getSurgePriceDetailsByRequestTimeAndRegionId" parameterType="map" resultMap="surgePriceResultMap"> 		
+		
+	   	SELECT     
+			surge_price_id, multicity_city_region_id, surge_price, start_time, end_time, 
+	        is_active, record_status, created_by, created_at, updated_by, updated_at
+	        
+		FROM 
+			surge_prices
+			
+ 		WHERE  
+          	multicity_city_region_id = #{multicityCityRegionId}
+        AND
+        	start_time &lt; #{requestTimeInMilli}
+        AND
+        	end_time &gt; #{requestTimeInMilli}
+        AND
+        	is_active = TRUE
+        AND
+        	record_status = 'A'
+				
+	</select>
+	
+</mapper>

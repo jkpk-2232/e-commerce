@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.webapp.daos.UserAccountLogDetailsDao">
+	
+	<resultMap id="userAccountLogsDetailsResultMap" type="UserAccountLogDetailsModel">
+  
+  		<result property="userAccountLogDetailsId" column="user_account_log_details_id" />
+		<result property="userAccountLogId" column="user_account_log_id" />
+		<result property="userAccountId" column="user_account_id" />
+		<result property="userId" column="user_id" />
+		<result property="description" column="description" />
+		<result property="remark" column="remark" />
+		<result property="creditedAmount" column="credited_amount" />
+		<result property="debitedAmount" column="debited_amount" />
+		<result property="transactionType" column="transaction_type" />
+		<result property="transactionStatus" column="transaction_status" />
+		<result property="currentBalance" column="current_balance" />
+		<result property="holdBalance" column="hold_balance" />
+		<result property="approvedBalance" column="approved_balance" />
+		<result property="totalBalance" column="total_balance" />
+		<result property="transactionBy" column="transaction_by" />
+		<result property="isAccountRecharge" column="is_account_recharge" />
+		
+		<result property="createdAt" column="created_at" />
+		<result property="createdBy" column="created_by" />
+		<result property="updatedAt" column="updated_at" />
+		<result property="updatedBy" column="updated_by" />
+		
+	</resultMap>
+	
+	<insert id="insertUserAccountLogDetails" parameterType="UserAccountLogDetailsModel">
+
+		INSERT INTO 
+			user_account_log_details
+				(
+					user_account_log_details_id, user_account_log_id, user_account_id, user_id, description, remark, credited_amount,  
+					debited_amount, transaction_type, transaction_status, current_balance, hold_balance, approved_balance, 
+					total_balance, transaction_by, is_account_recharge, created_at, created_by, updated_at, updated_by
+				)
+		VALUES
+				(
+					#{userAccountLogDetailsId}, #{userAccountLogId}, #{userAccountId}, #{userId}, #{description}, #{remark}, #{creditedAmount},
+					#{debitedAmount}, #{transactionType}, #{transactionStatus}, #{currentBalance}, #{holdBalance}, #{approvedBalance}, 
+					#{totalBalance}, #{transactionBy}, #{isAccountRecharge}, #{createdAt}, #{createdBy}, #{updatedAt}, #{updatedBy}
+				)
+				
+	</insert>
+	
+</mapper>

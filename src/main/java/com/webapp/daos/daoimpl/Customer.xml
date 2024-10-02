@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.webapp.daos.CustomerDao">
+
+	<insert id="insertCustomer" parameterType="CustomerModel">
+	
+		INSERT INTO customer
+			(
+				customer_id, phone_num, customer_name, offline_Order_id, 
+				created_by, created_at, updated_by, updated_at
+			)
+		VALUES 
+			(
+				#{customerId}, #{phoneNum}, #{customerName}, #{offlineOrderId}, 
+				#{createdBy}, #{createdAt}, #{updatedBy}, #{updatedAt}
+			);
+	
+	</insert>
+	
+</mapper>

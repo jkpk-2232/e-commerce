@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.webapp.daos.VendorFeedCommentsDao">
+	
+	<resultMap type="VendorFeedCommentModel" id="VendorFeedCommentResultMap">
+		
+		<result property="commentId" column="comment_id"/>
+		<result property="postId" column="post_id"/>
+		<result property="commentContent" column="comment_content"/>
+		<result property="userId" column="user_id"/>
+		<result property="parentComment" column="parent_comment"/>
+		
+		<result property="createdAt" column="created_at"/>
+		
+		<result property="userName" column="user_name"/>		
+	</resultMap>
+	
+	<sql id="VendorFeedCommentColumns">
+		vfc.comment_id, vfc.post_id, vfc.comment_content, vfc.user_id,
+		vfc.parent_comment, vfc.created_at
+	</sql>
+	
+	<insert id="insertVendorFeedComment" parameterType="VendorFeedCommentModel">
+	
+		INSERT INTO vendor_feed_comments
+			(
+				comment_id, post_id, comment_content, user_id,
+				parent_comment, created_at	
+			)
+		VALUES 
+			(
+				#{commentId}, #{postId}, #{commentContent}, #{userId},
+				#{parentComment}, #{createdAt}
+				
+			);
+	
+	</insert>
+	
+	
+	<select id="getVendorFeedCommentsByPostId" resultMap="VendorFeedCommentResultMap">
+		
+		SELECT
+			<include refid="VendorFeedCommentColumns"></include>,
+			concat(vui.first_name,' ',vui.last_name) as user_name
+		FROM
+			vendor_feed_comments vfc
+		INNER JOIN user_info vui ON vui.user_id = vfc.user_id
+		WHERE
+			vfc.post_id = #{postId}	
+		AND
+			vfc.parent_comment is null
+				
+		<if test="length>0">
+		LIMIT #{length} OFFSET #{start}
+		</if>	
+	
+	</select>
+	
+	<select id="getVendorFeedCommentsByParentComment" resultMap="VendorFeedCommentResultMap">
+		
+		SELECT
+			<include refid="VendorFeedCommentColumns"></include>,
+			concat(vui.first_name,' ',vui.last_name) as user_name
+		FROM
+			vendor_feed_comments vfc
+		INNER JOIN user_info vui ON vui.user_id = vfc.user_id
+		WHERE
+			vfc.parent_comment = #{commentId}	
+			
+	</select>
+	
+</mapper>

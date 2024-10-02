@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.webapp.daos.AppointmentSettingDao">
+
+	<resultMap id="AppointmentSettingResultMap" type="AppointmentSettingModel">
+	
+		<result property="appointmentSettingId" column="appointment_setting_id" />
+		<result property="serviceId" column="service_id" />
+		<result property="minBookingTime" column="min_booking_time" />
+		<result property="maxBookingTime" column="max_booking_time" />
+		<result property="freeCancellationTimeMins" column="free_cancellation_time_mins" />
+		<result property="cronJobExpireTimeMins" column="cron_job_expire_time_mins" />
+		
+		<result property="createdBy" column="created_by" />
+		<result property="createdAt" column="created_at" />
+		<result property="updatedBy" column="updated_by" />
+		<result property="updatedAt" column="updated_at" />
+		
+		<result property="serviceName" column="service_name" />
+		
+	</resultMap>
+	
+	<sql id="AppointmentSettingColumns">
+		aas.appointment_setting_id, aas.service_id, aas.min_booking_time, aas.max_booking_time, 
+		aas.free_cancellation_time_mins, aas.cron_job_expire_time_mins, 
+		aas.created_by, aas.created_at, aas.updated_by, aas.updated_at
+	</sql>
+	
+	<insert id="insertAppointmentSettings" parameterType="AppointmentSettingModel">
+	
+		INSERT INTO appointment_settings
+			(
+				appointment_setting_id, service_id, min_booking_time, max_booking_time, 
+				free_cancellation_time_mins, cron_job_expire_time_mins, 
+				created_by, created_at, updated_by, updated_at
+			)
+		VALUES 
+			(
+				#{appointmentSettingId}, #{serviceId}, #{minBookingTime}, #{maxBookingTime}, 
+				#{freeCancellationTimeMins}, #{cronJobExpireTimeMins}, 
+				#{createdBy}, #{createdAt}, #{updatedBy}, #{updatedAt}
+			);
+	
+	</insert>
+	
+	<update id="updateAppointmentSettings" parameterType="AppointmentSettingModel">
+		
+		UPDATE 
+			appointment_settings
+		SET 
+			min_booking_time = #{minBookingTime}, 
+			max_booking_time = #{maxBookingTime}, 
+			free_cancellation_time_mins = #{freeCancellationTimeMins}, 
+			cron_job_expire_time_mins = #{cronJobExpireTimeMins}, 
+			updated_by = #{updatedBy}, 
+			updated_at = #{updatedAt}
+		WHERE 
+			service_id = #{serviceId}
+		
+	</update>
+	
+	<select id="getAppointmentSettingCount" resultType="int">
+	
+		SELECT
+			count(aas.appointment_setting_id)
+		FROM
+			appointment_settings aas
+		INNER JOIN services s ON s.service_id = aas.service_id
+		<if test="serviceId!=null">
+		WHERE
+			aas.service_id = #{serviceId}
+		</if>
+	
+	</select>
+	
+	<select id="getAppointmentSettingSearch" resultMap="AppointmentSettingResultMap">
+	
+		SELECT
+			<include refid="AppointmentSettingColumns"></include>, s.service_name
+		FROM
+			appointment_settings aas
+		INNER JOIN services s ON s.service_id = aas.service_id
+		WHERE
+			(
+				s.service_name ilike #{searchKey}
+			)
+		<if test="serviceId!=null">
+		AND
+			aas.service_id = #{serviceId}
+		</if>
+		ORDER BY aas.updated_at DESC
+		<if test="length>0">
+		LIMIT #{length} OFFSET #{start}
+		</if>
+	
+	</select>
+	
+	<select id="getAppointmentSettingSearchCount" resultType="int">
+	
+		SELECT
+			count(aas.appointment_setting_id)
+		FROM
+			appointment_settings aas
+		INNER JOIN services s ON s.service_id = aas.service_id
+		WHERE
+			(
+				s.service_name ilike #{searchKey}
+			)
+		<if test="serviceId!=null">
+		AND
+			aas.service_id = #{serviceId}
+		</if>
+	
+	</select>
+	
+	<select id="getAppointmentSettingDetailsByServiceId" resultMap="AppointmentSettingResultMap">
+		
+		SELECT
+			<include refid="AppointmentSettingColumns"></include>, s.service_name
+		FROM
+			appointment_settings aas
+		INNER JOIN services s ON s.service_id = aas.service_id
+		WHERE
+			aas.service_id = #{serviceId}
+		
+	</select>
+
+</mapper>

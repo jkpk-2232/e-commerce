@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.webapp.daos.UserAccountLogsDao">
+	
+	<resultMap id="userAccountLogsResultMap" type="UserAccountLogsModel">
+  
+		<result property="userAccountLogId" column="user_account_log_id" />
+		<result property="userAccountId" column="user_account_id" />
+		<result property="userId" column="user_id" />
+		<result property="description" column="description" />
+		<result property="remark" column="remark" />
+		<result property="creditedAmount" column="credited_amount" />
+		<result property="debitedAmount" column="debited_amount" />
+		<result property="transactionType" column="transaction_type" />
+		<result property="transactionStatus" column="transaction_status" />
+		<result property="currentBalance" column="current_balance" />
+		<result property="holdBalance" column="hold_balance" />
+		<result property="approvedBalance" column="approved_balance" />
+		<result property="totalBalance" column="total_balance" />
+		
+		<result property="createdAt" column="created_at" />
+		<result property="createdBy" column="created_by" />
+		<result property="updatedAt" column="updated_at" />
+		<result property="updatedBy" column="updated_by" />
+  
+		<result property="transactionBy" column="transaction_by" />
+		<result property="isAccountRecharge" column="is_account_recharge" />
+		<result property="encashRequestId" column="encash_request_id" />
+		
+	</resultMap>
+	
+	<insert id="insertUserAccountLog" parameterType="UserAccountLogsModel">
+
+		INSERT INTO 
+			user_account_logs
+				(
+					user_account_log_id, user_account_id, user_id, description, remark, credited_amount,  
+					debited_amount, transaction_type, transaction_status, current_balance, hold_balance, 
+					approved_balance, total_balance, transaction_by, is_account_recharge, encash_request_id,
+					created_at, created_by, updated_at, updated_by
+				)
+		VALUES
+				(
+					#{userAccountLogId}, #{userAccountId}, #{userId}, #{description}, #{remark}, #{creditedAmount},
+					#{debitedAmount}, #{transactionType}, #{transactionStatus}, #{currentBalance}, #{holdBalance}, 
+					#{approvedBalance}, #{totalBalance}, #{transactionBy}, #{isAccountRecharge}, #{encashRequestId},
+					#{createdAt}, #{createdBy}, #{updatedAt}, #{updatedBy}
+				)
+				
+	</insert>
+	
+	<update id="updateUserAccountLogByEncashRequestId" parameterType="UserAccountLogsModel">
+	
+		UPDATE 
+			user_account_logs 
+		SET 
+			description = #{description}, 
+			remark = #{remark},
+			transaction_status = #{transactionStatus}, 
+			current_balance = #{currentBalance}, 
+			hold_balance = #{holdBalance}, 
+			approved_balance = #{approvedBalance}, 
+			total_balance = #{totalBalance},
+			updated_at = #{updatedAt},
+			updated_by = #{updatedBy}
+		WHERE  
+			encash_request_id = #{encashRequestId}
+			
+	</update>
+ 	
+ 	<select id="getUserAccountLogsListByUserId" parameterType="map" resultMap="userAccountLogsResultMap">
+		
+	    SELECT 
+	    	user_account_log_id, user_account_id, user_id, description, remark, credited_amount, debited_amount, 
+	    	transaction_type, transaction_status, current_balance, hold_balance, approved_balance, total_balance,
+			transaction_by, is_account_recharge, created_at, created_by, updated_at, updated_by, encash_request_id
+		FROM 
+			user_account_logs 
+		WHERE 
+			user_id = #{userId} 
+			
+		ORDER BY created_at DESC
+		LIMIT #{length} OFFSET #{offset}
+		
+ 	</select>
+ 	
+ 	<select id="getTotalUserAccountLogsCount" parameterType="map" resultType="int"> 		
+		
+	    SELECT 
+			count(user_account_log_id)
+		FROM 
+			user_account_logs
+		WHERE 	
+			user_id = #{userId}
+			
+		<if test="startDateLong > 0">	
+		AND
+			created_at &gt; #{startDateLong}
+		</if>
+		
+		<if test="endDateLong > 0">	
+		AND
+			created_at &lt; #{endDateLong}
+		</if>
+		
+	</select>
+	
+	<select id="getUserAccountLogsListForSearch"  parameterType="map"  resultMap="userAccountLogsResultMap">
+	
+		SELECT 
+			user_account_log_id, user_account_id, user_id, description, remark, credited_amount, debited_amount, 
+	    	transaction_type, transaction_status, current_balance, hold_balance, approved_balance, total_balance,
+			transaction_by, is_account_recharge, created_at, created_by, updated_at, updated_by, encash_request_id
+		FROM 
+			user_account_logs
+		WHERE 	
+			user_id = #{userId}
+		AND
+			(
+					description iLIKE #{globalSearchString}	
+				OR
+					remark iLIKE #{globalSearchString} 
+			)
+			
+		<if test="startDateLong > 0">	
+		AND
+			created_at &gt; #{startDateLong}
+		</if>
+		
+		<if test="endDateLong > 0">	
+		AND
+			created_at &lt; #{endDateLong}
+		</if>
+	    
+	    ORDER BY created_at DESC
+	    
+        LIMIT  #{length}  OFFSET  #{start}  
+        
+	</select>
+	
+	<select id="getFilteredUserAccountLogsCount" parameterType="map" resultType="int"> 		
+		
+	    SELECT 
+			count(user_account_log_id)
+		FROM 
+			user_account_logs
+		WHERE 	
+			user_id = #{userId}
+		AND
+			(
+					description iLIKE #{globalSearchString}	
+				OR
+					remark iLIKE #{globalSearchString} 
+			)
+			
+		<if test="startDateLong > 0">	
+		AND
+			created_at &gt; #{startDateLong}
+		</if>
+		
+		<if test="endDateLong > 0">	
+		AND
+			created_at &lt; #{endDateLong}
+		</if>
+	    
+	</select>
+	
+	<select id="getUserAccountLogsListForExport"  parameterType="map"  resultMap="userAccountLogsResultMap">
+	
+		SELECT 
+			user_account_log_id, user_account_id, user_id, description, remark, credited_amount, debited_amount, 
+	    	transaction_type, transaction_status, current_balance, hold_balance, approved_balance, total_balance,
+			transaction_by, is_account_recharge, created_at, created_by, updated_at, updated_by, encash_request_id
+		FROM 
+			user_account_logs
+		WHERE 	
+			user_id = #{userId}
+		AND
+			(
+					description iLIKE #{searchString}	
+				OR
+					remark iLIKE #{searchString} 
+			)
+			
+		<if test="startDateLong > 0">	
+		AND
+			created_at &gt; #{startDateLong}
+		</if>
+		
+		<if test="endDateLong > 0">	
+		AND
+			created_at &lt; #{endDateLong}
+		</if>
+		
+		ORDER BY created_at DESC
+        
+	</select>
+	
+	<select id="getUserAccountLogDetailsByEncashRequestId" parameterType="String" resultMap="userAccountLogsResultMap">
+		
+	    SELECT 
+	    	user_account_log_id, user_account_id, user_id, description, remark, credited_amount, debited_amount, transaction_type, 
+	    	transaction_status, current_balance, hold_balance, approved_balance, total_balance, transaction_by, is_account_recharge, 
+	    	encash_request_id, created_at, created_by, updated_at, updated_by
+		FROM 
+			user_account_logs 
+		WHERE 
+			encash_request_id = #{encashRequestId} 
+		
+ 	</select>
+	
+</mapper>

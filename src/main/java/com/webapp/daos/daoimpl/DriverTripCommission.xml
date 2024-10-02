@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.webapp.daos.DriverTripCommissionDao">
+
+	<resultMap id="driverTripCommissionResultMap" type="DriverTripCommissionModel" >
+	    
+		<result property="driverTripCommissionId" column="driver_trip_commission_id" />
+		<result property="tourId" column="tour_id" />
+		<result property="invoiceId" column="invoice_id" />
+		<result property="driverId" column="driver_id" />
+		<result property="driverCommissionTypeId" column="driver_commission_type_id" />
+		<result property="driverPercentrage" column="driver_percentage" />
+		<result property="driverAmount" column="driver_amount" />
+		<result property="createdAt" column="created_at" />
+		<result property="updatedAt" column="updated_at" />
+		<result property="createdBy" column="created_by" />
+		<result property="updatedBy" column="updated_by" />
+		
+	</resultMap>
+	
+	
+</mapper> 

@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.webapp.daos.TransactionHistoryDao">
+
+	<resultMap id="transactionHistoryResultMap" type="TransactionHistoryModel" >
+	    
+		<result property="transactionHistoryId" column="transaction_history_id" />
+		<result property="orderId" column="order_id" />
+		<result property="userId" column="user_id" />
+		<result property="paymentTypeId" column="payment_type_id" />
+		<result property="transactionId" column="transaction_id" />
+		<result property="amount" column="amount" />
+		<result property="status" column="status" />
+		<result property="paymentType" column="payment_type" />
+		<result property="recordStatus" column="record_status" />
+		<result property="createdAt" column="created_at" />
+		<result property="updatedAt" column="updated_at" />
+		<result property="createdBy" column="created_by" />
+		<result property="updatedBy" column="updated_by" />
+		
+	</resultMap>
+
+	<sql id="transactionHistoryTableColsWithOutTypeAlias">
+		transaction_history_id, user_id, payment_type_id, 
+		transaction_id, amount, status, 
+		record_status, created_at, created_by, updated_at, updated_by
+	</sql>
+	
+	<sql id="transactionHistoryTableColsWithTypeAlias">
+		th.transaction_history_id, th.order_id, th.user_id, th.payment_type_id, 
+		th.transaction_id, th.amount, th.status, 
+		th.record_status, th.created_at, th.created_by, th.updated_at, th.updated_by
+	</sql>
+
+	<sql id="transactionHistoryModelColsWithOutTypeAlias">
+		#{transactionHistoryId}, #{userId}, #{paymentTypeId}, 
+		#{transactionId}, #{amount}, #{status}, 
+		'A', #{createdAt},#{createdBy},#{updatedAt},#{updatedBy}
+	</sql>
+	
+	<insert id="addTransactionHistory" parameterType="TransactionHistoryModel">
+
+		INSERT INTO 
+			transaction_history
+				(
+					<include refid="transactionHistoryTableColsWithOutTypeAlias" /> 
+				)
+		VALUES
+				(
+					<include refid="transactionHistoryModelColsWithOutTypeAlias" /> 
+				)
+				
+	</insert>
+	
+	<update id="updateTransactionHistory" parameterType="TransactionHistoryModel" >
+	
+		UPDATE 
+			transaction_history 
+		SET 
+			status = #{status},
+			updated_at = #{updatedAt},
+			updated_by = #{updatedBy}
+		WHERE  
+			transaction_id = #{transactionId}
+		AND
+			user_id = #{userId}
+		AND
+			record_status = 'A'
+			
+	</update>
+	
+	<select id="getTransactionHistoryList" resultMap="transactionHistoryResultMap">
+	
+		SELECT
+			<include refid="transactionHistoryTableColsWithTypeAlias" />, py.payment_type
+		FROM 
+			transaction_history th
+		INNER JOIN
+			payment_type py
+		ON
+			th.payment_type_id = py.payment_type_id
+		WHERE
+			th.user_id = #{userId}
+		AND
+			th.record_status = 'A'
+		ORDER BY th.updated_at DESC
+	    LIMIT  #{length}  OFFSET  #{start}   
+			
+	</select>
+	
+	<select id="getTotalTransactionCountByUserId" parameterType="String" resultType="int">
+	
+		SELECT
+			count(*)
+		FROM 
+			transaction_history
+		WHERE
+			user_id = #{userId}
+		AND
+			record_status = 'A' 
+			
+	</select>
+	
+	<select id="getTrasactionHistoryByTrasactionId" parameterType="String" resultMap="transactionHistoryResultMap">
+	
+		SELECT
+			<include refid="transactionHistoryTableColsWithOutTypeAlias" /> 
+		FROM 
+			transaction_history
+		WHERE
+			transaction_id = #{transactionId}
+		AND
+			record_status = 'A' 
+			
+	</select>
+	
+</mapper> 

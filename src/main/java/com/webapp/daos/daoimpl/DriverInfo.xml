@@ -1,0 +1,455 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.webapp.daos.DriverInfoDao">
+	
+	<resultMap id="driverInfoResultMap" type="DriverInfoModel">
+
+		<id property="userInfoId" column="user_info_id" />
+		<result property="firstName" column="first_name" />
+		<result property="lastName" column="last_name" />
+		<result property="phoneNo" column="phone_no" />
+		<result property="phoneNoCode" column="phone_no_code" />
+		<result property="drivingLicense" column="driving_license" />
+		<result property="joiningDate" column="joining_date" />
+		<result property="mailAddressLineOne" column="mail_address_line_1" />
+		<result property="mailAddressLineTwo" column="mail_address_line_2" />
+		<result property="mailCountryId" column="mail_country_id" />
+		<result property="mailStateId" column="mail_state_id" />
+		<result property="mailCityId" column="mail_city_id" />
+		<result property="mailZipCode" column="mail_zip_code" />
+		<result property="billAddressLineOne" column="bill_address_line_1" />
+		<result property="billAddressLineTwo" column="bill_address_line_2" />
+		<result property="billCountryId" column="bill_country_id" />
+		<result property="billStateId" column="bill_state_id" />
+		<result property="billCityId" column="bill_city_id" />
+		<result property="billZipCode" column="bill_zip_code" />
+		<result property="gender" column="gender" />
+		<result property="userId" column="user_id" />
+		<result property="roleId" column="role_id" />
+		<result property="userRole" column="userRole" />
+		<result property="email" column="email" />
+		<result property="password" column="password" />
+		<result property="photoUrl" column="photo_url" />
+		<result property="isActive" column="is_active" />
+		<result property="isDeleted" column="is_deleted" />
+		<result property="isNotificationStatus" column="is_notification_send_status" />
+		<result property="isOnDuty" column="is_on_duty" />
+		<result property="fullName" column="fullName" />
+		<result property="applicationStatus" column="application_status" />
+		<result property="drivingLicensephoto" column="driving_license_photo" />
+		<result property="verificationCode" column="verification_code" />
+		<result property="isVerified" column="is_verified" />
+		<result property="isSameAsMailing" column="is_same_as_mailing" />
+		<result property="companyName" column="company_name" />
+		<result property="companyAddress" column="company_address" />
+		<result property="approvelStatus" column="approvel_status" />
+		<result property="companyDriver" column="company_driver" />
+		<result property="driverReferralCode" column="referral_code" />
+		<result property="driveTransmissionTypeId" column="drive_transmission_type_id" />
+		<result property="driverPayablePercentage" column="driver_payable_percentage" />
+		<result property="agentNumber" column="agent_number" />
+		
+		<result property="createdBy" column="created_by" />
+		<result property="createdAt" column="created_at" />
+		<result property="updatedBy" column="updated_by" />
+		<result property="updatedAt" column="updated_at" />
+	</resultMap>
+	
+	<insert id="addBusinessOwner" keyColumn="user_id" useGeneratedKeys="true" parameterType="DriverInfoModel">
+
+		INSERT INTO 
+			user_info
+				(
+					user_info_id,first_name,last_name,phone_no, phone_no_code,
+					driving_license,joining_date,mail_address_line_1, mail_address_line_2,
+					mail_country_id,mail_state_id,mail_city_id,mail_zip_code,
+					bill_address_line_1,bill_address_line_2,bill_country_id,bill_state_id,
+					bill_city_id,bill_zip_code,gender,user_id,is_same_as_mailing,
+					created_by,created_at,updated_by,updated_at, agent_number
+				)
+		VALUES
+			(
+				#{userInfoId},#{firstName},#{lastName},#{phoneNo}, #{phoneNoCode} 
+				#{drivingLicense},#{joiningDate},#{mailAddressLineOne},#{mailAddressLineTwo},
+				#{mailCountryId},#{mailStateId},#{mailCityId},#{mailZipCode},
+				#{billAddressLineOne},#{billAddressLineTwo},#{billCountryId},#{billStateId},
+				#{billCityId},#{billZipCode},#{gender},#{userId},#{isSameAsMailing},
+				#{createdBy},#{createdAt},#{updatedBy},#{updatedAt}, #{agentNumber}
+			)
+			
+	</insert>
+	
+	<insert id="addDriver" keyColumn="user_id" useGeneratedKeys="true" parameterType="DriverInfoModel">
+
+		INSERT INTO 
+			user_info
+				(
+					user_info_id,first_name,last_name,phone_no, driving_license_photo,phone_no_code,
+					driving_license,joining_date,mail_address_line_1,mail_address_line_2,
+					mail_country_id,mail_state_id,mail_city_id,mail_zip_code,
+					bill_address_line_1,bill_address_line_2,bill_country_id,bill_state_id,
+					bill_city_id,bill_zip_code,gender,user_id,application_status,is_same_as_mailing,drive_transmission_type_id,
+					created_by,created_at,updated_by,updated_at, 
+					company_driver,referral_code, driver_payable_percentage, agent_number
+				)
+		VALUES
+				(
+					#{userInfoId},#{firstName},#{lastName},#{phoneNo}, #{drivingLicensephoto},#{phoneNoCode},
+					#{drivingLicense},#{joiningDate},#{mailAddressLineOne},#{mailAddressLineTwo},
+					#{mailCountryId},#{mailStateId},#{mailCityId},#{mailZipCode},
+					#{billAddressLineOne},#{billAddressLineTwo},#{billCountryId},#{billStateId},
+					#{billCityId},#{billZipCode},#{gender},#{userId},#{applicationStatus},#{isSameAsMailing},#{driveTransmissionTypeId},
+					#{createdBy},#{createdAt},#{updatedBy},#{updatedAt},
+					#{companyDriver},#{driverReferralCode},#{driverPayablePercentage}, #{agentNumber}
+				)
+				
+	</insert>
+	
+	<select id="getDriverAccountDetailsById" parameterType="String" resultMap="driverInfoResultMap">
+		
+	    SELECT 
+	    	U.user_id,U.email, U.photo_url,driving_license_photo, U.password,U.is_notification_send_status,U.is_on_duty, 
+	    	UI.first_name,UI.last_name,UI.gender,U.is_active,UI,company_name, UI.company_address,
+	    	UI.driving_license,UI.phone_no, UI.phone_no_code,UI.user_info_id,UI.mail_zip_code,
+	    	concat(UI.first_name,' ',UI.last_name ) AS fullName,
+	    	UI.mail_address_line_1,UI.mail_address_line_2, UI.agent_number,
+			UI.mail_country_id,UI.mail_state_id,UI.mail_city_id,UI.mail_zip_code,
+			UI.bill_address_line_1,UI.bill_address_line_2,UI.bill_country_id,UI.bill_state_id,
+			UI.bill_city_id,UI.bill_zip_code,UI.application_status,UI.application_status,UI.drive_transmission_type_id,
+	    	R.role as userRole, UI.is_verified,UI.is_same_as_mailing,UI.company_driver,UI.referral_code
+		FROM 
+			users U 
+		INNER JOIN user_info UI ON UI.user_id=U.user_id
+		INNER JOIN roles R ON R.role_id=U.role_id
+		WHERE 
+			U.user_id = #{userId} 
+		AND 
+			U.is_deleted='FALSE' 
+		
+ 	</select>
+ 	
+ 	<select id="getActiveDeactiveDriverAccountDetailsById" parameterType="String" resultMap="driverInfoResultMap">
+		
+	    SELECT 
+	    	U.user_id,U.email, U.photo_url,driving_license_photo, U.password,U.is_notification_send_status,U.is_on_duty, 
+	    	UI.first_name,UI.last_name,UI.gender,U.is_active,UI,company_name, UI.company_address,
+	    	UI.driving_license,UI.phone_no, UI.phone_no_code,UI.user_info_id,UI.mail_zip_code,
+	    	concat(UI.first_name,' ',UI.last_name ) AS fullName,
+	    	UI.mail_address_line_1,UI.mail_address_line_2, UI.agent_number,
+			UI.mail_country_id,UI.mail_state_id,UI.mail_city_id,UI.mail_zip_code,
+			UI.bill_address_line_1,UI.bill_address_line_2,UI.bill_country_id,UI.bill_state_id,
+			UI.bill_city_id,UI.bill_zip_code,UI.application_status,UI.drive_transmission_type_id,
+	    	R.role as userRole, UI.is_verified,UI.is_same_as_mailing,UI.company_driver,U.approvel_status, 
+	    	UI.driver_payable_percentage
+		FROM 
+			users U 
+		INNER JOIN user_info UI ON UI.user_id=U.user_id
+		INNER JOIN roles R ON R.role_id=U.role_id
+		WHERE 
+			U.user_id = #{userId} 
+<!-- 		AND U.is_deleted='FALSE'  -->
+
+ 	</select>
+ 	
+	<select id="getUserListByRole" parameterType="map" resultMap="driverInfoResultMap">
+	
+		SELECT 
+		 	U.user_id, U.email, U.photo_url, U.is_active, UI.agent_number,
+		 	concat(UI.first_name,' ',UI.last_name ) AS fullName,
+	    	UI.phone_no,UI.phone_no_code, UI.driving_license,UI.company_driver
+	    FROM
+	   		users U 
+   		INNER JOIN user_info UI ON UI.user_id=U.user_id
+		WHERE 		  	
+        	(
+        	 UI.first_name ilike #{searchKey} 
+        	 OR UI.last_name ilike #{searchKey} 
+        	 OR U.email iLIKE #{searchKey} 
+        	 OR UI.driving_license iLIKE #{searchKey} 
+        	 OR UI.phone_no iLIKE #{searchKey} 
+        	 OR CONCAT(UI.first_name,CONCAT(' ',UI.last_name)) iLIKE #{searchKey} )
+        AND 
+        	U.role_id = #{roleId}
+<!--         AND  -->
+<!--         	U.is_deleted='FALSE'  -->
+        ORDER BY 
+        	U.updated_at DESC
+       	LIMIT #{recordOffset}
+       	OFFSET #{startOffSet}
+       	
+	</select>
+	
+	<select id="getUserDetailsByRole" parameterType="String" resultMap="driverInfoResultMap">
+	
+		SELECT 
+		 	U.user_id, UI.first_name, UI.last_name, U.email,UI.gender,UI,company_name, UI.company_address,
+	    	UI.phone_no, UI.phone_no_code, UI.driving_license, UI.mail_address_line_1, UI.mail_address_line_2,
+	    	UI.mail_country_id, UI.mail_state_id, UI.mail_city_id, UI.mail_zip_code, UI.agent_number,
+	    	UI.bill_address_line_1, UI.bill_address_line_2, UI.bill_country_id, UI.bill_state_id,
+	    	UI.bill_city_id, UI.bill_zip_code,UI.is_same_as_mailing,UI.company_driver
+	    FROM
+	   		users U 
+   		INNER JOIN user_info UI ON UI.user_id=U.user_id
+		WHERE 
+        	U.role_id = #{roleId}
+<!--         AND  -->
+<!--         	U.is_deleted='FALSE'  -->
+        ORDER BY U.updated_at DESC
+        
+       	LIMIT 1
+       	
+	</select>
+	
+	<select id="getDriverDetailsByRoleAndApplication" parameterType="String" resultMap="driverInfoResultMap">
+	    
+		SELECT 
+		 	U.user_id, UI.first_name, UI.last_name, U.email, photo_url, driving_license_photo, U.password,
+	    	UI.phone_no,UI.phone_no_code, UI.driving_license, UI.mail_address_line_1, UI.mail_address_line_2,
+	    	UI.mail_country_id, UI.mail_state_id, UI.mail_city_id, UI.mail_zip_code,UI,company_name, UI.company_address,
+	    	UI.bill_address_line_1, UI.bill_address_line_2, UI.bill_country_id, UI.bill_state_id, UI.agent_number,
+	    	UI.bill_city_id, UI.bill_zip_code,UI.is_same_as_mailing,UI.company_driver
+	    FROM
+	   		users U 
+   		INNER JOIN user_info UI ON UI.user_id=U.user_id
+		WHERE 
+        	U.role_id = #{roleId}
+        AND 
+        	U.is_deleted='FALSE' 
+        AND
+			UI.application_status = #{applicationStatus}
+        ORDER BY 
+        	U.updated_at DESC
+       	LIMIT 1
+       	
+	</select>
+	
+	<select id="getActiveDeactiveDriverDetailsByRoleAndApplication" parameterType="String" resultMap="driverInfoResultMap">
+	    
+		SELECT 
+		 	U.user_id, UI.first_name, UI.last_name, U.email, photo_url, driving_license_photo, UI,company_name, UI.company_address,
+	    	UI.phone_no,UI.phone_no_code, UI.driving_license, UI.mail_address_line_1, UI.mail_address_line_2,
+	    	UI.mail_country_id, UI.mail_state_id, UI.mail_city_id, UI.mail_zip_code,U.is_active, UI.agent_number,
+	    	UI.bill_address_line_1, UI.bill_address_line_2, UI.bill_country_id, UI.bill_state_id,
+	    	UI.bill_city_id, UI.bill_zip_code,UI.is_same_as_mailing,UI.company_driver, UI.driver_payable_percentage
+	    FROM
+	   		users U 
+   		INNER JOIN user_info UI ON UI.user_id=U.user_id
+		WHERE 
+        	U.role_id = #{roleId}
+<!--         AND  -->
+<!--         	U.is_deleted='FALSE'  -->
+        AND
+			UI.application_status = #{applicationStatus}
+        ORDER BY U.updated_at DESC
+        
+       	LIMIT 1
+       	
+	</select>
+	
+	<select id="getDriverCountByRoleAndApplicationStatus" resultType="int">
+	    
+		SELECT 
+		 	count(*)
+	    FROM
+	   		users U 
+   		INNER JOIN user_info UI ON UI.user_id=U.user_id
+		WHERE 
+        	U.role_id = #{roleId}
+        AND 
+        	U.is_deleted='FALSE' 
+        AND
+			UI.application_status = #{applicationStatus}
+        
+	</select>
+	
+	<!-- 	used for announcement -->
+	<select id="getAllDriverDetailsByRoleIdAndApplicationStatus" parameterType="map" resultMap="driverInfoResultMap">
+	    
+		SELECT 
+		 	DISTINCT U.user_id, UI.first_name, UI.last_name, U.email, photo_url, driving_license_photo, U.is_active,
+	    	UI.phone_no, UI.phone_no_code, UI.driving_license, UI.mail_address_line_1, UI.mail_address_line_2,
+	    	UI.mail_country_id, UI.mail_state_id, UI.mail_city_id, UI.mail_zip_code,UI,company_name, UI.company_address,
+	    	UI.bill_address_line_1, UI.bill_address_line_2, UI.bill_country_id, UI.bill_state_id, UI.agent_number,
+	    	UI.bill_city_id, UI.bill_zip_code,UI.is_same_as_mailing,UI.company_driver, UI.driver_payable_percentage
+	    	
+	    FROM
+	   		users U 
+	   		
+   		INNER JOIN 
+   			user_info UI 
+   		ON 
+   			UI.user_id = U.user_id
+   		
+   		LEFT JOIN
+				multicity_user_region MUR
+		ON
+			MUR.user_id = UI.user_id
+   		
+		WHERE 
+        	U.role_id = #{roleId}
+        AND 
+        	U.is_deleted='FALSE' 
+        AND
+			UI.application_status = #{applicationStatus}
+		
+		<if test="assignedRegionList != null">
+	    AND
+	    	MUR.multicity_city_region_id IN
+	    		
+	    		<foreach item="item" index="index" collection="assignedRegionList" open="(" separator="," close=")">
+					#{item}
+				</foreach>
+	    </if>
+        
+	</select>
+	
+	<select id="getDriverListByMulticityRegionIds" parameterType="map" resultMap="driverInfoResultMap">
+	    
+		SELECT 
+		 	DISTINCT U.user_id, UI.first_name, UI.last_name, U.email, photo_url, driving_license_photo, U.is_active,
+	    	UI.phone_no, UI.phone_no_code, UI.driving_license, UI.mail_address_line_1, UI.mail_address_line_2,
+	    	UI.mail_country_id, UI.mail_state_id, UI.mail_city_id, UI.mail_zip_code,UI,company_name, UI.company_address,
+	    	UI.bill_address_line_1, UI.bill_address_line_2, UI.bill_country_id, UI.bill_state_id, UI.agent_number,
+	    	UI.bill_city_id, UI.bill_zip_code,UI.is_same_as_mailing,UI.company_driver, UI.driver_payable_percentage
+	    	
+	    FROM
+	   		users U 
+	   		
+   		INNER JOIN 
+   				user_info UI 
+   		ON 
+   			UI.user_id=U.user_id
+   			
+   		INNER JOIN
+   				multicity_user_region MUR
+   		ON
+   			MUR.user_id = UI.user_id
+   		
+		WHERE 
+        	U.role_id = #{roleId}
+        AND 
+        	U.is_deleted='FALSE' 
+        AND
+			UI.application_status = #{applicationStatus}
+		AND
+			MUR.multicity_city_region_id IN
+			<foreach item="item" index="index" collection="multicityRegionIds" open="(" separator="," close=")">
+				#{item}
+			</foreach> 
+        
+	</select>
+	
+	<select id="getDriverApplicationListByRoleAndApplication" parameterType="map" resultMap="driverInfoResultMap">
+		SELECT 
+		 	U.user_id, U.email, U.photo_url, U.is_active, UI.agent_number,
+		 	concat(UI.first_name,' ',UI.last_name ) AS fullName,
+	    	UI.phone_no,UI.phone_no_code, UI.driving_license,UI.company_driver
+	    FROM
+	   		users U 
+   		INNER JOIN user_info UI ON UI.user_id=U.user_id
+		WHERE 		  	
+        	(
+        	 UI.first_name ilike #{searchKey} 
+        	 OR UI.last_name ilike #{searchKey} 
+        	 OR U.email iLIKE #{searchKey} 
+        	 OR UI.driving_license iLIKE #{searchKey} 
+        	 OR UI.phone_no iLIKE #{searchKey} 
+        	 OR CONCAT(UI.first_name,CONCAT(' ',UI.last_name)) iLIKE #{searchKey} )
+        AND 
+        	U.role_id = #{roleId}
+        AND
+         	U.is_deleted='FALSE'  
+        AND
+			UI.application_status = #{applicationStatus}
+        ORDER BY 
+        	U.updated_at DESC
+       	LIMIT #{recordOffset}
+       	OFFSET #{startOffSet}
+	</select>
+	
+	<update id="updateDriverInfo" parameterType="DriverInfoModel"  > 	
+		UPDATE 
+			user_info 
+		SET 
+			first_name = #{firstName},
+			last_name = #{lastName},
+			phone_no = #{phoneNo},
+			phone_no_code = #{phoneNoCode},
+			gender = #{gender},
+			company_driver = #{companyDriver},
+			mail_address_line_1 = #{mailAddressLineOne},
+			mail_address_line_2 = #{mailAddressLineTwo},
+			mail_country_id = #{mailCountryId},
+			mail_state_id = #{mailStateId},
+			mail_city_id = #{mailCityId},
+			mail_zip_code = #{mailZipCode},
+			bill_address_line_1 = #{billAddressLineOne},
+			bill_address_line_2 = #{billAddressLineTwo},
+			bill_country_id = #{billCountryId},
+			bill_state_id = #{billStateId},
+			bill_city_id = #{billCityId},
+			bill_zip_code = #{billZipCode},
+			is_same_as_mailing = #{isSameAsMailing},
+			updated_at = #{updatedAt},
+			updated_by = #{updatedBy},
+			referral_code = #{driverReferralCode},
+			drive_transmission_type_id = #{driveTransmissionTypeId},
+			driver_payable_percentage = #{driverPayablePercentage},
+			agent_number = #{agentNumber}
+		WHERE 
+			user_id=#{userId}
+			
+	</update>
+	
+	<update id="updateDriverForApi" parameterType="DriverInfoModel"  > 
+		
+		UPDATE 
+			user_info 
+		SET 
+			first_name = #{firstName},
+			last_name = #{lastName},
+			mail_address_line_1 = #{mailAddressLineOne},
+			mail_address_line_2 = #{mailAddressLineTwo},
+			mail_country_id = #{mailCountryId},
+			mail_state_id = #{mailStateId},
+			mail_city_id = #{mailCityId},
+			mail_zip_code = #{mailZipCode},
+			bill_address_line_1 = #{billAddressLineOne},
+			bill_address_line_2 = #{billAddressLineTwo},
+			bill_country_id = #{billCountryId},
+			bill_state_id = #{billStateId},
+			bill_city_id = #{billCityId},
+			bill_zip_code = #{billZipCode},
+			updated_at = #{updatedAt},
+			updated_by = #{updatedBy}
+		WHERE 
+			user_id=#{userId}
+			
+	</update>
+	
+	<update id="updateDriverApplicationStatus" parameterType="DriverInfoModel"  > 	
+	
+		UPDATE 
+			user_info 
+		SET 
+			application_status = #{applicationStatus},
+			updated_at = #{updatedAt},
+			updated_by = #{updatedBy}
+		WHERE 
+			user_id=#{userId}
+			
+	</update>
+	
+	<update id="updateVerificationCode" parameterType="map"  > 
+		
+		UPDATE 
+			user_info 
+		SET 
+			verification_code = #{verificationCode}
+		WHERE 
+			user_id=#{userId}
+			
+	</update>
+	
+</mapper>

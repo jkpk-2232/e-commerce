@@ -1,0 +1,428 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.webapp.daos.PromoCodeDao">
+
+	<resultMap id="promoCodeResultMap" type="PromoCodeModel" >
+	    
+		<result property="promoCodeId" column="promo_code_id" />
+		<result property="promoCode" column="promo_code" />
+		<result property="vendorId" column="vendor_id" />
+		<result property="usage" column="usage" />
+		<result property="usageCount" column="usage_count" />
+		<result property="usageType" column="usage_type" />
+		<result property="usedCount" column="used_count" />
+		<result property="mode" column="mode" />
+		<result property="discount" column="discount" />
+		<result property="startDate" column="start_date" />
+		<result property="endDate" column="end_date" />
+		
+		<result property="serviceTypeId" column="service_type_id" /> 
+		<result property="maxDiscount" column="max_discount" /> 
+		
+		<result property="serviceTypeName" column="serviceTypeName" /> 
+		<result property="vendorBrandName" column="vendorBrandName" /> 
+		
+		<result property="isActive" column="is_active" /> 
+		
+		<result property="recordStatus" column="record_status" />
+		<result property="createdAt" column="created_at" />
+		<result property="updatedAt" column="updated_at" />
+		<result property="createdBy" column="created_by" />
+		<result property="updatedBy" column="updated_by" />
+	</resultMap>
+
+	<sql id="promoCodeTableColsWithOutTypeAlias">
+		DISTINCT pc.promo_code_id, pc.promo_code, pc.vendor_id, pc.usage, 
+		pc.usage_count, pc.usage_type, pc.used_count, pc.mode, 
+		pc.discount, pc.start_date, pc.end_date, pc.multicity_country_id, 
+		pc.record_status, pc.created_by, pc.created_at, pc.updated_by, 
+		pc.updated_at, pc.is_active, pc.service_type_id, pc.max_discount
+	</sql>
+	
+	<insert id="addPromoCode" parameterType="PromoCodeModel">
+
+		INSERT INTO promo_code
+				(
+            		promo_code_id, promo_code, usage, usage_count, used_count, 
+            		mode, discount, start_date, end_date, vendor_id, usage_type, is_active,
+            		record_status, created_by, created_at, updated_by, updated_at,
+            		service_type_id, max_discount
+            	)
+	    VALUES 
+				(
+					#{promoCodeId}, #{promoCode}, #{usage}, #{usageCount}, #{usedCount},
+					#{mode}, #{discount}, #{startDate}, #{endDate}, #{vendorId}, #{usageType}, #{isActive},
+					#{recordStatus}, #{createdBy}, #{createdAt}, #{updatedBy}, #{updatedAt},
+					#{serviceTypeId}, #{maxDiscount}
+				)
+	</insert>
+
+	<select id="getPromoCodeCount" resultType="int">
+	
+		SELECT 
+			count(DISTINCT pc.promo_code_id)
+		FROM 
+			promo_code pc
+		LEFT JOIN user_info ui ON ui.user_id = pc.vendor_id
+		LEFT JOIN service_types st ON st.service_type_id = pc.service_type_id
+		LEFT JOIN multicity_user_region MUR ON MUR.user_id = pc.vendor_id
+ 		WHERE 
+			pc.record_status = 'A'
+		<if test="startDatelong>0">
+ 		AND
+ 			pc.created_at &gt; #{startDatelong}
+		AND
+			pc.created_at &lt; #{endDatelong}
+		</if>
+		<if test="serviceTypeId!=null">
+		<!-- if particular service type is selected then show all the promo for all i.e., -1 + particular service type id promo -->
+		AND
+			(
+				pc.service_type_id = #{serviceTypeId}
+			OR
+				pc.service_type_id = '-1'
+			)
+		</if>
+		<if test="vendorId!=null">
+		AND
+			(
+				pc.vendor_id = #{vendorId}
+			OR
+				pc.vendor_id = '-1'
+			)
+		</if>
+		<if test="assignedRegionList!=null">
+	    AND
+	    	(
+		    	MUR.multicity_city_region_id IN
+		    		<foreach item="item" index="index" collection="assignedRegionList" open="(" separator="," close=")">
+						#{item}
+					</foreach>
+			OR
+				pc.service_type_id = '-1'
+			OR
+				pc.vendor_id = '-1'
+			)
+	    </if>
+	
+	</select>
+	
+	<select id="getPromoCodeListForSearch" resultMap="promoCodeResultMap">
+		
+		SELECT     
+			<include refid="promoCodeTableColsWithOutTypeAlias"></include>,
+			ui.vendor_brand_name AS vendorBrandName,
+			st.service_type_name AS serviceTypeName
+		FROM 
+			promo_code pc
+		LEFT JOIN user_info ui ON ui.user_id = pc.vendor_id
+		LEFT JOIN service_types st ON st.service_type_id = pc.service_type_id
+		LEFT JOIN multicity_user_region MUR ON MUR.user_id = pc.vendor_id
+ 		WHERE 
+ 			(
+ 				pc.promo_code iLIKE #{globalSearchString}
+ 			<if test="maxDiscountSearch!=-1">
+ 			OR
+ 				pc.max_discount = #{maxDiscountSearch}
+ 			</if>
+ 			) 
+ 		AND
+			pc.record_status = 'A'
+ 		<if test="startDatelong>0">
+ 		AND
+ 			pc.created_at &gt; #{startDatelong}
+		AND
+			pc.created_at &lt; #{endDatelong}
+		</if>
+		<if test="serviceTypeId!=null">
+		<!-- if particular service type is selected then show all the promos for all i.e., -1 + particular service type id promo -->
+		AND
+			(
+				pc.service_type_id = #{serviceTypeId}
+			OR
+				pc.service_type_id = '-1'
+			)
+		</if>
+		<if test="vendorId!=null">
+		AND
+			(
+				pc.vendor_id = #{vendorId}
+			OR
+				pc.vendor_id = '-1'
+			)
+		</if>
+		<if test="assignedRegionList!=null">
+	    AND
+	    	(
+		    	MUR.multicity_city_region_id IN
+		    		<foreach item="item" index="index" collection="assignedRegionList" open="(" separator="," close=")">
+						#{item}
+					</foreach>
+			OR
+				pc.service_type_id = '-1'
+			OR
+				pc.vendor_id = '-1'
+			)
+	    </if>
+		ORDER BY pc.updated_at DESC
+		LIMIT  #{length}  OFFSET  #{start}         
+        
+	</select>
+	
+	<select id="getTotalPromoCodeCountBySearch" resultType="int"> 		
+		
+		SELECT     
+			count(DISTINCT pc.promo_code_id)
+		FROM 
+			promo_code pc
+		LEFT JOIN user_info ui ON ui.user_id = pc.vendor_id
+		LEFT JOIN service_types st ON st.service_type_id = pc.service_type_id
+		LEFT JOIN multicity_user_region MUR ON MUR.user_id = pc.vendor_id
+ 		WHERE 
+ 			(
+ 				pc.promo_code iLIKE #{globalSearchString}
+ 			<if test="maxDiscountSearch!=-1">
+ 			OR
+ 				pc.max_discount = #{maxDiscountSearch}
+ 			</if>
+ 			) 
+ 		AND
+			pc.record_status = 'A'
+ 		<if test="startDatelong>0">
+ 		AND
+ 			pc.created_at &gt; #{startDatelong}
+		AND
+			pc.created_at &lt; #{endDatelong}
+		</if>
+		<if test="serviceTypeId!=null">
+		<!-- if particular service type is selected then show all the promos for all i.e., -1 + particular service type id promo -->
+		AND
+			(
+				pc.service_type_id = #{serviceTypeId}
+			OR
+				pc.service_type_id = '-1'
+			)
+		</if>
+		<if test="vendorId!=null">
+		AND
+			(
+				pc.vendor_id = #{vendorId}
+			OR
+				pc.vendor_id = '-1'
+			)
+		</if>
+		<if test="assignedRegionList!=null">
+	    AND
+	    	(
+		    	MUR.multicity_city_region_id IN
+		    		<foreach item="item" index="index" collection="assignedRegionList" open="(" separator="," close=")">
+						#{item}
+					</foreach>
+			OR
+				pc.service_type_id = '-1'
+			OR
+				pc.vendor_id = '-1'
+			)
+	    </if>
+				
+	</select>
+
+	<update id="deletePromoCode" parameterType="PromoCodeModel">
+	
+		UPDATE
+			promo_code
+		SET
+			is_active = false,
+			record_status = 'D',
+			updated_at = #{updatedAt},
+			updated_by = #{updatedBy}
+		WHERE
+			promo_code_id = #{promoCodeId}
+			
+	</update>
+	
+	<update id="activatePromoCode" parameterType="PromoCodeModel">
+	
+		UPDATE
+			promo_code
+		SET
+			is_active = true,
+			updated_at = #{updatedAt},
+			updated_by = #{updatedBy}
+		WHERE
+			promo_code_id = #{promoCodeId}
+		AND
+        	record_status = 'A'
+			
+	</update>
+	
+	<update id="deactivatePromoCode" parameterType="PromoCodeModel">
+	
+		UPDATE
+			promo_code
+		SET
+			is_active = false,
+			updated_at = #{updatedAt},
+			updated_by = #{updatedBy}
+		WHERE
+			promo_code_id = #{promoCodeId}
+		AND
+        	record_status = 'A'
+			
+	</update>
+
+<!-- 	<update id="activatePromoCode" parameterType="PromoCodeModel"> -->
+	
+<!-- 		UPDATE -->
+<!-- 			promo_code -->
+<!-- 		SET -->
+<!-- 			record_status = 'A', -->
+<!-- 			updated_at = #{updatedAt} -->
+<!-- 		WHERE -->
+<!-- 			promo_code_id = #{promoCodeId} -->
+			
+<!-- 	</update> -->
+	
+	<select id="isPromoCodeExists" resultType="boolean"> 		
+		
+	   	SELECT     
+			(count(*)>0)
+		FROM 
+			promo_code pc
+ 		WHERE  
+          	pc.promo_code = #{promoCode}
+        AND
+			pc.record_status = 'A'
+				
+	</select>
+	
+	<select id="getPromoCodeDetailsByPromoCode" resultMap="promoCodeResultMap"> 		
+		
+	   	SELECT     
+			<include refid="promoCodeTableColsWithOutTypeAlias"></include>
+		FROM 
+			promo_code pc
+ 		WHERE  
+          	pc.promo_code = #{promoCode}
+        AND
+        	pc.is_active = true
+        AND
+        	pc.record_status = 'A'
+				
+	</select>
+	
+	<select id="getPromoCodeDetailsByPromoCodeId" resultMap="promoCodeResultMap"> 		
+		
+	   	SELECT     
+			<include refid="promoCodeTableColsWithOutTypeAlias"></include>
+		FROM 
+			promo_code pc
+ 		WHERE  
+          	pc.promo_code_id = #{promoCodeId}
+<!--         AND -->
+<!--         	is_active = true -->
+<!--         AND -->
+<!--         	record_status = 'A' -->
+				
+	</select>
+	
+	<update id="updatePromoCodeCount" parameterType="PromoCodeModel">
+	
+		UPDATE
+			promo_code
+		SET
+			used_count = #{usedCount}
+		WHERE
+			promo_code_id = #{promoCodeId}
+			
+	</update>
+	
+	<select id="getActiveDeactivePromoCodeDetailsByPromoCodeId" parameterType="map" resultMap="promoCodeResultMap"> 		
+		
+	   	SELECT     
+			<include refid="promoCodeTableColsWithOutTypeAlias"></include>,
+			ui.vendor_brand_name AS vendorBrandName,
+			st.service_type_name AS serviceTypeName
+		FROM 
+			promo_code pc
+		LEFT JOIN user_info ui ON ui.user_id = pc.vendor_id
+		LEFT JOIN service_types st ON st.service_type_id = pc.service_type_id
+ 		WHERE  
+          	pc.promo_code_id = #{promoCodeId}
+        AND
+        	pc.record_status = 'A'
+				
+	</select>
+	
+	<update id="updatePromoCodeDetails" parameterType="PromoCodeModel">
+        
+		UPDATE
+			promo_code
+		SET
+<!-- 			mode = #{mode}, -->
+<!-- 			discount = #{discount}, -->
+<!-- 			usage = #{usage}, -->
+<!-- 			usage_count = #{usageCount}, -->
+			end_date = #{endDate},
+			updated_at = #{updatedAt},
+			updated_by = #{updatedBy}
+		WHERE
+			promo_code_id = #{promoCodeId}
+			
+	</update>
+	
+	<select id="getPromoCodeListByserviceTypeIdAndVendorId"
+		resultMap="promoCodeResultMap">
+
+		SELECT
+		<include refid="promoCodeTableColsWithOutTypeAlias"></include>
+		,
+		ui.vendor_brand_name AS vendorBrandName,
+		st.service_type_name AS serviceTypeName
+		FROM
+		promo_code pc
+		LEFT JOIN user_info ui ON ui.user_id = pc.vendor_id
+		LEFT JOIN
+		service_types st ON st.service_type_id = pc.service_type_id
+		LEFT JOIN
+		multicity_user_region MUR ON MUR.user_id = pc.vendor_id
+		WHERE
+
+		<if test="serviceTypeId!=null">
+			<!-- if particular service type is selected then show all the promos for 
+				all i.e., -1 + particular service type id promo -->
+
+			(
+			pc.service_type_id = #{serviceTypeId}
+			OR
+			pc.service_type_id = '-1'
+			)
+		</if>
+		<if test="vendorId!=null">
+			AND
+			(
+			pc.vendor_id = #{vendorId}
+			OR
+			pc.vendor_id = '-1'
+			)
+		</if>
+		<if test="assignedRegionList!=null">
+			AND
+			(
+			MUR.multicity_city_region_id IN
+			<foreach item="item" index="index"
+				collection="assignedRegionList" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+			OR
+			pc.service_type_id = '-1'
+			OR
+			pc.vendor_id = '-1'
+			)
+		</if>
+		ORDER BY pc.updated_at DESC
+
+	</select>
+
+</mapper> 

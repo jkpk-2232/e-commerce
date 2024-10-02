@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.webapp.daos.CarDriversDao">
+
+	<resultMap id="carDriversResultMap" type="CarDriversModel" >
+	    
+		<result property="carDriversId" column="car_drivers_id" />
+		<result property="carId" column="car_id" />
+		<result property="driverId" column="driver_id" />
+		<result property="isActive" column="is_active" />
+		
+		<result property="driverName" column="driverName" />
+		<result property="driverPhoneNo" column="driverPhoneNo" />
+		
+		<result property="recordStatus" column="record_status" />
+		<result property="createdAt" column="created_at" />
+		<result property="updatedAt" column="updated_at" />
+		<result property="createdBy" column="created_by" />
+		<result property="updatedBy" column="updated_by" />
+		
+	</resultMap>
+
+	<insert id="insertCarDrivers" parameterType="CarDriversModel">
+
+		INSERT INTO 
+			car_drivers
+				(
+            		car_drivers_id, car_id, driver_id, is_active, record_status, 
+            		created_by, created_at, updated_by, updated_at
+            	)
+    	VALUES 
+    			(
+					#{carDriversId}, #{carId}, #{driverId}, 'true', 'A',
+					#{createdBy}, #{createdAt}, #{updatedBy}, #{updatedAt}
+				)
+	</insert>
+
+	<select id="getCarDriverDetailsByDriverId" parameterType="String" resultMap="carDriversResultMap">
+	
+		SELECT
+			car_drivers_id, car_id, driver_id, is_active, record_status, 
+            created_by, created_at, updated_by, updated_at
+		FROM
+			car_drivers
+		WHERE
+			driver_id = #{driverId}
+		AND
+		 	record_status = 'A'
+		 	
+	</select>
+	
+	<update id="updateCarDriverDetails" parameterType="CarDriversModel">
+	
+		UPDATE
+			car_drivers
+		SET
+			car_id = #{carId}
+		WHERE
+			driver_id = #{driverId}
+	
+	</update>
+
+	<select id="getTotalCarDriverCountByCarId" parameterType="String" resultType="int">
+	
+		SELECT
+			count(*)
+		FROM
+			car_drivers
+		WHERE
+			car_id = #{carId}
+		AND 
+			record_status = 'A'
+	
+	</select>
+	
+	<select id="getCarDriversListForSearch" parameterType="String" resultMap="carDriversResultMap">
+	
+		SELECT
+			cd.car_drivers_id, cd.car_id, cd.driver_id, cd.is_active, cd.record_status, 
+            cd.created_by, cd.created_at, cd.updated_by, cd.updated_at,
+            concat(ui.first_name,' ',ui.last_name) AS driverName, ui.phone_no AS driverPhoneNo
+		FROM
+			car_drivers cd
+		LEFT JOIN
+			user_info ui
+		ON 
+			cd.driver_id = ui.user_id 
+		WHERE
+			(
+		 		ui.first_name iLIKE #{globalSearchString} 
+            OR 
+            	ui.last_name iLIKE #{globalSearchString}
+            OR 
+            	concat(ui.first_name,' ',ui.last_name) iLIKE #{globalSearchString}    
+            OR 
+            	ui.phone_no iLIKE #{globalSearchString}            	
+            )
+        AND
+			cd.car_id = #{carId}
+		AND 
+			cd.record_status = 'A'
+		ORDER BY cd.updated_at DESC
+	    LIMIT  #{length}  OFFSET  #{start}   
+	
+	</select>
+
+</mapper> 

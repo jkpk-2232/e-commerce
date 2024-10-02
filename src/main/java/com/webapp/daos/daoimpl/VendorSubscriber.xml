@@ -1,0 +1,236 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.webapp.daos.VendorSubscriberDao">
+
+	<resultMap id="VendorSubscriberResultMap" type="VendorSubscriberModel">
+	
+		<result property="vendorSubscriberId" column="vendor_subscriber_id" />
+		<result property="vendorId" column="vendor_id" />
+		<result property="vendorStoreId" column="vendor_store_id" />
+		<result property="userId" column="user_id" />
+		
+		<result property="vendorName" column="vendorName" />
+		<result property="vendorBrandName" column="vendorBrandName" />
+		<result property="storeName" column="store_name" />
+		<result property="subscriberName" column="subscriberName" />
+
+		<result property="createdBy" column="created_by" />
+		<result property="createdAt" column="created_at" />
+		<result property="updatedBy" column="updated_by" />
+		<result property="updatedAt" column="updated_at" />
+		
+	</resultMap>
+	
+	<resultMap id="StatsResultMap" type="StatsModel">
+		<result property="numberOfSubscribers" column="numberOfSubscribers" />
+	</resultMap>
+	
+	<sql id="VendorSubscriberColumns">
+		vsub.vendor_subscriber_id, vsub.vendor_id, vsub.vendor_store_id, vsub.user_id, 
+		vsub.created_by, vsub.created_at, vsub.updated_by, vsub.updated_at
+	</sql>
+	
+	<insert id="insertVendorSubscriber" parameterType="VendorSubscriberModel">
+	
+		INSERT INTO vendor_subscribers
+			(
+				vendor_subscriber_id, vendor_id, vendor_store_id, user_id,
+				created_by, created_at, updated_by, updated_at
+			)
+		VALUES 
+			(
+				#{vendorSubscriberId}, #{vendorId}, #{vendorStoreId}, #{userId},
+				#{createdBy}, #{createdAt}, #{updatedBy}, #{updatedAt}
+			);
+	
+	</insert>
+	
+	<select id="getVendorSubscriberCount" resultType="int">
+		
+		SELECT
+			count(vsub.vendor_subscriber_id)
+		FROM
+			vendor_subscribers vsub
+		INNER JOIN vendor_stores vs ON vs.vendor_store_id = vsub.vendor_store_id
+		WHERE
+			vsub.created_at &gt;= #{startDatelong}
+		AND
+			vsub.created_at &lt;= #{endDatelong}
+		<if test="vendorId!=null">
+		AND
+			vsub.vendor_id = #{vendorId}	
+		</if>	
+		<if test="vendorStoreId!=null">
+		AND
+			vsub.vendor_store_id = #{vendorStoreId}	
+		</if>	
+	
+	</select>
+	
+	<select id="getVendorSubscriberSearch" resultMap="VendorSubscriberResultMap">
+		
+		SELECT
+			<include refid="VendorSubscriberColumns"></include>,
+			vui.vendor_brand_name AS vendorBrandName,
+			concat(vui.first_name,' ',vui.last_name) AS vendorName,
+			concat(sui.first_name,' ',sui.last_name) AS subscriberName,
+			vs.store_name
+		FROM
+			vendor_subscribers vsub
+		INNER JOIN user_info vui ON vui.user_id = vsub.vendor_id
+		INNER JOIN user_info sui ON sui.user_id = vsub.user_id
+		INNER JOIN vendor_stores vs ON vs.vendor_store_id = vsub.vendor_store_id
+		WHERE
+			(
+				vui.first_name ilike #{searchKey}
+			OR
+				vui.last_name ilike #{searchKey}
+			OR
+				concat(vui.first_name,' ',vui.last_name ) ilike #{searchKey}
+			OR
+				vui.vendor_brand_name ilike #{searchKey}
+			OR
+				sui.first_name ilike #{searchKey}
+			OR
+				sui.last_name ilike #{searchKey}
+			OR
+				concat(sui.first_name,' ',sui.last_name ) ilike #{searchKey}
+			OR
+				vs.store_name ilike #{searchKey}
+			)
+		<if test="startDatelong>0">
+		AND
+			vsub.created_at &gt;= #{startDatelong}
+		AND
+			vsub.created_at &lt;= #{endDatelong}
+		</if>
+		<if test="vendorId!=null">
+		AND
+			vsub.vendor_id = #{vendorId}	
+		</if>	
+		<if test="vendorStoreId!=null">
+		AND
+			vsub.vendor_store_id = #{vendorStoreId}	
+		</if>
+		ORDER BY vsub.updated_at DESC
+		<if test="length>0">
+		LIMIT #{length} OFFSET #{start}
+		</if>	
+	
+	</select>
+	
+	<select id="getVendorSubscriberSearchCount" resultType="int">
+		
+		SELECT
+			count(vsub.vendor_subscriber_id)
+		FROM
+			vendor_subscribers vsub
+		INNER JOIN user_info vui ON vui.user_id = vsub.vendor_id
+		INNER JOIN user_info sui ON sui.user_id = vsub.user_id
+		INNER JOIN vendor_stores vs ON vs.vendor_store_id = vsub.vendor_store_id
+		WHERE
+			(
+				vui.first_name ilike #{searchKey}
+			OR
+				vui.last_name ilike #{searchKey}
+			OR
+				concat(vui.first_name,' ',vui.last_name ) ilike #{searchKey}
+			OR
+				vui.vendor_brand_name ilike #{searchKey}
+			OR
+				sui.first_name ilike #{searchKey}
+			OR
+				sui.last_name ilike #{searchKey}
+			OR
+				concat(sui.first_name,' ',sui.last_name ) ilike #{searchKey}
+			OR
+				vs.store_name ilike #{searchKey}
+			)
+		<if test="startDatelong>0">
+		AND
+			vsub.created_at &gt;= #{startDatelong}
+		AND
+			vsub.created_at &lt;= #{endDatelong}
+		</if>
+		<if test="vendorId!=null">
+		AND
+			vsub.vendor_id = #{vendorId}	
+		</if>	
+		<if test="vendorStoreId!=null">
+		AND
+			vsub.vendor_store_id = #{vendorStoreId}	
+		</if>	
+	
+	</select>
+	
+	<select id="isUserSubscribedToVendorStore" resultType="boolean">
+		
+		SELECT
+			(count(*)>0)
+		FROM 
+			vendor_subscribers vsub
+		WHERE
+			vsub.vendor_store_id = #{vendorStoreId}
+		AND
+			vsub.user_id = #{userId}
+		
+	</select>
+	
+	<delete id="deleteVendorSubscriber" parameterType="VendorSubscriberModel">
+		
+		DELETE FROM 
+			vendor_subscribers vsub
+		WHERE
+			vsub.vendor_store_id = #{vendorStoreId}
+		AND
+			vsub.user_id = #{userId}
+		
+	</delete>
+	
+	<select id="getVendorSubscribersByVendorId" resultMap="VendorSubscriberResultMap">
+		
+		SELECT
+			DISTINCT vsub.user_id
+		FROM
+			vendor_subscribers vsub
+		WHERE
+			vsub.vendor_id = #{vendorId}
+		LIMIT #{length} OFFSET #{start}
+	
+	</select>
+	
+	<select id="getSubscriberStatsByTimeForVendor" resultMap="StatsResultMap">
+		
+		SELECT
+			COALESCE(COUNT(vsub.vendor_subscriber_id), 0) AS numberOfSubscribers
+		FROM
+			vendor_subscribers vsub
+		INNER JOIN users su ON su.user_id = vsub.user_id AND su.is_active = TRUE AND su.is_deleted = FALSE
+		WHERE
+			vsub.vendor_id = #{vendorId}
+		<if test="startTime>0">
+		AND
+			vsub.created_at &gt;= #{startTime}
+		AND
+			vsub.created_at &lt;= #{endTime}
+		</if>			
+	
+	</select>
+	
+	<select id="getVendorSubscribersCountByVendorId" resultType="int">
+		
+		SELECT
+			count(vsub.vendor_subscriber_id)
+		FROM
+			vendor_subscribers vsub
+			
+		<if test="vendorId!=null">
+		WHERE
+			vsub.vendor_id = #{vendorId}	
+		</if>	
+		
+	
+	</select>
+	
+</mapper>

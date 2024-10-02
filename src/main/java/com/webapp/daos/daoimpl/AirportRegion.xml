@@ -1,0 +1,256 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.webapp.daos.AirportRegionDao">
+
+	<resultMap id="airportRegionResultMap" type="AirportRegionModel" >
+	
+		<result property="airportRegionId" column="airport_region_id" />
+		<result property="aliasName" column="alias_name" />
+		<result property="address" column="address" />
+		<result property="areaPolygon" column="area_polygon" />
+		<result property="isActive" column="is_active" />
+		<result property="regionName" column="region_name" />
+		<result property="cityDisplayName" column="city_display_name" />
+		<result property="recordStatus" column="record_status" />
+		<result property="regionLatitude" column="region_latitude" />
+		<result property="regionLongitude" column="region_longitude" />
+		<result property="createdAt" column="created_at" />
+		<result property="updatedAt" column="updated_at" />
+		<result property="createdBy" column="created_by" />
+		<result property="updatedBy" column="updated_by" />
+		<result property="multicityCityRegionId" column="multicity_city_region_id" />
+		<result property="airportDistance" column="airport_distance" />
+		<result property="airportPickupFixedFareMini" column="airport_pickup_fixed_fare_mini" />
+		<result property="airportPickupFixedFareSedan" column="airport_pickup_fixed_fare_sedan" />
+		<result property="airportPickupFixedFareSuv" column="airport_pickup_fixed_fare_suv" />
+		<result property="airportDropFixedFareMini" column="airport_drop_fixed_fare_mini" />
+		<result property="airportDropFixedFareSedan" column="airport_drop_fixed_fare_sedan" />
+		<result property="airportDropFixedFareSuv" column="airport_drop_fixed_fare_suv" />
+		
+		<result property="initialFare" column="initial_fare" />
+		<result property="perKmFare" column="per_km_fare" />
+		<result property="perMinuteFare" column="per_minute_fare" />
+		<result property="freeDistance" column="free_distance" />
+		<result property="kmToIncreaseFare" column="km_to_increase_fare" />
+		<result property="fareAfterSpecificKm" column="fare_after_specific_km" />
+	</resultMap>
+	
+	<sql id="airportRegionTableColsWithOutTypeAlias">
+	  airport_region_id, alias_name, address, multicity_city_region_id,
+	  region_latitude, region_longitude, substring(left(St_astext(area_polygon),-2),10) AS areaPolygon,
+	  is_active, record_status,created_by, created_at, updated_by, updated_at
+	</sql>
+			
+	<insert id="addAirportRegion" parameterType="AirportRegionModel">
+
+		INSERT INTO 
+			airport_regions
+				(
+					airport_region_id, multicity_city_region_id, area_polygon, alias_name, address, region_latitude,
+       				region_longitude, is_active, record_status, created_by, created_at, updated_by,updated_at	            	
+       			)
+	    VALUES 
+				(
+					#{airportRegionId}, #{multicityCityRegionId}, st_geomfromtext(${areaPolygon}), #{aliasName}, #{address}, #{regionLatitude},
+					#{regionLongitude}, #{isActive}, 'A', #{createdBy}, #{createdAt}, #{updatedBy}, #{updatedAt}			
+				)
+					
+	</insert>
+	
+	<select id="getAirportRegionCount" parameterType="map" resultType="int">
+	
+		SELECT
+			count(AR.airport_region_id)
+		FROM
+        	airport_regions AR
+        INNER JOIN multicity_city_region MCR ON AR.multicity_city_region_id = MCR.multicity_city_region_id
+		WHERE
+			(
+					AR.alias_name iLIKE #{globalSearchString} 
+				OR
+					MCR.region_name iLIKE #{globalSearchString} 
+			)
+		<if test="regionIds != null">
+		AND	   
+			AR.multicity_city_region_id IN
+			<foreach item="item" index="index" collection="regionIds" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+		<if test="onOffStatusForCheck != null">
+		AND
+			AR.is_active = #{onOffStatus}
+		</if> 
+	
+	</select>
+	
+	<select id="getAirportRegionSearchDatatable" parameterType="map" resultMap="airportRegionResultMap">
+			
+		SELECT
+	    	airport_region_id,MCR.multicity_city_region_id,
+       	   	alias_name,address,AR.is_active,AR.record_status,region_name,
+       	   	MCR.city_display_name,airport_distance
+       	FROM
+        	airport_regions AR 
+        INNER JOIN multicity_city_region MCR ON AR.multicity_city_region_id = MCR.multicity_city_region_id
+		WHERE
+			(
+				AR.alias_name iLIKE #{globalSearchString} 
+			OR
+				MCR.region_name iLIKE #{globalSearchString} 
+			)
+ 
+ 		<if test="regionIds != null">
+		AND	   
+			AR.multicity_city_region_id IN
+			<foreach item="item" index="index" collection="regionIds" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+		<if test="onOffStatusForCheck != null">
+		AND
+			AR.is_active = #{onOffStatus}
+		</if> 
+		ORDER BY AR.updated_at DESC
+		LIMIT #{length} OFFSET #{start}
+	
+	</select>
+	
+	<select id="getAirportRegionDetailsById" resultMap="airportRegionResultMap">
+			
+		SELECT
+	       airport_region_id,MCR.multicity_city_region_id,
+       	   alias_name,address,AR.is_active,AR.record_status,region_name,
+       	   substring(left(St_astext(AR.area_polygon),-2),10) AS area_polygon,
+       	   AR.region_latitude,AR.region_longitude,airport_distance
+       	FROM
+          airport_regions AR 
+     	INNER JOIN  
+     		multicity_city_region MCR
+        ON 
+        	(AR.multicity_city_region_id = MCR.multicity_city_region_id)
+     	WHERE
+           AR.airport_region_id = #{airportRegionId}
+
+	</select>
+	
+	<update id="editAirportRegion" parameterType="AirportRegionModel">
+	
+		UPDATE
+			airport_regions
+		SET
+			multicity_city_region_id = #{multicityCityRegionId}, 
+    		address = #{address}, 
+    		alias_name = #{aliasName}, 
+       		area_polygon = st_geomfromtext(${areaPolygon}),
+       		region_latitude = #{regionLatitude},
+       		region_longitude = #{regionLongitude}
+      
+       		
+       	WHERE
+			airport_region_id = #{airportRegionId}
+	
+	</update>
+	
+	<select id="getPolygonContainingLatLngArea" parameterType="map" resultMap="airportRegionResultMap">
+	    
+       	SELECT
+        	airport_region_id,MCR.multicity_city_region_id,
+       	    alias_name,address,region_name,city_display_name,airport_distance,
+       	    airport_pickup_fixed_fare_mini, airport_pickup_fixed_fare_sedan, airport_pickup_fixed_fare_suv, 
+			airport_drop_fixed_fare_mini, airport_drop_fixed_fare_sedan, airport_drop_fixed_fare_suv, 
+       	FROM 
+        	airport_regions AR
+        INNER JOIN 	
+        	multicity_city_region MCR
+        ON 
+        	(AR.multicity_city_region_id = MCR.multicity_city_region_id)
+		WHERE 
+	        ${latAndLong}
+	    AND
+	    	AR.is_active = true
+	    ORDER BY  
+		    AR.created_at ASC
+		LIMIT 1 
+	   			    
+	</select>
+	
+	<select id="getAirportRegionContainingLatLng" parameterType="map" resultMap="airportRegionResultMap">
+	    
+       	SELECT
+        	<include refid="airportRegionTableColsWithOutTypeAlias" />
+       	FROM 
+        	airport_regions AR
+		WHERE 
+	        ${latAndLong}
+	    AND
+	    	is_active = true
+	    ORDER BY  
+		    created_at ASC
+		LIMIT 1 
+	   			    
+	</select>
+	
+	<update id="updateActiveDeactive" parameterType="AirportRegionModel">
+	
+		UPDATE
+			airport_regions
+		SET
+			is_active = #{isActive}
+		WHERE
+			airport_region_id = #{airportRegionId}
+			
+	</update>
+	
+	<select id="getAirportRegionActiveDeactiveDatatable" parameterType="map" resultMap="airportRegionResultMap">
+			
+		SELECT
+	    	airport_region_id,MCR.multicity_city_region_id,
+       	   	alias_name,address,AR.is_active,AR.record_status,region_name, airport_distance,
+       	   	airport_pickup_fixed_fare_mini, airport_pickup_fixed_fare_sedan, airport_pickup_fixed_fare_suv, 
+			airport_drop_fixed_fare_mini, airport_drop_fixed_fare_sedan, airport_drop_fixed_fare_suv
+       	FROM
+        	airport_regions AR 
+        INNER JOIN  
+        		multicity_city_region MCR
+        ON 
+        	AR.multicity_city_region_id = MCR.multicity_city_region_id
+		WHERE
+			alias_name iLIKE #{globalSearchString} 
+    	<if test="onOffStatusForCheck != null">
+		AND
+			AR.is_active = #{onOffStatus}
+		</if> 
+		ORDER BY AR.updated_at DESC
+		LIMIT #{length} OFFSET #{start}
+	
+	</select>
+	
+	<select id="getDriverCity" parameterType="String" resultType="Boolean">
+			
+		SELECT
+	    	count(MUR.multicity_city_region_id) >0
+       	FROM
+        	airport_regions AR  
+        INNER JOIN  
+        		multicity_user_region MUR
+        ON 
+        	AR.multicity_city_region_id = MUR.multicity_city_region_id
+		WHERE
+			MUR.user_id=#{userId} 
+		AND 
+			AR.multicity_city_region_id=#{multicityCityRegionId}
+	
+	</select>
+	
+	<select id="getScriptAllExistingAirports" resultMap="airportRegionResultMap">
+	
+		SELECT
+			*
+		FROM
+			airport_regions
+			 
+	</select>
+	
+</mapper> 

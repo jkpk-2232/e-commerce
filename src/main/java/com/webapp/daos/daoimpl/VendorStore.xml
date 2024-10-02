@@ -1,0 +1,522 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.webapp.daos.VendorStoreDao">
+
+	<resultMap id="VendorStoreResultMap" type="VendorStoreModel">
+	
+		<result property="vendorStoreId" column="vendor_store_id" />
+		<result property="vendorId" column="vendor_id" />
+		<result property="storeName" column="store_name" />
+		<result property="storeAddress" column="store_address" />
+		<result property="storeAddressLat" column="store_address_lat" />
+		<result property="storeAddressLng" column="store_address_lng" />
+		<result property="storePlaceId" column="store_place_id" />
+		<result property="storeAddressGeolocation" column="store_address_geolocation" />
+		<result property="storeImage" column="store_image" />
+		<result property="isClosedToday" column="is_closed_today" />
+		<result property="isActive" column="is_active" />
+		<result property="isDeleted" column="is_deleted" />
+		<result property="ledDeviceForStore" column="led_device_for_store" />
+		<result property="ledDeviceCount" column="led_device_count" />
+		<result property="type" column="type" />
+		<result property="numberOfRacks" column="number_of_racks" />
+		<result property="rackCategoryId" column="rack_category_id"/>
+		<result property="phonepeStoreId" column="phonepe_store_id" />
+		<result property="brandId" column="brand_id"/>
+		
+		<result property="dateType" column="date_type" />
+		<result property="numberOfShifts" column="number_of_shifts" />
+		<result property="shiftType" column="shift_type" />
+		<result property="startDate" column="start_date" />
+		<result property="endDate" column="end_date" />
+		<result property="dateOpeningMorningHours" column="date_opening_morning_hours" />
+		<result property="dateClosingMorningHours" column="date_closing_morning_hours" />
+		<result property="dateOpeningEveningHours" column="date_opening_evening_hours" />
+		<result property="dateClosingEveningHours" column="date_closing_evening_hours" />
+		<result property="multicityCityRegionId" column="multicity_city_region_id" />
+		<result property="multicityCountryId" column="multicity_country_id" />
+		
+		<result property="vendorName" column="vendorName" />
+		<result property="vendorBrandName" column="vendor_brand_name" />
+
+		<result property="createdBy" column="created_by" />
+		<result property="createdAt" column="created_at" />
+		<result property="updatedBy" column="updated_by" />
+		<result property="updatedAt" column="updated_at" />
+		
+		<collection property="vendorStoreTimingList" javaType="ArrayList" column="vendor_store_id" ofType="VendorStoreTimingModel" resultMap="com.webapp.daos.VendorStoreTimingDao.VendorStoreTimingResultMap" />
+		
+	</resultMap>
+	
+	<sql id="VendorStoreColumns">
+		DISTINCT vs.vendor_store_id, vs.vendor_id, vs.store_name, vs.store_address, vs.store_address_lat, vs.store_address_lng, 
+		vs.store_place_id, vs.store_address_geolocation, vs.store_image, vs.is_active, vs.is_deleted, 
+		vs.created_by, vs.created_at, vs.updated_by, vs.updated_at, vs.is_closed_today,
+		vs.date_type, vs.number_of_shifts, vs.shift_type, vs.start_date, vs.end_date, 
+		vs.date_opening_morning_hours, vs.date_closing_morning_hours, 
+		vs.date_opening_evening_hours, vs.date_closing_evening_hours,
+		vs.multicity_city_region_id, vs.multicity_country_id,
+		vs.led_device_for_store, vs.led_device_count, vs.type, vs.number_of_racks,
+		vs.rack_category_id, vs.phonepe_store_id, vs.brand_id
+	</sql>
+	
+	<sql id="VendorStoreTimingColumns">
+		vst.vendor_store_timing_id, vst.vendor_store_id, vst.day, 
+		vst.opening_morning_hours, vst.closing_morning_hours, 
+        vst.opening_evening_hours, vst.closing_evening_hours,
+        vst.record_status, vst.created_at, vst.created_by, vst.updated_at, vst.updated_by
+	</sql>
+	
+	<insert id="insertVendorStore" parameterType="VendorStoreModel">
+	
+		INSERT INTO vendor_stores
+			(
+				vendor_store_id, vendor_id, store_name, store_address, store_address_lat, 
+				store_address_lng, store_place_id, store_address_geolocation, 
+				store_image, is_active, is_deleted, is_closed_today,
+				created_by, created_at, updated_by, updated_at,
+				date_type, number_of_shifts, shift_type, start_date, end_date, 
+				date_opening_morning_hours, date_closing_morning_hours, 
+				date_opening_evening_hours, date_closing_evening_hours,
+				multicity_city_region_id, multicity_country_id,
+				led_device_for_store, led_device_count, type, number_of_racks,
+				rack_category_id, phonepe_store_id, brand_id
+			)
+		VALUES 
+			(
+				#{vendorStoreId}, #{vendorId}, #{storeName}, #{storeAddress}, #{storeAddressLat}, 
+				#{storeAddressLng}, #{storePlaceId}, ${storeAddressGeolocation}, 
+				#{storeImage}, #{isActive}, #{isDeleted}, #{isClosedToday}, 
+				#{createdBy}, #{createdAt}, #{updatedBy}, #{updatedAt},
+				#{dateType}, #{numberOfShifts}, #{shiftType}, #{startDate}, #{endDate},
+				#{dateOpeningMorningHours}, #{dateClosingMorningHours},
+				#{dateOpeningEveningHours}, #{dateClosingEveningHours},
+				#{multicityCityRegionId}, #{multicityCountryId},
+				#{ledDeviceForStore},#{ledDeviceCount}, #{type}, #{numberOfRacks},
+				#{rackCategoryId}, #{phonepeStoreId}, #{brandId}
+			);
+	
+	</insert>
+	
+	<update id="updateVendorStore" parameterType="VendorStoreModel">
+	
+		UPDATE 
+			vendor_stores
+		SET
+		    store_name = #{storeName},
+			store_address = #{storeAddress},
+			store_address_lat = #{storeAddressLat},
+			store_address_lng = #{storeAddressLng},
+			store_place_id = #{storePlaceId},
+			store_address_geolocation = ${storeAddressGeolocation},
+			store_image = #{storeImage},
+			date_type = #{dateType},
+			number_of_shifts = #{numberOfShifts},
+			shift_type = #{shiftType},
+			start_date = #{startDate},
+			end_date = #{endDate},
+			is_closed_today = #{isClosedToday},
+			date_opening_morning_hours = #{dateOpeningMorningHours},
+			date_closing_morning_hours = #{dateClosingMorningHours},
+			date_opening_evening_hours = #{dateOpeningEveningHours},
+			date_closing_evening_hours = #{dateClosingEveningHours},
+			multicity_city_region_id = #{multicityCityRegionId},
+			multicity_country_id = #{multicityCountryId},
+			updated_at = #{updatedAt},
+			updated_by = #{updatedBy},
+			led_device_for_store = #{ledDeviceForStore},
+			led_device_count = #{ledDeviceCount},
+			type = #{type},
+			number_of_racks = #{numberOfRacks},
+			rack_category_id = #{rackCategoryId},
+			phonepe_store_id = #{phonepeStoreId},
+			brand_id = #{brandId}
+		WHERE
+			vendor_store_id = #{vendorStoreId}
+			
+	</update>
+	
+	<select id="getVendorStoreCount" resultType="int">
+		
+		SELECT
+			count(vs.vendor_store_id)
+		FROM
+			vendor_stores vs
+		INNER JOIN user_info vui ON vui.user_id = vs.vendor_id
+		INNER JOIN multicity_city_region mcr ON (mcr.multicity_city_region_id = vs.multicity_city_region_id)
+		WHERE
+			vs.created_at &gt;= #{startDatelong}
+		AND
+			vs.created_at &lt;= #{endDatelong}
+		<if test="vendorId!=null">
+		AND
+			vs.vendor_id = #{vendorId}	
+		</if>	
+		<if test="vendorStoreIdList!=null">
+		AND
+			vs.vendor_store_id IN
+			<foreach item="item" index="index" collection="vendorStoreIdList" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>	
+	
+	</select>
+	
+	<select id="getVendorStoreSearch" resultMap="VendorStoreResultMap">
+		
+		SELECT
+			<include refid="VendorStoreColumns"></include>,
+			concat(vui.first_name,' ',vui.last_name) AS vendorName,
+			vui.vendor_brand_name
+		FROM
+			vendor_stores vs
+		INNER JOIN user_info vui ON vui.user_id = vs.vendor_id
+		INNER JOIN multicity_city_region mcr ON (mcr.multicity_city_region_id = vs.multicity_city_region_id)
+		WHERE
+			(
+				vui.first_name ilike #{searchKey}
+			OR
+				vui.last_name ilike #{searchKey}
+			OR
+				concat(vui.first_name,' ',vui.last_name ) ilike #{searchKey}
+			OR
+				vs.store_address ilike #{searchKey} 
+			OR
+				vs.store_name ilike #{searchKey} 
+			)
+		<if test="startDatelong>0">
+		AND
+			vs.created_at &gt;= #{startDatelong}
+		AND
+			vs.created_at &lt;= #{endDatelong}
+		</if>
+		<if test="vendorId!=null">
+		AND
+			vs.vendor_id = #{vendorId}	
+		</if>	
+		<if test="vendorStoreIdList!=null">
+		AND
+			vs.vendor_store_id IN
+			<foreach item="item" index="index" collection="vendorStoreIdList" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+		ORDER BY vs.updated_at DESC
+		<if test="length>0">
+		LIMIT #{length} OFFSET #{start}
+		</if>	
+	
+	</select>
+	
+	<select id="getVendorStoreSearchCount" resultType="int">
+		
+		SELECT
+			count(vs.vendor_store_id)
+		FROM
+			vendor_stores vs
+		INNER JOIN user_info vui ON vui.user_id = vs.vendor_id
+		INNER JOIN multicity_city_region mcr ON (mcr.multicity_city_region_id = vs.multicity_city_region_id)
+		WHERE
+			(
+				vui.first_name ilike #{searchKey}
+			OR
+				vui.last_name ilike #{searchKey}
+			OR
+				concat(vui.first_name,' ',vui.last_name ) ilike #{searchKey}
+			OR
+				vs.store_address ilike #{searchKey} 
+			OR
+				vs.store_name ilike #{searchKey} 
+			)
+		<if test="startDatelong>0">
+		AND
+			vs.created_at &gt;= #{startDatelong}
+		AND
+			vs.created_at &lt;= #{endDatelong}
+		</if>
+		<if test="vendorId!=null">
+		AND
+			vs.vendor_id = #{vendorId}	
+		</if>	
+		<if test="vendorStoreIdList!=null">
+		AND
+			vs.vendor_store_id IN
+			<foreach item="item" index="index" collection="vendorStoreIdList" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+	
+	</select>
+	
+	<select id="getVendorStoreDetailsById" resultMap="VendorStoreResultMap">
+		
+		SELECT
+			<include refid="VendorStoreColumns"></include>
+		FROM
+			vendor_stores vs
+		WHERE
+			vs.vendor_store_id = #{vendorStoreId}	
+	
+	</select>
+	
+	<select id="getVendorStoresByOpenClosedStatus" resultMap="VendorStoreResultMap">
+		
+		SELECT
+			<include refid="VendorStoreColumns"></include>
+		FROM
+			vendor_stores vs
+		LEFT JOIN vendor_store_timings vst ON vst.vendor_store_id = vs.vendor_store_id
+		INNER JOIN multicity_city_region mcr ON (mcr.multicity_city_region_id = vs.multicity_city_region_id AND mcr.is_active = true AND mcr.is_deleted = false)
+		WHERE
+			vs.is_active = TRUE
+		AND
+			vs.is_deleted = FALSE
+		AND
+			vs.is_closed_today = #{isClosedToday}
+		AND
+			(
+				(
+					vs.date_type = 1
+				AND
+					vst.day = #{currentDayOfWeekValue}
+				)
+				OR
+				(
+					vs.date_type = 2
+				AND
+					vs.start_date &lt;= #{todayEpoch}
+				AND
+					vs.end_date &gt;= #{todayEpoch}
+				)
+			)
+	</select>
+	
+	<update id="updateClosedTodayFlag" parameterType="ArrayList">
+	
+		<foreach collection="updateList" item="model" separator=";">
+		
+		    UPDATE 
+		    	vendor_stores 
+		    SET 
+		    	is_closed_today = #{model.isClosedToday}
+		    WHERE
+		    	vendor_store_id = #{model.vendorStoreId}
+		    	
+		</foreach>
+	
+	</update>
+	
+	<update id="updateVendorStoreStatus" parameterType="VendorStoreModel">
+		
+	    UPDATE 
+	    	vendor_stores 
+	    SET 
+	    	is_active = #{isActive},
+	    	is_deleted = #{isDeleted},
+	    	updated_at = #{updatedAt},
+			updated_by = #{updatedBy}
+	    WHERE
+	    	vendor_store_id = #{vendorStoreId}
+	
+	</update>
+	
+	<select id="getVendorStoreList" resultMap="VendorStoreResultMap">
+		
+		SELECT
+			<include refid="VendorStoreColumns"></include>
+		FROM
+			vendor_stores vs
+		INNER JOIN users u ON u.user_id = vs.vendor_id
+		INNER JOIN vendor_service_categories vsc ON vsc.vendor_id = u.user_id
+		INNER JOIN services s ON s.service_id = vsc.service_id
+		INNER JOIN categories c ON c.category_id = vsc.category_id
+		INNER JOIN multicity_city_region mcr ON (mcr.multicity_city_region_id = vs.multicity_city_region_id AND mcr.is_active = true AND mcr.is_deleted = false)
+		WHERE
+			vs.is_active = TRUE
+		AND
+			vs.is_deleted = FALSE
+		AND
+	    	u.is_active = true
+	    AND
+	    	s.is_active = true
+	    AND
+	    	c.is_active = true
+	    <if test="vendorId!=null">
+	    AND
+	    	vs.vendor_id = #{vendorId}
+	    </if>
+		<if test="assignedRegionList!=null">
+	    AND
+	    	mcr.multicity_city_region_id IN
+    		<foreach item="item" index="index" collection="assignedRegionList" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+	    </if>
+			
+	</select>
+	
+	<select id="getVendorStoreListApi" resultMap="VendorStoreResultMap">
+		
+		SELECT
+			<include refid="VendorStoreColumns"></include>,
+			<include refid="VendorStoreTimingColumns"></include>,
+			concat(vui.first_name,' ',vui.last_name) AS vendorName
+		FROM
+			vendor_stores vs
+		INNER JOIN user_info vui ON vui.user_id = vs.vendor_id
+		INNER JOIN vendor_store_timings vst ON vst.vendor_store_id = vs.vendor_store_id
+		INNER JOIN multicity_city_region mcr ON (mcr.multicity_city_region_id = vs.multicity_city_region_id AND mcr.is_active = true AND mcr.is_deleted = false)
+		WHERE
+			(
+				vui.first_name ilike #{searchKey}
+			OR
+				vui.last_name ilike #{searchKey}
+			OR
+				concat(vui.first_name,' ',vui.last_name ) ilike #{searchKey}
+			OR
+				vs.store_address ilike #{searchKey} 
+			OR
+				vs.store_name ilike #{searchKey} 
+			)
+		AND
+			vs.vendor_id = #{vendorId}	
+		<if test="vendorStoreIdList!=null">
+		AND
+			vs.vendor_store_id IN
+			<foreach item="item" index="index" collection="vendorStoreIdList" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+		ORDER BY vs.store_name ASC
+		<if test="length>0">
+		LIMIT #{length} OFFSET #{start}
+		</if>	
+	
+	</select>
+	
+	<select id="getVendorStoresBasedOnService" resultMap="VendorStoreResultMap">
+		
+		SELECT 
+			<include refid="VendorStoreColumns"></include>
+		FROM 
+			vendor_stores vs 
+		WHERE 
+			vendor_id in (
+				SELECT 
+					vendor_id 
+				FROM 
+					vendor_service_categories 
+				WHERE 
+					service_id IN (
+						SELECT
+							service_id 
+						FROM 
+							services 
+							<if test="serviceIds != null">
+							WHERE 
+								service_id IN				
+		
+								<foreach item="item"  collection="serviceIds" open="(" separator="," close=")">
+									#{item}
+								</foreach>
+							</if>
+				
+					)
+			);
+		 
+	</select>
+	
+	<select id="getVendorStoresInfoList" resultMap="VendorStoreResultMap">
+		
+		SELECT
+			<include refid="VendorStoreColumns"></include>
+		FROM
+			vendor_stores vs
+		WHERE
+			
+			vs.vendor_id = #{vendorId}	
+		ORDER BY vs.store_name ASC
+	
+	</select>
+	
+	<select id="getVendorStoreListByVendorAndSubVendor" resultMap="VendorStoreResultMap">
+		
+		SELECT
+			<include refid="VendorStoreColumns"></include>
+		FROM
+			vendor_stores vs
+		INNER JOIN users u ON u.user_id = vs.vendor_id
+		INNER JOIN vendor_service_categories vsc ON vsc.vendor_id = u.user_id
+		INNER JOIN services s ON s.service_id = vsc.service_id
+		INNER JOIN categories c ON c.category_id = vsc.category_id
+		INNER JOIN multicity_city_region mcr ON (mcr.multicity_city_region_id = vs.multicity_city_region_id AND mcr.is_active = true AND mcr.is_deleted = false)
+		WHERE
+			vs.is_active = TRUE
+		AND
+			vs.is_deleted = FALSE
+		AND
+	    	u.is_active = true
+	    AND
+	    	s.is_active = true
+	    AND
+	    	c.is_active = true
+	    <if test="vendorId!=null">
+	    AND
+	    	vs.vendor_id = #{vendorId}
+	    </if>
+	    <if test="vendorStoreIdList!=null">
+		AND
+			vs.vendor_store_id IN
+			<foreach item="item" index="index" collection="vendorStoreIdList" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+		
+			
+	</select>
+	
+	<select id="getERPBrandList" resultMap="VendorStoreResultMap">
+		
+		SELECT
+			<include refid="VendorStoreColumns"></include>
+		FROM
+			vendor_stores vs
+		INNER JOIN users u ON u.user_id = vs.vendor_id
+		INNER JOIN multicity_city_region mcr ON (mcr.multicity_city_region_id = vs.multicity_city_region_id AND mcr.is_active = true AND mcr.is_deleted = false)
+		WHERE
+			vs.is_active = TRUE
+		AND
+			vs.is_deleted = FALSE
+		AND
+	    	u.is_active = true
+	    
+	    <if test="vendorId!=null">
+	    AND
+	    	vs.vendor_id = #{vendorId}
+	    </if>
+		<if test="assignedRegionList!=null">
+	    AND
+	    	mcr.multicity_city_region_id IN
+    		<foreach item="item" index="index" collection="assignedRegionList" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+	    </if>
+			
+	</select>
+	
+	
+	<select id="getVendorStoresWithRacks" resultMap="VendorStoreResultMap">
+    SELECT
+        <include refid="VendorStoreColumns"/>
+    FROM
+        vendor_stores vs
+    WHERE
+        vs.number_of_racks > 0
+        AND vs.vendor_id = #{vendorId}
+    ORDER BY 
+        vs.store_name ASC
+</select>
+	
+	
+</mapper>

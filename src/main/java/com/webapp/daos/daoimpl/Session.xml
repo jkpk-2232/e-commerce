@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.webapp.daos.SessionDao">
+
+	<resultMap id="sessionMap" type="DbSession" >
+	    <result property="sessionId" column="session_id" />
+	    <result property="createdAt" column="created_at" />
+	    <result property="accessedAt" column="accessed_at" />
+	    <result property="sessionAttributeId" column="session_attribute_id" />
+	    <result property="attribute" column="attribute" />
+	    <result property="attributeValue" column="attribute_value" />
+	</resultMap>
+	
+	<insert id="newSession" keyColumn="session_id" parameterType="map">
+
+		INSERT INTO sessions 
+				(
+					session_id, created_at, accessed_at
+				)
+		VALUES 
+				( 
+					#{param1}, #{param2}, #{param3} 
+				)
+				
+	</insert>
+	
+	<select id="sessionExistsForKey" parameterType="String" resultType="boolean">
+	
+		SELECT 
+			COUNT(*) 
+		FROM 
+			sessions 
+		WHERE 
+			session_id = #{sessionId}
+			
+	</select>
+	
+	<delete id="destroySession" parameterType="String">
+	
+		DELETE FROM 
+			sessions 
+		WHERE 
+			session_id =  #{sessionKey}
+			
+	</delete>
+	
+	<update id="setSessionLastAccessedTimeStamp" parameterType="map">
+		
+		UPDATE 
+			sessions 
+		SET 
+			accessed_at = #{accessedAt} 
+		WHERE 	
+			session_id = #{sessionKey}
+			
+	</update>
+	
+	<select id="attributeExistsForSession" parameterType="map" resultType="String">
+	
+		SELECT 
+			session_attribute_id 
+		FROM 
+			session_attributes 
+		WHERE 
+			session_id = #{sessionId} 
+		AND 
+			attribute = #{attribute}
+			
+	</select>
+	
+	<insert id="insertAttributeForSession" keyColumn="session_attribute_id" useGeneratedKeys="true" parameterType="map">
+	
+		INSERT INTO session_attributes 
+				(
+					session_id, attribute, attribute_value
+				)
+		VALUES 
+				( 
+					#{sessionId}, #{attribute}, #{attributeValue} 
+				)
+				
+	</insert>
+	
+	<update id="updateAttribute" parameterType="map">
+		
+		UPDATE 
+			session_attributes 
+		SET 
+			attribute_value = #{attributeValue} 
+		WHERE 
+			session_attribute_id = #{attributeId}
+		
+	</update>
+	
+	<select id="attributeValueForSession" parameterType="map" resultType="String">
+	
+		SELECT 
+			attribute_value 
+		FROM 
+			session_attributes 
+		WHERE 
+			session_id = #{sessionId} 
+		AND 
+			attribute = #{attribute}
+		
+	</select>
+	
+	<select id="allattributeValuesForSession" parameterType="map" resultMap="sessionMap">
+	
+		SELECT 
+			*
+		FROM 
+			session_attributes 
+		WHERE 
+			session_id = #{sessionId} 
+		
+	</select>
+
+	<delete id="removeAttributeForSession" parameterType="map">
+	
+		DELETE FROM 
+			session_attributes 
+		WHERE 
+			session_id = #{sessionId} 
+		AND 
+			attribute = #{attribute}
+		
+	</delete>
+	
+	<delete id="destroySessionAttribute" parameterType="String">
+	
+		DELETE FROM 
+			session_attributes 
+		WHERE 
+			session_id = #{sessionKey}
+			
+	</delete>
+			
+</mapper> 

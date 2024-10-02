@@ -1,0 +1,229 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.webapp.daos.PhonepePaymentDao">
+
+	<resultMap id="PhonepePaymentResultMap" type="PhonepePaymentModel">
+
+		<result property="phonepePaymentId" column="phonepe_payment_id" />
+		<result property="vendorId" column="vendor_id" />
+		<result property="merchantTransactionId" column="merchant_transaction_id" />
+		<result property="transactionId" column="transaction_id" />
+		<result property="userId" column="user_id" />
+		<result property="code" column="code" />
+		<result property="message" column="message" />
+		<result property="amount" column="amount" />
+		<result property="state" column="state" />
+		<result property="responseCode" column="response_code" />
+		<result property="paymentInstrumentType" column="payment_instrument_type" />
+		<result property="utr" column="utr" />
+		<result property="cardType" column="card_type" />
+		<result property="pgTransactionId" column="pg_transaction_id" />
+		<result property="pgServiceTransactionId" column="pg_service_transaction_id" />
+		<result property="bankTransactionId" column="bank_transaction_id" />
+		<result property="pgAuthorizationCode" column="pg_authorization_code" />
+		<result property="arn" column="arn" />
+		<result property="bankId" column="bank_id" />
+		<result property="brn" column="brn" />
+		<result property="responseCodeDescription" column="response_code_description" />
+		<result property="paymentOrderId" column="payment_order_id" />
+		
+		
+		<result property="createdBy" column="created_by" />
+		<result property="createdAt" column="created_at" />
+		<result property="updatedBy" column="updated_by" />
+		<result property="updatedAt" column="updated_at" />
+		
+		<result property="paymentRequestType" column="payment_request_type" />
+		<result property="fullName" column="full_name" />
+		<result property="paymentStatus" column="payment_status" />
+		
+	</resultMap>
+	
+	<sql id="PhonepePaymentColumns">
+		pp.phonepe_payment_id, pp.vendor_id, pp.merchant_transaction_id, pp.transaction_id, pp.user_id,
+		pp.code, pp.message, pp.amount, pp.state, pp.response_code, pp.payment_instrument_type,
+		pp.utr, pp.card_type, pp.pg_transaction_id, pp.bank_transaction_id, pp.pg_authorization_code,
+		pp.arn, pp.bank_id, pp.created_by, pp.created_at, pp.updated_by, pp.updated_at, pp.brn, pp.response_code_description,
+		pp.payment_order_id 
+	</sql>
+	
+	<insert id="insertPhonepePayment"  parameterType="PhonepePaymentModel">
+	
+		INSERT INTO phonepe_payments
+			(
+				phonepe_payment_id, vendor_id, merchant_transaction_id, user_id,
+				code, message, amount, state, response_code, payment_instrument_type,
+				utr, card_type, pg_transaction_id, pg_service_transaction_id,
+				bank_transaction_id, pg_authorization_code, arn, bank_id, 
+				created_by, created_at, updated_by, updated_at, payment_order_id,
+				transaction_id, response_code_description, brn
+			)
+		VALUES 
+			(
+				#{phonepePaymentId}, #{vendorId}, #{merchantTransactionId}, #{userId},
+				#{code}, #{message}, #{amount},  #{state}, #{responseCode}, #{paymentInstrumentType},
+				#{utr}, #{cardType}, #{pgTransactionId}, #{pgServiceTransactionId},
+				#{bankTransactionId}, #{pgAuthorizationCode}, #{arn}, #{bankId}, 
+				#{createdBy}, #{createdAt}, #{updatedBy}, #{updatedAt}, #{paymentOrderId},
+				#{transactionId}, #{responseCodeDescription}, #{brn}
+			);
+			
+	</insert>
+	
+	<select id="getPhonepePaymentDetailsByPhonepePaymentId" resultMap="PhonepePaymentResultMap">
+		
+		SELECT
+			<include refid="PhonepePaymentColumns"></include>
+			
+		FROM
+			phonepe_payments pp
+		
+		WHERE
+			pp.phonepe_payment_id = #{phonepePaymentId}
+		
+	</select>
+	
+	<select id="getPhonepePaymentDetailsByMerchantTransactionId" resultMap="PhonepePaymentResultMap">
+		
+		SELECT
+			<include refid="PhonepePaymentColumns"></include>
+			
+		FROM
+			phonepe_payments pp
+		
+		WHERE
+			pp.merchant_transaction_id = #{merchantTransactionId}
+			
+	</select>
+	
+	<update id="updatePhonepePaymentDetails" parameterType="PhonepePaymentModel">
+		
+		UPDATE 
+			phonepe_payments
+		SET 
+			code = #{code},
+			message = #{message},
+			state = #{state},
+			response_code = #{responseCode},
+			transaction_id = #{transactionId},
+			payment_instrument_type = #{paymentInstrumentType},
+			utr =  #{utr},
+			card_type = #{cardType},
+			pg_transaction_id = #{pgTransactionId}, 
+			bank_transaction_id = #{bankTransactionId},
+			pg_authorization_code = #{pgAuthorizationCode},
+			arn = #{arn},
+			bank_id = #{bankId}, 
+			pg_service_transaction_id = #{pgServiceTransactionId},
+			updated_at = #{updatedAt},
+			brn = #{brn},
+			response_code_description = #{responseCodeDescription}
+		WHERE 
+			phonepe_payment_id = #{phonepePaymentId}
+		
+	</update>
+	
+	<select id="getPhonepePaymentListCount" parameterType="map" resultType="int">
+	
+		SELECT
+			count(*)
+		FROM 
+			payment_orders po
+		LEFT JOIN phonepe_payments pp ON pp.payment_order_id = po.payment_order_id
+		INNER JOIN user_info UI ON UI.user_id = po.user_id
+		LEFT JOIN subscription_packages SP ON SP.subscription_package_id = po.order_ref_id		
+		LEFT JOIN orders O ON O.order_id = po.order_ref_id		
+		WHERE
+			po.created_at &lt; #{endDate}	    
+		AND	
+			po.created_at &gt; #{startDate} 
+		AND
+	    	pO.payment_status IN
+			<foreach item="item" index="index" collection="ccavenueStatusArray" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+				
+	</select>
+	
+	<select id="getPhonepePaymentListBySearch" parameterType="map" resultMap="PhonepePaymentResultMap">
+	
+		SELECT
+			 po.payment_order_id, po.order_type AS payment_request_type, concat(UI.first_name,' ',UI.last_name ) AS fullName, pp.transaction_id,
+			 po.amount, po.payment_status, pp.payment_instrument_type, pp.updated_at 
+		FROM 
+			payment_orders po
+		LEFT JOIN phonepe_payments pp ON pp.payment_order_id = po.payment_order_id
+		INNER JOIN user_info UI ON UI.user_id = po.user_id
+		LEFT JOIN subscription_packages SP ON SP.subscription_package_id = po.order_ref_id		
+		LEFT JOIN orders O ON O.order_id = po.order_ref_id
+		WHERE
+			( 
+			 		
+			 		CAST (SP.short_subscription_id AS character varying) iLIKE #{globalSearchString}
+			 	OR 
+			 		pp.transaction_id iLIKE #{globalSearchString} 
+			 	OR 
+			 		pp.code iLIKE #{globalSearchString} 
+			 	OR
+			 		CAST (po.amount AS character varying) iLIKE #{globalSearchString}
+			 	OR	
+			 		CAST (O.order_short_id AS character varying) iLIKE #{globalSearchString}
+			 	OR	
+			 		UI.first_name iLIKE #{globalSearchString}
+			 	OR	
+			 		UI.last_name iLIKE #{globalSearchString}			
+			 )
+		AND
+			po.created_at &lt; #{endDate}	    
+		AND	
+			po.created_at &gt; #{startDate} 
+		AND
+	    	po.payment_status IN
+			<foreach item="item" index="index" collection="ccavenueStatusArray" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		
+		ORDER BY pp.updated_at DESC
+	    LIMIT #{length} OFFSET #{start}   
+	    
+	</select>
+	
+	<select id="getPhonepeLogsReport" parameterType="map" resultMap="PhonepePaymentResultMap">
+	
+		SELECT
+			 po.payment_order_id, po.order_type AS payment_request_type, concat(UI.first_name,' ',UI.last_name ) AS fullName, pp.transaction_id,
+			 po.amount, po.payment_status, pp.payment_instrument_type, pp.updated_at 
+		FROM 
+			payment_orders po
+		LEFT JOIN phonepe_payments pp ON pp.payment_order_id = po.payment_order_id
+		INNER JOIN user_info UI ON UI.user_id = po.user_id
+		LEFT JOIN subscription_packages SP ON SP.subscription_package_id = po.order_ref_id		
+		LEFT JOIN orders O ON O.order_id = po.order_ref_id
+		WHERE
+			( 
+			 		
+			 		CAST (SP.short_subscription_id AS character varying) iLIKE #{globalSearchString}
+			 	OR 
+			 		pp.transaction_id iLIKE #{globalSearchString} 
+			 	OR 
+			 		pp.code iLIKE #{globalSearchString} 
+			 	OR
+			 		CAST (po.amount AS character varying) iLIKE #{globalSearchString}
+			 	OR	
+			 		CAST (O.order_short_id AS character varying) iLIKE #{globalSearchString}
+			 	OR	
+			 		UI.first_name iLIKE #{globalSearchString}
+			 	OR	
+			 		UI.last_name iLIKE #{globalSearchString}			
+			 )
+		AND
+			po.created_at &lt; #{endDate}	    
+		AND	
+			po.created_at &gt; #{startDate} 
+		
+		
+		ORDER BY pp.updated_at DESC
+	</select>	
+	
+</mapper>

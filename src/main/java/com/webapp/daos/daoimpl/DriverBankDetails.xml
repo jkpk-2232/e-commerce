@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.webapp.daos.DriverBankDetailsDao">
+    
+    <resultMap id="driverBankDetailsResultMap" type="DriverBankDetailsModel" >
+        
+		<result property="driverBankDetailsId" column="driver_bank_details_id" />
+		<result property="userId" column="user_id" />
+		<result property="bankName" column="bank_name" />
+		<result property="accountNumber" column="account_number" />
+		<result property="accountName" column="account_name" />
+		<result property="routingNumber" column="routing_number" />
+		<result property="type" column="type" />
+		
+		<result property="createdBy" column="created_by" />
+		<result property="createdAt" column="created_at" />
+		<result property="updatedBy" column="updated_by" />
+		<result property="updatedAt" column="updated_at" />
+
+	</resultMap>
+	
+    <insert id="addDriverBankDetails" parameterType="DriverBankDetailsModel" useGeneratedKeys="false">
+        
+		INSERT INTO 
+			driver_bank_details
+				(
+					driver_bank_details_id,user_id, bank_name, account_number,
+					account_name, routing_number, type,
+					created_by,created_at, updated_by, updated_at
+				)
+		VALUES
+				(
+					#{driverBankDetailsId},#{userId},#{bankName},#{accountNumber},
+					#{accountName},#{routingNumber},#{type},
+					#{createdBy},#{createdAt},#{updatedBy},#{updatedAt}
+				)
+			
+	</insert>
+
+    <select id="getDriverBankDetails" parameterType="DriverBankDetailsModel" resultMap="driverBankDetailsResultMap">
+		
+	    SELECT 
+	    	driver_bank_details_id,user_id,bank_name,account_number,
+			account_name,routing_number,type,
+			created_by,created_at,updated_by,updated_at
+	    FROM 
+	    	driver_bank_details 
+	    WHERE 
+	    	user_id=#{userId}
+	    
+	</select>
+	
+    <update id="updateDriverBankDetails" parameterType="DriverBankDetailsModel"  > 
+        	
+		UPDATE 
+			driver_bank_details 
+		SET 
+		    account_number = #{accountNumber},
+			bank_name = #{bankName},
+            account_name = #{accountName},
+		    routing_number = #{routingNumber},
+		    type = #{type}, 
+			updated_at = #{updatedAt},
+			updated_by = #{updatedBy}
+		WHERE 
+			user_id=#{userId}
+			
+	</update>
+    
+</mapper>

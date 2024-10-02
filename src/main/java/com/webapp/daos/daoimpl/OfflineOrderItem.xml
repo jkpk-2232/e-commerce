@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.webapp.daos.OfflineOrderItemDao">
+
+
+
+	<insert id="insertOfflineOrderitem" useGeneratedKeys="true" parameterType="OfflineOrderItemModel">
+	
+		INSERT INTO offline_order_items
+			(
+				offline_order_item_id, offline_store_order_item_id, product_name, 
+				product_sku, price, quantity, offline_order_id, 
+				created_by, created_at, updated_by, updated_at, mrp, prd_qty_type
+			)
+			
+		VALUES 
+		
+		<foreach collection="offlineOrderItemList" item="model" separator=","> 
+			(
+				#{model.offlineOrderItemId}, #{model.offlineStoreOrderItemId}, #{model.productName}, 
+				#{model.productSku}, #{model.price}, #{model.quantity}, #{model.offlineOrderId},
+				#{model.createdBy}, #{model.createdAt}, #{model.updatedBy}, #{model.updatedAt}, #{model.mrp}, #{model.prdQtyType}
+				
+			)
+		</foreach>
+			
+	</insert>
+	
+</mapper>

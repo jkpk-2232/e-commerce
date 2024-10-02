@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.webapp.daos.FreeWaitingTimeDao">
+
+	<resultMap id="waitingTimeResult" type="FreeWaitingTimeModel" >
+	    
+		<result property="freeWaitingTimeId" column="free_waiting_time_id" />
+		<result property="userId" column="user_id" />
+		<result property="waitingTime" column="waiting_time" /> 
+		<result property="cancelTime" column="cancel_time" /> 		
+		<result property="createdAt" column="created_at" />
+		<result property="updatedAt" column="updated_at" />
+		<result property="createdBy" column="created_by" />
+		<result property="updatedBy" column="updated_by" />
+		
+	</resultMap>
+	
+	<update id="updateWaitingTime" parameterType="FreeWaitingTimeModel"  > 
+        	
+		UPDATE 
+			free_waiting_time 
+		SET 
+			waiting_time = #{waitingTime},
+			updated_by = #{updatedBy},
+			updated_at = #{updatedAt}
+		
+	</update>
+	 	
+	<select id="getFreeWaitingTime" resultMap="waitingTimeResult">
+	    
+		SELECT 
+			free_waiting_time_id, waiting_time, cancel_time,
+			created_at, updated_at, created_by, updated_by
+		FROM 
+			free_waiting_time 
+		
+ 	</select>
+ 	
+ 	<update id="updateCancelTime" parameterType="FreeWaitingTimeModel"  > 
+        	
+		UPDATE 
+			free_waiting_time 
+		SET 
+			cancel_time = #{cancelTime}
+		
+	</update>
+	
+</mapper> 

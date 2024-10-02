@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.webapp.daos.PassengerGeoLocationDao">
+
+	<resultMap id="PassengerGeoLocationResultMap" type="PassengerGeoLocationModel" >
+	
+		<result property="passengerGeoLocationId" column="passenger_geo_location_id" /> 
+		<result property="passengerId" column="passenger_id" />
+		<result property="latitude" column="latitude" />
+		<result property="longitude" column="longitude" /> 
+		<result property="geoLocation" column="geo_location" />
+		
+		<result property="recordStatus" column="record_status" />
+		<result property="createdAt" column="created_at" />
+		<result property="createdBy" column="created_by" />
+		<result property="updatedAt" column="updated_at" />
+		<result property="updatedBy" column="updated_by" />
+		
+	</resultMap>
+	
+	<insert id="insertPassengerGeoLocationDetails" parameterType="PassengerGeoLocationModel" useGeneratedKeys="false">
+	
+		INSERT INTO 
+			passenger_geo_location
+				(
+					passenger_geo_location_id, passenger_id, latitude, longitude, geo_location,
+					record_status, created_at, created_by, updated_at, updated_by
+				)
+		VALUES
+				(
+					#{passengerGeoLocationId}, #{passengerId}, #{latitude}, #{longitude}, ${geoLocation},
+					#{recordStatus}, #{createdAt}, #{createdBy}, #{updatedAt}, #{updatedBy}
+				)
+				
+	</insert>
+	
+	<update id="updatePassengerGeoLocationDetails" parameterType="PassengerGeoLocationModel"  > 
+		
+		UPDATE 
+			passenger_geo_location 
+		SET 
+			latitude =#{latitude}, longitude =#{longitude}, geo_location= ${geoLocation},
+			updated_at =#{updatedAt}, updated_by =#{updatedBy}
+		WHERE 
+			passenger_id=#{passengerId}
+		AND 
+			record_status = 'A'
+			
+	</update>
+	
+	<select id="getPassengerGeoLocationDetailsById" parameterType="String" resultMap="PassengerGeoLocationResultMap">
+	
+		SELECT 
+			passenger_geo_location_id, passenger_id, 
+			ST_Y(geo_location::geometry) AS latitude,  
+			ST_X(geo_location::geometry) as longitude,
+			record_status, created_at, created_by, updated_at, updated_by
+		FROM 
+			passenger_geo_location 
+		WHERE 
+			passenger_id=#{passengerId} 
+		AND 
+			record_status = 'A'
+			
+	</select>
+	
+</mapper>

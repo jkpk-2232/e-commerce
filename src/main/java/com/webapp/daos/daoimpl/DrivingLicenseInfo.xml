@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.webapp.daos.DrivingLicenseInfoDao">
+    
+    <resultMap id="drivingLicenseInfoResultMap" type="DrivingLicenseInfoModel" >
+        
+		<result property="drivingLicenseInfoId" column="driving_license_info_id" />
+		<result property="fName" column="f_name" />
+		<result property="mName" column="m_name" />
+		<result property="lName" column="l_name" />
+		<result property="driverLicenseCardNumber" column="driver_license_card_number" />
+		<result property="dob" column="dob" />
+		<result property="socialSecurityNumber" column="social_security_number" />
+		<result property="insuranceEffectiveDate" column="insurance_effective_date" />
+		<result property="insuranceExpirationDate" column="insurance_expiration_date" />
+		<result property="insurancePhotoUrl" column="insurance_photo_url" />
+		<result property="drivingLicensePhotoUrl" column="driving_license_photo_url" />
+		<result property="userId" column="user_id" />
+		
+		<result property="drivingLicenseBackPhotoUrl" column="driving_license_back_photo_url" />
+		<result property="birthAccreditationPassportPhotoUrl" column="birth_accreditation_passport_photo_url" />
+		<result property="criminalHistoryPhotoUrl" column="criminal_history_photo_url" />
+		<result property="auBusinessNo" column="au_business_no" />
+		
+		<result property="licenceExpirationDate" column="licence_expiration_date" />
+		
+		<result property="socilaSecurityPhotoUrl" column="social_security_number_photo_url" />
+		
+		<result property="createdBy" column="created_by" />
+		<result property="createdAt" column="created_at" />
+		<result property="updatedBy" column="updated_by" />
+		<result property="updatedAt" column="updated_at" />
+	
+	</resultMap>
+	
+    <insert id="insertDriverLicenseDetails" parameterType="DrivingLicenseInfoModel" useGeneratedKeys="false">
+        
+		INSERT INTO 
+			driving_license_info
+				(
+					driving_license_info_id,f_name,m_name,l_name,
+					driver_license_card_number,dob,
+					social_security_number,insurance_effective_date,
+					insurance_expiration_date,insurance_photo_url,driving_license_photo_url,user_id,
+					driving_license_back_photo_url,birth_accreditation_passport_photo_url,criminal_history_photo_url,
+					au_business_no,licence_expiration_date,social_security_number_photo_url,
+					created_by,created_at,updated_by,updated_at
+				)
+		VALUES
+				(
+					#{drivingLicenseInfoId},#{fName},#{mName},#{lName},
+					#{driverLicenseCardNumber},#{dob},
+					#{socialSecurityNumber},#{insuranceEffectiveDate},#{insuranceExpirationDate},
+					#{insurancePhotoUrl},#{drivingLicensePhotoUrl},#{userId},
+					#{drivingLicenseBackPhotoUrl},#{birthAccreditationPassportPhotoUrl},
+					#{criminalHistoryPhotoUrl},#{auBusinessNo},#{licenceExpirationDate},#{socilaSecurityPhotoUrl},
+					#{createdBy},#{createdAt},#{updatedBy},#{updatedAt}
+				)
+			
+	</insert>
+
+    <select id="getDriverLicenseDetails" parameterType="DrivingLicenseInfoModel" resultMap="drivingLicenseInfoResultMap">
+		
+	    SELECT 
+	    	driving_license_info_id,f_name,m_name,l_name,
+			driver_license_card_number,dob,
+			social_security_number,insurance_effective_date,
+			insurance_expiration_date,insurance_photo_url,driving_license_photo_url,user_id,
+			driving_license_back_photo_url,birth_accreditation_passport_photo_url,criminal_history_photo_url,
+			au_business_no,licence_expiration_date,social_security_number_photo_url,
+			created_by,created_at,updated_by,updated_at
+	    FROM 
+	    	driving_license_info 
+	    WHERE 
+	    	user_id=#{userId}
+	    
+	</select>
+	
+    <update id="updateDrivingLicenseInfo" parameterType="DrivingLicenseInfoModel"  > 
+        	
+		UPDATE 
+			driving_license_info 
+		SET 
+			f_name = #{fName},
+			m_name = #{mName},
+			l_name = #{lName},
+			driver_license_card_number = #{driverLicenseCardNumber},
+			dob = #{dob},
+			insurance_expiration_date = #{insuranceExpirationDate},
+			insurance_effective_date = #{insuranceEffectiveDate},
+			social_security_number = #{socialSecurityNumber},
+			insurance_photo_url = #{insurancePhotoUrl},
+			driving_license_photo_url = #{drivingLicensePhotoUrl},
+			licence_expiration_date = #{licenceExpirationDate},
+			au_business_no = #{auBusinessNo},
+			driving_license_back_photo_url = #{drivingLicenseBackPhotoUrl},
+			birth_accreditation_passport_photo_url = #{birthAccreditationPassportPhotoUrl},
+			criminal_history_photo_url = #{criminalHistoryPhotoUrl},
+			social_security_number_photo_url = #{socilaSecurityPhotoUrl},
+			updated_at = #{updatedAt}
+		WHERE 
+			user_id=#{userId}
+	</update>
+    
+</mapper>

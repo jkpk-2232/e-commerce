@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.webapp.daos.OfflineOrderDao">
+	
+	<resultMap id="OfflineOrderResultMap" type="OfflineOrderModel">
+		
+		<result property="offlineOrderId" column="offline_order_id"/>
+		<result property="offlineStoreOrderId" column="offline_store_order_id"/>
+		<result property="refNumber" column="ref_number"/>
+		<result property="discount" column="discount"/>
+		<result property="status" column="status"/>
+		<result property="subTotal" column="sub_total"/>
+		<result property="tax" column="tax"/>
+		<result property="orderType" column="order_type"/>
+		<result property="paymentType" column="payment_type"/>
+		<result property="paymentInfo" column="payment_info"/>
+		<result property="total" column="total"/>
+		<result property="paid" column="paid"/>
+		<result property="change" column="change"/>
+		<result property="userId" column="user_id"/>
+		<result property="coludOrderId" column="colud_order_id"/>
+		<result property="date" column="date"/>
+		<result property="counterNo" column="counter_no"/>
+		<result property="roundedValue" column="rounded_value"/>
+		
+		<result property="createdBy" column="created_by" />
+		<result property="createdAt" column="created_at" />
+		<result property="updatedBy" column="updated_by" />
+		<result property="updatedAt" column="updated_at" />
+		
+		
+	</resultMap>
+
+	<sql id="OfflineOrderColumns">
+		ofo.offline_order_id, ofo.offline_store_order_id, ofo.ref_number,
+		ofo.discount, ofo.status, ofo.sub_total, ofo.tax, ofo.order_type,
+		ofo.payment_type, ofo.payment_info, ofo.total,
+		ofo.paid, ofo.change, ofo.user_id, ofo.cloud_order_id, ofo.created_by,
+		ofo.created_at, ofo.updated_by, ofo.updated_at, ofo.date, ofo.counter_no,
+		ofo.rounded_value
+	</sql>
+
+	<insert id="insertOfflineOrder" useGeneratedKeys="true" parameterType="OfflineOrderModel">
+	
+		INSERT INTO offline_orders
+			(
+				offline_order_id, offline_store_order_id, ref_number, 
+				discount, status, sub_total, tax, order_type, 
+				payment_type, payment_info, total,
+				paid, change, user_id, cloud_order_id, created_by, 
+				created_at, updated_by, updated_at, date, counter_no,
+				rounded_value
+			)
+		VALUES 
+			(
+				#{offlineOrderId}, #{offlineStoreOrderId}, #{refNumber}, 
+				#{discount}, #{status}, #{subTotal}, #{tax},#{orderType},
+				#{paymentType}, #{paymentInfo}, #{total}, 
+				#{paid}, #{change}, #{userId}, #{cloudOrderId}, #{createdBy},
+				#{createdAt}, #{updatedBy}, #{updatedAt}, #{date}, #{counterNo},
+				#{roundedValue}
+			);
+			
+	</insert>
+	
+	<select id="getOrderDetailsByOfflineStoreOrderId" resultMap="OfflineOrderResultMap">
+		
+		SELECT
+			<include refid="OfflineOrderColumns"></include>
+		FROM
+			offline_orders ofo
+		WHERE
+			ofo.offline_store_order_id = #{offlineStoreOrderId}
+		
+	</select>
+	
+</mapper>

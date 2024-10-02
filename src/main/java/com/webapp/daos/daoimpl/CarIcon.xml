@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.webapp.daos.CarIconDao">
+
+	<resultMap id="carIconResultMap" type="CarIconModel" >
+	    
+		<result property="carIconId" column="car_icon_id" />
+		<result property="isActive" column="is_active" />
+		<result property="createdAt" column="created_at" />
+		<result property="updatedAt" column="updated_at" />
+		<result property="createdBy" column="created_by" />
+		<result property="updatedBy" column="updated_by" />
+		
+	</resultMap>
+	
+	<sql id="carIconsColumns">
+		car_icon_id, is_active, created_by, created_at, updated_by, updated_at       	
+	</sql>
+	
+	<select id="getAllCarIcons" parameterType="CarIconModel" resultMap="carIconResultMap">
+		
+	    SELECT 
+	    	<include refid="carIconsColumns"></include>
+	    FROM 
+	    	car_icons
+	    WHERE
+	    	is_active = true
+	    
+	</select>
+	
+</mapper> 

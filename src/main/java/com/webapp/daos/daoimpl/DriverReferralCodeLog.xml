@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.webapp.daos.DriverReferralCodeLogDao">
+
+	<resultMap id="driverReferralCodeLogResultMap" type="DriverReferralCodeLogModel" >
+  
+		<result property="driverReferralCodeLogId" column="driver_referral_code_log_id" /> 
+		<result property="driverId" column="driver_id" />
+		<result property="passengerId" column="passenger_id" />
+		<result property="driverPercentage" column="driver_percentage" />
+		
+		<result property="recordStatus" column="record_status" />
+		<result property="createdAt" column="created_at" />
+		<result property="updatedAt" column="updated_at" />
+		<result property="createdBy" column="created_by" />
+		<result property="updatedBy" column="updated_by" />
+		
+		<result property="passengerEmail" column="passenger_email" />
+        <result property="passengerName" column="passenger_name" />
+        <result property="passengerPhoneNumber" column="passenger_phone_number" />
+        
+        <result property="driverEmail" column="driver_email" />
+        <result property="driverName" column="driver_name" />
+        <result property="driverPhoneNumber" column="driver_phone_number" />
+		
+	</resultMap>
+	
+	<insert id="addDriverReferralCodeLog" parameterType="DriverReferralCodeLogModel">
+
+		INSERT INTO driver_referral_code_logs
+				(
+	           		driver_referral_code_log_id, driver_id, passenger_id, driver_percentage, 
+	           		record_status, created_by, created_at, updated_by, updated_at
+	           	)
+	   	VALUES 
+				(
+					#{driverReferralCodeLogId}, #{driverId}, #{passengerId}, #{driverPercentage},
+					#{recordStatus}, #{createdBy}, #{createdAt}, #{updatedBy}, #{updatedAt}
+				)
+	</insert>
+	
+	<update id="deleteDriverReferralCodeLogByPassengerId" parameterType="DriverReferralCodeLogModel">
+	
+		UPDATE 
+			driver_referral_code_logs 
+		SET 
+			record_status = 'D',
+			updated_by = #{updatedBy}, 
+			updated_at = #{updatedAt}
+		WHERE  
+			passenger_id = #{passengerId}
+		AND
+			record_status = 'A'
+			
+	</update>
+	
+	<select id="getDriverReferralCodeLogByPassengerId" parameterType="map" resultMap="driverReferralCodeLogResultMap"> 		
+		
+	   	SELECT     
+			DRCL.driver_referral_code_log_id, DRCL.driver_id, DRCL.passenger_id, DRCL.driver_percentage, 
+	        DRCL.record_status, DRCL.created_by, DRCL.created_at, DRCL.updated_by, DRCL.updated_at,
+	        DU.email AS driver_email, CONCAT(DUI.first_name, CONCAT(' ', DUI.last_name)) AS driver_name,
+            CONCAT(DUI.phone_no_code, CONCAT(' ', DUI.phone_no)) AS driver_phone_number,
+            PU.email AS passenger_email, CONCAT(PUI.first_name, CONCAT(' ', PUI.last_name)) AS passenger_name,
+            CONCAT(PUI.phone_no_code, CONCAT(' ', PUI.phone_no)) AS passenger_phone_number
+		FROM 
+			driver_referral_code_logs DRCL
+		INNER JOIN users DU ON (DU.user_id = DRCL.driver_id)
+		INNER JOIN user_info DUI ON (DUI.user_id = DU.user_id)
+		INNER JOIN users PU ON (PU.user_id = DRCL.passenger_id)
+		INNER JOIN user_info PUI ON (PUI.user_id = PU.user_id)
+ 		WHERE  
+        	DRCL.passenger_id = #{passengerId}
+        AND
+        	DRCL.record_status = 'A'
+				
+	</select>
+	
+	<select id="getTotalDriverReferralLogsCount" parameterType="map" resultType="int"> 		
+		
+	    SELECT 
+			count(DRCL.driver_referral_code_log_id)
+		FROM 
+			driver_referral_code_logs DRCL
+		INNER JOIN users U ON U.user_id = DRCL.passenger_id
+		INNER JOIN user_info UI ON UI.user_id = U.user_id
+		WHERE
+			DRCL.record_status = 'A' 
+		AND
+			DRCL.created_at &gt; #{startDate}
+		AND
+			DRCL.created_at &lt; #{endDate}
+		<if test="driverId != null">
+		AND
+			DRCL.driver_id = #{driverId}	
+		</if>
+		
+	</select>
+	
+	<select id="getDriverReferralLogsListForSearch"  parameterType="map"  resultMap="driverReferralCodeLogResultMap">
+		
+		SELECT 
+			DRCL.driver_referral_code_log_id, DRCL.driver_id, DRCL.passenger_id, DRCL.driver_percentage, 
+	        DRCL.record_status, DRCL.created_by, DRCL.created_at, DRCL.updated_by, DRCL.updated_at,
+	        U.email AS passenger_email,
+            CONCAT(UI.first_name,CONCAT(' ',UI.last_name)) AS passenger_name,
+            CONCAT(UI.phone_no_code,CONCAT(' ',UI.phone_no)) AS passenger_phone_number
+		FROM 
+			driver_referral_code_logs DRCL
+		INNER JOIN users U ON U.user_id = DRCL.passenger_id
+		INNER JOIN user_info UI ON UI.user_id = U.user_id
+        WHERE  
+	        (
+	        	UI.first_name iLIKE #{globalSearchString} 
+			OR 
+				UI.last_name iLIKE #{globalSearchString} 
+			OR 
+				UI.phone_no iLIKE #{globalSearchString}
+			OR 
+				UI.phone_no_code iLIKE #{globalSearchString}
+			OR 
+				CONCAT(UI.first_name,CONCAT(' ',UI.last_name)) iLIKE #{globalSearchString} 
+			OR 
+				CONCAT(UI.phone_no_code,CONCAT(' ',UI.phone_no)) iLIKE #{globalSearchString}
+			OR 
+				U.email iLIKE #{globalSearchString}
+			) 
+		AND 
+			DRCL.record_status = 'A' 
+		AND
+			DRCL.created_at &gt; #{startDate}
+		AND
+			DRCL.created_at &lt; #{endDate}
+		<if test="driverId != null">
+		AND
+			DRCL.driver_id = #{driverId}	
+		</if>
+		ORDER BY DRCL.updated_at DESC
+		<if test="length>0">
+        LIMIT #{length} OFFSET #{start}        
+        </if>
+        
+	</select>
+	
+</mapper>

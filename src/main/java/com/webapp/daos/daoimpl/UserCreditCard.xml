@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.webapp.daos.UserCreditCardDao">
+
+	<resultMap id="userCreditCardResultMap" type="UserCreditCardModel" >
+	
+	    <result property="userCreditCardDetailsId" column="credit_card_details_id" />
+		<result property="userId" column="user_id" />
+		<result property="cardNumber" column="card_number" />
+		<result property="token" column="token" />
+		<result property="authCode" column="auth_code" />
+		<result property="cardType" column="card_type" />
+		<result property="recordStatus" column="record_status" />
+		<result property="createdAt" column="created_at" />
+		<result property="updatedAt" column="updated_at" />
+		<result property="createdBy" column="created_by" />
+		<result property="updatedBy" column="updated_by" />
+		
+		<result property="braintreeProfileId" column="braintree_profile_id" />
+		<result property="nonceToken" column="nonce_token" />
+		
+	</resultMap>
+
+	<insert id="addUserCreditCardDetails" parameterType="UserCreditCardModel" useGeneratedKeys="false">
+	
+		INSERT INTO 
+			credit_card_details
+				(
+	            	credit_card_details_id, user_id, card_number, token, auth_code,
+	            	nonce_token,braintree_profile_id,
+	            	record_status, created_by, created_at, updated_by, updated_at,
+	            	card_type
+	            )
+    	VALUES
+				(
+					#{userCreditCardDetailsId}, #{userId}, #{cardNumber}, #{token}, #{authCode},
+					#{nonceToken},#{braintreeProfileId},
+					'A', #{createdBy}, #{createdAt}, #{updatedBy}, #{updatedAt},
+					#{cardType}
+				)
+			
+	</insert>
+			
+	
+	<select id="getCreditCardDetails" parameterType="String" resultMap="userCreditCardResultMap">
+		
+	    SELECT 
+	    	credit_card_details_id, user_id, card_number, token, auth_code, 
+            record_status, created_by, created_at, updated_by, updated_at, card_type,nonce_token,braintree_profile_id
+		FROM 
+			credit_card_details
+		WHERE 
+			user_id = #{userId}
+		AND
+			record_status = 'A' 
+ 	</select>
+ 	
+ 	<update id="updateUserCreditCardDetails" parameterType="UserCreditCardModel">
+ 	
+		UPDATE 
+			credit_card_details 
+		SET 
+			card_number = #{cardNumber}, 
+			token = #{token}, 
+			auth_code = #{authCode},
+			updated_at = #{updatedAt},
+			updated_by = #{updatedBy}
+		WHERE  
+			user_id = #{userId}
+		AND
+			record_status = 'A' 
+	</update>
+	
+	<update id="updateUserCreditCardDetails1" parameterType="UserCreditCardModel">
+ 	
+		UPDATE 
+			credit_card_details 
+		SET 
+			card_number = #{cardNumber}, 
+			token = #{token}, 
+			auth_code = #{authCode},
+			card_type = #{cardType},
+			updated_at = #{updatedAt},
+			updated_by = #{updatedBy}
+		WHERE  
+			user_id = #{userId}
+		AND
+			record_status = 'A' 
+	</update>
+	
+	<update id="editUserCreditCardDetails" parameterType="UserCreditCardModel">
+ 	
+		UPDATE 
+			credit_card_details 
+		SET 
+			card_number = #{cardNumber}, 
+			braintree_profile_id = #{braintreeProfileId}, 
+			card_type = #{cardType},
+			updated_at = #{updatedAt},
+			updated_by = #{updatedBy}
+		WHERE  
+			user_id = #{userId}
+		AND
+			record_status = 'A' 
+	</update>
+	
+</mapper> 

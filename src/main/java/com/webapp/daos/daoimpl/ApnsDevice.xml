@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.webapp.daos.ApnsDeviceDao">
+
+
+	<resultMap id="apnsResultMap" type="ApnsDeviceModel">
+	
+	    <id property="apnsDeviceId" column="apns_device_id" />
+		<result property="userId" column="user_id" />
+		<result property="deviceType" column="device_type" />
+		<result property="appName" column="app_name" />
+		<result property="appVersion" column="app_version" />
+		<result property="deviceUid" column="device_uid" />
+		<result property="deviceToken" column="device_token" />
+		<result property="deviceName" column="device_name" />
+		<result property="deviceModel" column="device_model" />
+		<result property="deviceVersion" column="device_version" />
+		<result property="pushBadge" column="push_badge" />
+		<result property="pushAlert" column="push_alert" />
+		<result property="pushSound" column="push_sound" />
+		<result property="development" column="development" />
+		<result property="apiSessionKey" column="api_session_key" />		
+		<result property="deleted" column="is_deleted" />
+		<result property="createdAt" column="created_at" />
+		<result property="updatedAt" column="updated_at" />
+		<result property="lastNotificationsViewedTimeId" column="last_notifications_viewed_time_id" />
+		
+		<result property="timezone" column="timezone" />
+		
+	</resultMap>
+	
+	<sql id="ApnsDeviceColumns">
+		AD.apns_device_id, AD.user_id, AD.device_type, AD.app_name, AD.app_version, 
+		AD.device_uid, AD.device_token, AD.device_name, AD.device_model, AD.device_version, 
+		AD.push_badge, AD.push_alert, AD.push_sound, development, AD.timezone, AD.is_deleted, 
+		AD.created_at, AD.updated_at, AD.api_session_key
+	</sql>
+
+	<insert id="insertApnsDeviceDetails" parameterType="ApnsDeviceModel">
+	
+		INSERT INTO apns_devices
+				(
+					apns_device_id, user_id, device_type, app_name, app_version,device_uid, device_token,device_name, device_model, 
+					device_version,push_badge, push_alert, push_sound, development, created_at,updated_at,api_session_key, timezone 
+				)
+		VALUES
+				(
+					#{apnsDeviceId},#{userId},#{deviceType},#{appName},#{appVersion},#{deviceUid},#{deviceToken},#{deviceName}, #{deviceModel},
+					#{deviceVersion},#{pushBadge},#{pushAlert},#{pushSound},#{development}, #{createdAt},#{updatedAt},#{apiSessionKey}, #{timezone}
+				)
+
+	</insert>
+
+	<delete id="deleteApnsDeviceDetails" parameterType="map">
+		DELETE FROM apns_devices WHERE device_token =#{deviceToken}
+	</delete>
+	
+	<delete id="deleteApnsDeviceDetailsByUserId" parameterType="map">
+		DELETE FROM apns_devices WHERE user_id =#{userId}
+	</delete>
+
+	<select id="getDeviseByDeviceTokenAndDeviceUid" parameterType="map" resultMap="apnsResultMap">
+	
+		SELECT 
+			<include refid="ApnsDeviceColumns"></include>
+		FROM 
+			apns_devices AD
+		WHERE 
+			AD.device_token = #{deviceToken} 
+		AND 
+			AD.device_uid = #{deviceUid} 
+		AND 
+			AD.is_deleted = 'FALSE'
+		
+	</select>
+	
+	<select id="getDeviseByUserId" parameterType="String" resultMap="apnsResultMap">
+	
+		SELECT 
+			<include refid="ApnsDeviceColumns"></include>
+		FROM 
+			apns_devices AD
+		WHERE 
+			AD.user_id = #{userId} 
+		AND 
+			AD.is_deleted = 'FALSE'
+		
+	</select>
+	
+	<select id="getBadgeCount" parameterType="String" resultType="int">
+	
+		SELECT   
+			COUNT(*) AS badgeCount 
+		FROM     
+			apns_notification_messages anm
+		WHERE    
+		    anm.is_deleted =FALSE
+		AND    
+			anm.to_user_id = #{userId} 
+		AND  
+		    anm.created_at > (SELECT 
+		                            max(created_at) FROM last_notifications_viewed_times 
+		                      WHERE 
+		                          user_id = #{userId} 
+		                      AND 
+		                          is_deleted =FALSE)   
+
+	</select>
+	
+	<insert id="recordViewedNotificationTime" parameterType="ApnsDeviceModel">
+	
+		INSERT INTO
+			last_notifications_viewed_times
+				(
+					last_notifications_viewed_time_id, user_id, created_at, updated_at
+				)
+		VALUES
+				(
+					#{lastNotificationsViewedTimeId}, #{userId}, #{createdAt}, #{updatedAt}
+				)
+
+	</insert>
+	
+	 <select id="isdevicsUidExist" parameterType="String" resultType="boolean" >
+	 
+		SELECT 
+			( COUNT(*) > 0)  
+		FROM 
+			apns_devices 
+		WHERE 
+			device_uid=#{deviceUid}
+		
+	</select>
+	
+    <update id="updateApnsDeviceUser" parameterType="ApnsDeviceModel" >
+    
+	   UPDATE 
+	   		apns_devices 
+	   SET 
+	        user_id= #{userId},       
+	        app_name= #{appName},
+			app_version= #{appVersion}
+	  WHERE
+	        device_uid=#{deviceUid}
+	 
+	</update>
+	
+    <delete id="deleteNotificationTime" parameterType="String">
+	
+     UPDATE 
+     	last_notifications_viewed_times 
+     SET 
+     	is_deleted = TRUE  
+     WHERE 
+     	user_id=#{userId}
+
+	</delete>
+	
+	<select id="checkRecordViewedNotificationTime" parameterType="String" resultType="boolean" >
+	
+     SELECT ( COUNT(*) > 0) 
+         FROM last_notifications_viewed_times 
+     WHERE 
+        user_id=#{userId}
+     AND 
+          is_deleted = FALSE
+        
+	</select>
+
+	<select id="getDeviceListByUserIds" parameterType="map" resultMap="apnsResultMap">
+	
+		SELECT 
+			<include refid="ApnsDeviceColumns"></include>
+		FROM 
+			apns_devices AD		
+		INNER JOIN users U ON U.user_id = AD.user_id			 
+		WHERE 
+			U.is_active = true
+		AND
+			U.is_deleted = false
+		AND
+			U.is_notification_send_status = true
+		AND
+			AD.is_deleted = false
+		AND
+			AD.user_id IN
+			<foreach item="item" index="index" collection="userIdList" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+			
+	</select>
+
+</mapper>

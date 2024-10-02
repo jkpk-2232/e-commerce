@@ -1,0 +1,377 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN" 
+ "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+	
+	<properties resource="database.properties" />		
+	
+	<settings>
+		<setting name="useGeneratedKeys" value="true"/>
+	</settings>
+	<!-- In this tag(typeAliases). You can create Models aliases so that you can use that alias name in respective xml file. -->
+	<typeAliases>
+	
+		<typeAlias alias="LoginUtils" type="com.utils.LoginUtils"/>	
+		<typeAlias alias="UserModel" type="com.webapp.models.UserModel"/>
+		<typeAlias alias="RoleModel" type="com.webapp.models.RoleModel"/>
+		<typeAlias alias="UrlModel" type="com.webapp.models.UrlModel"/>
+		<typeAlias alias="UrlAccessModel" type="com.webapp.models.UrlAccessModel"/>
+		<typeAlias alias="UserRolesModel" type="com.webapp.models.UserRolesModel"/>
+		<typeAlias alias="ForgotPasswordSessionModel" type="com.webapp.models.ForgotPasswordSessionModel"/>
+		<typeAlias alias="ActivityLogModel" type="com.webapp.models.ActivityLogModel"/>
+		<typeAlias alias="AbstractModel" type="com.webapp.models.AbstractModel"/>
+		<typeAlias alias="DbSession" type="com.utils.dbsession.DbSession"/>
+		<typeAlias alias="VersionModel" type="com.webapp.models.VersionModel"/>
+		<typeAlias alias="UserProfileModel" type="com.webapp.models.UserProfileModel"/>
+		<typeAlias alias="ApnsDeviceModel" type="com.webapp.models.ApnsDeviceModel"/>
+		<typeAlias alias="GeoCityModel" type="com.webapp.models.GeoCityModel"/>
+		<typeAlias alias="GeoStateModel" type="com.webapp.models.GeoStateModel"/>
+		<typeAlias alias="GeoCountryModel" type="com.webapp.models.GeoCountryModel"/>
+		<typeAlias alias="UserCreditCardModel" type="com.webapp.models.UserCreditCardModel"/>
+		<typeAlias alias="CarModel" type="com.webapp.models.CarModel"/>
+		<typeAlias alias="CarTypeModel" type="com.webapp.models.CarTypeModel"/>
+		<typeAlias alias="CarFareModel" type="com.webapp.models.CarFareModel"/>
+		<typeAlias alias="PassengerTripRatingsModel" type="com.webapp.models.PassengerTripRatingsModel"/>
+		<typeAlias alias="DriverTripRatingsModel" type="com.webapp.models.DriverTripRatingsModel"/>
+		<typeAlias alias="DriverGeoLocationModel" type="com.webapp.models.DriverGeoLocationModel"/>
+    	<typeAlias alias="DriverModel" type="com.webapp.models.DriverModel"/>
+    	<typeAlias alias="TourModel" type="com.webapp.models.TourModel"/>
+    	<typeAlias alias="DriverInfoModel" type="com.webapp.models.DriverInfoModel"/>
+    	<typeAlias alias="DriverBankDetailsModel" type="com.webapp.models.DriverBankDetailsModel"/>
+    	<typeAlias alias="DriverTourRequestModel" type="com.webapp.models.DriverTourRequestModel"/>
+    	<typeAlias alias="DriverTourStatusModel" type="com.webapp.models.DriverTourStatusModel"/>
+		<typeAlias alias="ApnsMessageModel" type="com.webapp.models.ApnsMessageModel"/>
+		<typeAlias alias="UrlAccessesModel" type="com.webapp.models.UrlAccessesModel"/>
+		<typeAlias alias="AnnouncementModel" type="com.webapp.models.AnnouncementModel"/>
+		<typeAlias alias="InvoiceModel" type="com.webapp.models.InvoiceModel"/>
+		<typeAlias alias="UserPaymentProfileModel" type="com.webapp.models.UserPaymentProfileModel"/>
+		<typeAlias alias="BusinessOperatorModel" type="com.webapp.models.BusinessOperatorModel"/>
+		<typeAlias alias="AdminTipModel" type="com.webapp.models.AdminTipModel"/>
+		<typeAlias alias="CancellationChargeModel" type="com.webapp.models.CancellationChargeModel"/>
+		<typeAlias alias="DrivingLicenseInfoModel" type="com.webapp.models.DrivingLicenseInfoModel"/>
+		<typeAlias alias="DriverPayablePercentageModel" type="com.webapp.models.DriverPayablePercentageModel"/>
+		<typeAlias alias="TransactionHistoryModel" type="com.webapp.models.TransactionHistoryModel"/>
+		<typeAlias alias="PaymentTypeModel" type="com.webapp.models.PaymentTypeModel"/>
+		<typeAlias alias="AdminTopUpLogsModel" type="com.webapp.models.AdminTopUpLogsModel"/>
+		<typeAlias alias="AdminSmsSendingModel" type="com.webapp.models.AdminSmsSendingModel"/>
+		<typeAlias alias="AdminSettingsModel" type="com.webapp.models.AdminSettingsModel"/>
+		<typeAlias alias="AdminAreaModel" type="com.webapp.models.AdminAreaModel"/>
+		<typeAlias alias="AdminFaqModel" type="com.webapp.models.AdminFaqModel"/>
+		<typeAlias alias="AdminCompanyContactModel" type="com.webapp.models.AdminCompanyContactModel"/>
+		<typeAlias alias="PromoCodeModel" type="com.webapp.models.PromoCodeModel"/>
+		<typeAlias alias="TourTimeModel" type="com.webapp.models.TourTimeModel"/>
+		<typeAlias alias="FreeWaitingTimeModel" type="com.webapp.models.FreeWaitingTimeModel"/>
+		<typeAlias alias="UserPromoCodeModel" type="com.webapp.models.UserPromoCodeModel"/>
+		<typeAlias alias="ReferralCodeLogsModel" type="com.webapp.models.ReferralCodeLogsModel"/>
+		<typeAlias alias="UtilizedUserPromoCodeModel" type="com.webapp.models.UtilizedUserPromoCodeModel"/>
+		<typeAlias alias="FavouriteDriverModel" type="com.webapp.models.FavouriteDriverModel"/>
+		<typeAlias alias="CarDriversModel" type="com.webapp.models.CarDriversModel"/>
+		<typeAlias alias="DriverCommissionTypeModel" type="com.webapp.models.DriverCommissionTypeModel"/>
+		<typeAlias alias="AttachedReferrerDriverModel" type="com.webapp.models.AttachedReferrerDriverModel"/>
+		<typeAlias alias="DriverTripCommissionModel" type="com.webapp.models.DriverTripCommissionModel"/>
+		<typeAlias alias="AuthorizeCreditCardModel" type="com.webapp.models.AuthorizeCreditCardModel"/>
+		<typeAlias alias="DriverDutyLogsModel" type="com.webapp.models.DriverDutyLogsModel"/>
+		<typeAlias alias="RideLaterSettingsModel" type="com.webapp.models.RideLaterSettingsModel"/>
+		<typeAlias alias="EmergencyNumbersModel" type="com.webapp.models.EmergencyNumbersModel"/>
+		<typeAlias alias="EmergencyNumbersPersonalModel" type="com.webapp.models.EmergencyNumbersPersonalModel"/>
+		<typeAlias alias="TrackMyLocationModel" type="com.webapp.models.TrackMyLocationModel"/> 
+		<typeAlias alias="TrackLocationTokenModel" type="com.webapp.models.TrackLocationTokenModel"/> 
+		<typeAlias alias="PassengerGeoLocationModel" type="com.webapp.models.PassengerGeoLocationModel"/>
+		<typeAlias alias="RechargeAmountModel" type="com.webapp.models.RechargeAmountModel"/>	
+		<typeAlias alias="CurrencyModel" type="com.webapp.models.CurrencyModel"/>	
+		<typeAlias alias="DriverAppVersionModel" type="com.webapp.models.DriverAppVersionModel"/>	
+		<typeAlias alias="DriverVersionLightModel" type="com.webapp.models.DriverVersionLightModel"/>	
+		<typeAlias alias="MulticityCountryModel" type="com.webapp.models.MulticityCountryModel"/>
+		<typeAlias alias="MulticityCityRegionModel" type="com.webapp.models.MulticityCityRegionModel"/>
+		<typeAlias alias="MulticityUserRegionModel" type="com.webapp.models.MulticityUserRegionModel"/> 
+		<typeAlias alias="SurgePriceModel" type="com.webapp.models.SurgePriceModel"/> 
+		<typeAlias alias="DriverCarTypeModel" type="com.webapp.models.DriverCarTypeModel"/>
+		<typeAlias alias="CcavenueRsaRequestModel" type="com.webapp.models.CcavenueRsaRequestModel"/>
+		<typeAlias alias="CcavenueResponseLogModel" type="com.webapp.models.CcavenueResponseLogModel"/> 
+		<typeAlias alias="CcavenueRsaOrderModel" type="com.webapp.models.CcavenueRsaOrderModel"/>
+		<typeAlias alias="TaxModel" type="com.webapp.models.TaxModel"/>
+		<typeAlias alias="TourTaxModel" type="com.webapp.models.TourTaxModel"/>  
+		<typeAlias alias="RentalPackageModel" type="com.webapp.models.RentalPackageModel"/>
+		<typeAlias alias="RentalPackageFareModel" type="com.webapp.models.RentalPackageFareModel"/>
+		<typeAlias alias="DriverReferralCodeLogModel" type="com.webapp.models.DriverReferralCodeLogModel"/> 
+		<typeAlias alias="TourReferrerBenefitModel" type="com.webapp.models.TourReferrerBenefitModel"/>
+		<typeAlias alias="FavouriteLocationsModel" type="com.webapp.models.FavouriteLocationsModel"/> 
+		<typeAlias alias="ExportAccessModel" type="com.webapp.models.ExportAccessModel"/> 
+		<typeAlias alias="DriverLoggedInTimeModel" type="com.webapp.models.DriverLoggedInTimeModel"/>
+		<typeAlias alias="DriverVendorsModel" type="com.webapp.models.DriverVendorsModel"/>
+		<typeAlias alias="CarVendorsModel" type="com.webapp.models.CarVendorsModel"/>
+		<typeAlias alias="AirportRegionModel" type="com.webapp.models.AirportRegionModel"/>
+		<typeAlias alias="TempAirportRegionModel" type="com.webapp.models.TempAirportRegionModel"/>
+		<typeAlias alias="CitySurgeModel" type="com.webapp.models.CitySurgeModel"/>
+		<typeAlias alias="UserLoginOtpModel" type="com.webapp.models.UserLoginOtpModel"/>
+		<typeAlias alias="UserAccountModel" type="com.webapp.models.UserAccountModel"/> 
+		<typeAlias alias="UserAccountLogsModel" type="com.webapp.models.UserAccountLogsModel"/>
+		<typeAlias alias="EncashRequestsModel" type="com.webapp.models.EncashRequestsModel"/>
+		<typeAlias alias="DriverWalletSettingsModel" type="com.webapp.models.DriverWalletSettingsModel"/>
+		<typeAlias alias="UserAccountLogDetailsModel" type="com.webapp.models.UserAccountLogDetailsModel"/>
+		<typeAlias alias="VendorCarFareModel" type="com.webapp.models.VendorCarFareModel"/>
+		<typeAlias alias="VendorAdminSettingsModel" type="com.webapp.models.VendorAdminSettingsModel"/>
+		<typeAlias alias="VendorCarTypeModel" type="com.webapp.models.VendorCarTypeModel"/>
+		<typeAlias alias="CarIconModel" type="com.webapp.models.CarIconModel"/>
+		<typeAlias alias="VendorAirportRegionModel" type="com.webapp.models.VendorAirportRegionModel"/>
+		<typeAlias alias="VendorAirportRegionCarFareModel" type="com.webapp.models.VendorAirportRegionCarFareModel"/>
+		<typeAlias alias="SubscriptionPackageModel" type="com.webapp.models.SubscriptionPackageModel"/>
+		<typeAlias alias="DriverSubscriptionPackageHistoryModel" type="com.webapp.models.DriverSubscriptionPackageHistoryModel"/>
+		<typeAlias alias="DriverTransactionHistoryModel" type="com.webapp.models.DriverTransactionHistoryModel"/>
+		<typeAlias alias="ServiceModel" type="com.webapp.models.ServiceModel"/>
+		<typeAlias alias="CategoryModel" type="com.webapp.models.CategoryModel"/>
+		<typeAlias alias="VendorServiceCategoryModel" type="com.webapp.models.VendorServiceCategoryModel"/>
+		<typeAlias alias="VendorProductModel" type="com.webapp.models.VendorProductModel"/>
+		<typeAlias alias="VendorSubscriberModel" type="com.webapp.models.VendorSubscriberModel"/>
+		<typeAlias alias="ServiceTypeModel" type="com.webapp.models.ServiceTypeModel"/>
+		<typeAlias alias="OrderSettingModel" type="com.webapp.models.OrderSettingModel"/>
+		<typeAlias alias="DriverSubscriberModel" type="com.webapp.models.DriverSubscriberModel"/>
+		<typeAlias alias="OrderModel" type="com.webapp.models.OrderModel"/>
+		<typeAlias alias="OrderItemModel" type="com.webapp.models.OrderItemModel"/>
+		<typeAlias alias="VendorFeedModel" type="com.webapp.models.VendorFeedModel"/>
+		<typeAlias alias="VendorFeedLikeModel" type="com.webapp.models.VendorFeedLikeModel"/>
+		<typeAlias alias="VendorFeedViewModel" type="com.webapp.models.VendorFeedViewModel"/>
+		<typeAlias alias="VendorStoreModel" type="com.webapp.models.VendorStoreModel"/>
+		<typeAlias alias="VendorStoreTimingModel" type="com.webapp.models.VendorStoreTimingModel"/>
+		<typeAlias alias="DriverOrderRequestModel" type="com.webapp.models.DriverOrderRequestModel"/>
+		<typeAlias alias="DeliveryAddressModel" type="com.webapp.models.DeliveryAddressModel"/>
+		<typeAlias alias="StatsModel" type="com.webapp.models.StatsModel"/>
+		<typeAlias alias="InputModel" type="com.webapp.models.InputModel"/>
+		<typeAlias alias="VendorMonthlySubscriptionHistoryModel" type="com.webapp.models.VendorMonthlySubscriptionHistoryModel"/>
+		<typeAlias alias="VendorAppVersionModel" type="com.webapp.models.VendorAppVersionModel"/>
+		<typeAlias alias="VendorVersionLightModel" type="com.webapp.models.VendorVersionLightModel"/>
+		<typeAlias alias="UnifiedHistoryModel" type="com.webapp.models.UnifiedHistoryModel"/>
+		<typeAlias alias="UrlSubCategoryModel" type="com.webapp.models.UrlSubCategoryModel"/>
+		<typeAlias alias="ProductCategoryModel" type="com.webapp.models.ProductCategoryModel"/>
+		<typeAlias alias="FeedSettingsModel" type="com.webapp.models.FeedSettingsModel"/>
+		<typeAlias alias="FeedFareModel" type="com.webapp.models.FeedFareModel"/>
+		<typeAlias alias="CartModel" type="com.webapp.models.CartModel"/>
+		<typeAlias alias="OfflineOrderModel" type="com.webapp.models.OfflineOrderModel"/>
+		<typeAlias alias="OfflineOrderItemModel" type="com.webapp.models.OfflineOrderItemModel"/>
+		<typeAlias alias="CustomerModel" type="com.webapp.models.CustomerModel"/>
+		<typeAlias alias="VendorProductCategoryAssocModel"  type="com.webapp.models.VendorProductCategoryAssocModel"/>
+		<typeAlias alias="ProductSubCategoryModel" type="com.webapp.models.ProductSubCategoryModel"/>
+		<typeAlias alias="BrandModel" type="com.webapp.models.BrandModel"/>
+		<typeAlias alias="UnitOfMeasureModel" type="com.webapp.models.UnitOfMeasureModel"/>
+		<typeAlias alias="ProductTemplateModel" type="com.webapp.models.ProductTemplateModel"/>
+		<typeAlias alias="ProductVariantModel"  type="com.webapp.models.ProductVariantModel"/>
+		<typeAlias alias="ProductImageModel" type="com.webapp.models.ProductImageModel"/>
+		<typeAlias alias="VendorStoreSubVendorModel" type="com.webapp.models.VendorStoreSubVendorModel"/>
+		<typeAlias alias="PhonepePaymentModel" type="com.webapp.models.PhonepePaymentModel"/>
+		<typeAlias alias="AppointmentSettingModel" type="com.webapp.models.AppointmentSettingModel"/>
+		<typeAlias alias="AppointmentModel" type="com.webapp.models.AppointmentModel"/>
+		<typeAlias alias="WhmgmtRackModel" type="com.webapp.models.WhmgmtRackModel"/>
+		<typeAlias alias="WhmgmtRackSlotModel" type="com.webapp.models.WhmgmtRackSlotModel"/>
+		<typeAlias alias="WhmgmtRackCategoryModel" type="com.webapp.models.WhmgmtRackCategoryModel"/>
+		<typeAlias alias="WhmgmtRackSlotBookingModel" type="com.webapp.models.WhmgmtRackSlotBookingModel"/>
+		<typeAlias alias="BusinessInterestedUsersModel" type="com.webapp.models.BusinessInterestedUsersModel"/>
+		<typeAlias alias="DriverSubscriptionExtensionLogsModel" type="com.webapp.models.DriverSubscriptionExtensionLogsModel"/>
+		<typeAlias alias="VendorFeedCommentModel" type="com.webapp.models.VendorFeedCommentModel"/>
+		<typeAlias alias="QrProfileModel" type="com.webapp.models.QrProfileModel"/>
+		<typeAlias alias="PaymentOrderModel" type="com.webapp.models.PaymentOrdersModel"/>
+		
+	</typeAliases>
+		
+	<environments default="development">
+			
+		<environment id="development">
+		
+			<transactionManager type="JDBC"/>
+			
+			<dataSource type="POOLED">
+			
+				<property name="driver" value="${db_driver}"/>
+				<property name="url" value="${db_path}"/>
+				<property name="username" value="${db_username}"/>
+				<property name="password" value="${db_password}"/>
+				
+				<property name="poolMaximumActiveConnections" value="20" />
+				<property name="poolMaximumIdleConnections" value="10" />
+				<property name="poolPingEnabled" value="false" />
+				
+			</dataSource>
+			
+		</environment>
+		
+		
+		<environment id="production">
+		
+			<transactionManager type="JDBC"/>
+			
+			<dataSource type="POOLED">
+			
+				<property name="driver" value="${db_driver}"/>
+				<property name="url" value="${db_path}"/>
+			    <property name="username" value="${db_username}"/>
+				<property name="password" value="${db_password}"/>
+				
+				<property name="poolMaximumActiveConnections" value="20" />
+				<property name="poolMaximumIdleConnections" value="10" />
+				<property name="poolPingEnabled" value="false" />
+				
+			</dataSource>
+			
+		</environment>
+
+	</environments>
+	
+	<mappers>	
+	
+		<mapper resource="com/webapp/daos/daoimpl/Login.xml" /> 
+		<mapper resource="com/webapp/daos/daoimpl/User.xml" /> 
+		<mapper resource="com/webapp/daos/daoimpl/UserRole.xml" /> 
+		<mapper resource="com/webapp/daos/daoimpl/Role.xml" /> 
+		<mapper resource="com/webapp/daos/daoimpl/Url.xml" />
+		<mapper resource="com/webapp/daos/daoimpl/UrlAccess.xml" />
+		<mapper resource="com/webapp/daos/daoimpl/ActivityLog.xml" />
+		<mapper resource="com/webapp/daos/daoimpl/UserRole.xml" />
+		<mapper resource="com/webapp/daos/daoimpl/Session.xml" />
+		<mapper resource="com/webapp/daos/daoimpl/ForgotPasswordSession.xml" />
+		<mapper resource="com/webapp/daos/daoimpl/Version.xml" />
+		<mapper resource="com/webapp/daos/daoimpl/UserProfile.xml" /> 
+		<mapper resource="com/webapp/daos/daoimpl/ApnsDevice.xml" />
+		<mapper resource="com/webapp/daos/daoimpl/GeoCity.xml" />
+		<mapper resource="com/webapp/daos/daoimpl/GeoState.xml" />
+		<mapper resource="com/webapp/daos/daoimpl/GeoCountry.xml" /> 
+		<mapper resource="com/webapp/daos/daoimpl/UserCreditCard.xml" />
+		<mapper resource="com/webapp/daos/daoimpl/Car.xml" />
+		<mapper resource="com/webapp/daos/daoimpl/CarType.xml" />
+		<mapper resource="com/webapp/daos/daoimpl/CarFare.xml" />
+		<mapper resource="com/webapp/daos/daoimpl/PassengerTripRatings.xml" />
+		<mapper resource="com/webapp/daos/daoimpl/DriverTripRatings.xml" />
+		<mapper resource="com/webapp/daos/daoimpl/DriverGeoLocation.xml" />
+		<mapper resource="com/webapp/daos/daoimpl/Driver.xml" />
+		<mapper resource="com/webapp/daos/daoimpl/Tour.xml" />
+		<mapper resource="com/webapp/daos/daoimpl/DriverBankDetails.xml" />
+		<mapper resource="com/webapp/daos/daoimpl/DriverInfo.xml" />
+		<mapper resource="com/webapp/daos/daoimpl/DriverTourRequest.xml" />
+		<mapper resource="com/webapp/daos/daoimpl/DriverTourStatus.xml" />
+		<mapper resource="com/webapp/daos/daoimpl/ApnsMessage.xml" />
+		<mapper resource="com/webapp/daos/daoimpl/UrlAccesses.xml" />
+		<mapper resource="com/webapp/daos/daoimpl/Announcement.xml" />
+		<mapper resource="com/webapp/daos/daoimpl/Invoice.xml" />
+		<mapper resource="com/webapp/daos/daoimpl/UserPaymentProfile.xml" />
+		<mapper resource="com/webapp/daos/daoimpl/BusinessOperator.xml" />
+		<mapper resource="com/webapp/daos/daoimpl/AdminTip.xml" />
+		<mapper resource="com/webapp/daos/daoimpl/CancellationCharge.xml" />
+		<mapper resource="com/webapp/daos/daoimpl/DrivingLicenseInfo.xml" />
+		<mapper resource="com/webapp/daos/daoimpl/DriverPayablePercentage.xml" />
+		<mapper resource="com/webapp/daos/daoimpl/TransactionHistory.xml" />
+		<mapper resource="com/webapp/daos/daoimpl/PaymentType.xml" />
+		<mapper resource="com/webapp/daos/daoimpl/AdminTopUpLogs.xml" />
+		<mapper resource="com/webapp/daos/daoimpl/AdminSmsSending.xml" />
+		<mapper resource="com/webapp/daos/daoimpl/AdminSettings.xml" />
+		<mapper resource="com/webapp/daos/daoimpl/AdminArea.xml" />
+		<mapper resource="com/webapp/daos/daoimpl/AdminFaq.xml" />
+		<mapper resource="com/webapp/daos/daoimpl/AdminCompanyContact.xml" />
+		<mapper resource="com/webapp/daos/daoimpl/PromoCode.xml" />
+		<mapper resource="com/webapp/daos/daoimpl/TourTime.xml" />
+		<mapper resource="com/webapp/daos/daoimpl/FreeWaitingTime.xml" />
+		<mapper resource="com/webapp/daos/daoimpl/UserPromoCode.xml" />
+		<mapper resource="com/webapp/daos/daoimpl/ReferralCodeLogs.xml" />
+		<mapper resource="com/webapp/daos/daoimpl/UtilizedUserPromoCode.xml" />
+		<mapper resource="com/webapp/daos/daoimpl/FavouriteDriver.xml" />
+		<mapper resource="com/webapp/daos/daoimpl/CarDrivers.xml" />
+		<mapper resource="com/webapp/daos/daoimpl/DriverCommissionType.xml" />
+		<mapper resource="com/webapp/daos/daoimpl/AttachedReferrerDriver.xml" />
+		<mapper resource="com/webapp/daos/daoimpl/DriverTripCommission.xml" />
+		<mapper resource="com/webapp/daos/daoimpl/AuthorizeCreditCard.xml" />
+		<mapper resource="com/webapp/daos/daoimpl/DriverDutyLogs.xml" />
+		<mapper resource="com/webapp/daos/daoimpl/RideLaterSettings.xml" />
+		<mapper resource="com/webapp/daos/daoimpl/EmergencyNumbers.xml" />
+		<mapper resource="com/webapp/daos/daoimpl/EmergencyNumbersPersonal.xml" />
+		<mapper resource="com/webapp/daos/daoimpl/TrackMyLocation.xml" />
+		<mapper resource="com/webapp/daos/daoimpl/TrackLocationToken.xml" />
+		<mapper resource="com/webapp/daos/daoimpl/PassengerGeoLocation.xml" />
+		<mapper resource="com/webapp/daos/daoimpl/RechargeAmount.xml" />
+		<mapper resource="com/webapp/daos/daoimpl/Currency.xml" />
+		<mapper resource="com/webapp/daos/daoimpl/DriverAppVersion.xml" />
+		<mapper resource="com/webapp/daos/daoimpl/MulticityCountry.xml" />
+		<mapper resource="com/webapp/daos/daoimpl/MulticityCityRegion.xml" />
+		<mapper resource="com/webapp/daos/daoimpl/MulticityUserRegion.xml" />
+		<mapper resource="com/webapp/daos/daoimpl/SurgePrice.xml" />
+		<mapper resource="com/webapp/daos/daoimpl/DriverCarType.xml" />
+		<mapper resource="com/webapp/daos/daoimpl/CcavenueRsaRequest.xml" />
+		<mapper resource="com/webapp/daos/daoimpl/CcavenueResponseLog.xml" />
+		<mapper resource="com/webapp/daos/daoimpl/CcavenueRsaOrder.xml" />
+		<mapper resource="com/webapp/daos/daoimpl/Tax.xml" />
+		<mapper resource="com/webapp/daos/daoimpl/TourTax.xml" />
+		<mapper resource="com/webapp/daos/daoimpl/RentalPackage.xml" />
+		<mapper resource="com/webapp/daos/daoimpl/RentalPackageFare.xml" /> 
+		<mapper resource="com/webapp/daos/daoimpl/DriverReferralCodeLog.xml" />
+		<mapper resource="com/webapp/daos/daoimpl/TourReferrerBenefit.xml" />
+		<mapper resource="com/webapp/daos/daoimpl/FavouriteLocations.xml" />
+		<mapper resource="com/webapp/daos/daoimpl/ExportAccess.xml" />
+		<mapper resource="com/webapp/daos/daoimpl/DriverLoggedInTime.xml" />
+		<mapper resource="com/webapp/daos/daoimpl/DriverVendors.xml" />
+		<mapper resource="com/webapp/daos/daoimpl/CarVendors.xml" />
+		<mapper resource="com/webapp/daos/daoimpl/AirportRegion.xml" />
+		<mapper resource="com/webapp/daos/daoimpl/TempAirportRegion.xml" />
+		<mapper resource="com/webapp/daos/daoimpl/CitySurge.xml" />
+		<mapper resource="com/webapp/daos/daoimpl/UserLoginOtp.xml" />
+		<mapper resource="com/webapp/daos/daoimpl/UserAccount.xml" />
+		<mapper resource="com/webapp/daos/daoimpl/UserAccountLogs.xml" /> 
+		<mapper resource="com/webapp/daos/daoimpl/EncashRequests.xml" /> 
+		<mapper resource="com/webapp/daos/daoimpl/DriverWalletSettings.xml" />
+		<mapper resource="com/webapp/daos/daoimpl/UserAccountLogDetails.xml" />
+		<mapper resource="com/webapp/daos/daoimpl/VendorCarFare.xml" />
+		<mapper resource="com/webapp/daos/daoimpl/VendorAdminSettings.xml" />
+		<mapper resource="com/webapp/daos/daoimpl/VendorCarType.xml" />
+		<mapper resource="com/webapp/daos/daoimpl/CarIcon.xml" />
+		<mapper resource="com/webapp/daos/daoimpl/VendorAirportRegion.xml" />
+		<mapper resource="com/webapp/daos/daoimpl/VendorAirportRegionCarFare.xml" />
+		<mapper resource="com/webapp/daos/daoimpl/SubscriptionPackage.xml" />
+		<mapper resource="com/webapp/daos/daoimpl/DriverSubscriptionPackageHistory.xml" />
+		<mapper resource="com/webapp/daos/daoimpl/DriverTransactionHistory.xml" />
+		<mapper resource="com/webapp/daos/daoimpl/Service.xml" />
+		<mapper resource="com/webapp/daos/daoimpl/Category.xml" />
+		<mapper resource="com/webapp/daos/daoimpl/VendorServiceCategory.xml" />
+		<mapper resource="com/webapp/daos/daoimpl/VendorProduct.xml" />
+		<mapper resource="com/webapp/daos/daoimpl/VendorSubscriber.xml" />
+		<mapper resource="com/webapp/daos/daoimpl/ServiceType.xml" />
+		<mapper resource="com/webapp/daos/daoimpl/OrderSetting.xml" />
+		<mapper resource="com/webapp/daos/daoimpl/DriverSubscriber.xml" />
+		<mapper resource="com/webapp/daos/daoimpl/Order.xml" />
+		<mapper resource="com/webapp/daos/daoimpl/OrderItem.xml" />
+		<mapper resource="com/webapp/daos/daoimpl/VendorFeed.xml" />
+		<mapper resource="com/webapp/daos/daoimpl/VendorFeedLike.xml" />
+		<mapper resource="com/webapp/daos/daoimpl/VendorFeedView.xml" />
+		<mapper resource="com/webapp/daos/daoimpl/VendorStore.xml" />
+		<mapper resource="com/webapp/daos/daoimpl/VendorStoreTiming.xml" />
+		<mapper resource="com/webapp/daos/daoimpl/DriverOrderRequest.xml" />
+		<mapper resource="com/webapp/daos/daoimpl/DeliveryAddress.xml" />
+		<mapper resource="com/webapp/daos/daoimpl/VendorMonthlySubscriptionHistory.xml" />
+		<mapper resource="com/webapp/daos/daoimpl/VendorAppVersion.xml" />
+		<mapper resource="com/webapp/daos/daoimpl/UnifiedHistory.xml" />
+		<mapper resource="com/webapp/daos/daoimpl/UrlSubCategory.xml" />
+		<mapper resource="com/webapp/daos/daoimpl/ProductCategory.xml" />
+		<mapper resource="com/webapp/daos/daoimpl/FeedSettings.xml" />
+		<mapper resource="com/webapp/daos/daoimpl/FeedFare.xml"/>
+		<mapper resource="com/webapp/daos/daoimpl/Cart.xml"/>
+		<mapper resource="com/webapp/daos/daoimpl/OfflineOrder.xml"/>
+		<mapper resource="com/webapp/daos/daoimpl/OfflineOrderItem.xml"/>
+		<mapper resource="com/webapp/daos/daoimpl/Customer.xml"/>
+		<mapper resource="com/webapp/daos/daoimpl/VendorProductCategoryAssoc.xml"/>
+		<mapper resource="com/webapp/daos/daoimpl/ProductSubCategory.xml"/>
+		<mapper resource="com/webapp/daos/daoimpl/Brand.xml"/>
+		<mapper resource="com/webapp/daos/daoimpl/UnitOfMeasure.xml"/>
+		<mapper resource="com/webapp/daos/daoimpl/ProductTemplate.xml"/>
+		<mapper resource="com/webapp/daos/daoimpl/ProductVariant.xml"/>
+		<mapper resource="com/webapp/daos/daoimpl/ProductImage.xml"/>
+		<mapper resource="com/webapp/daos/daoimpl/VendorStoreSubVendor.xml" />
+		<mapper resource="com/webapp/daos/daoimpl/PhonepePayment.xml" />
+		<mapper resource="com/webapp/daos/daoimpl/AppointmentSetting.xml" />
+		<mapper resource="com/webapp/daos/daoimpl/Appointment.xml" />
+		<mapper resource="com/webapp/daos/daoimpl/WhmgmtRack.xml"/>
+		<mapper resource="com/webapp/daos/daoimpl/WhmgmtRackSlot.xml"/>
+		<mapper resource="com/webapp/daos/daoimpl/WhmgmtRackCategory.xml"/>
+		<mapper resource="com/webapp/daos/daoimpl/WhmgmtRackSlotBooking.xml"/>
+		<mapper resource="com/webapp/daos/daoimpl/BusinessInterestedUsers.xml"/>
+		<mapper resource="com/webapp/daos/daoimpl/DriverSubscriptionExtensionLogs.xml" />
+		<mapper resource="com/webapp/daos/daoimpl/VendorFeedComment.xml"/>
+		<mapper resource="com/webapp/daos/daoimpl/QrProfile.xml"/>
+		<mapper resource="com/webapp/daos/daoimpl/PaymentOrder.xml"/>
+		
+	</mappers>
+	
+</configuration>

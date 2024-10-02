@@ -1,0 +1,298 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.webapp.daos.ProductTemplateDao">
+
+	<resultMap id="ProductTemplateResultMap" type="ProductTemplateModel">
+	
+		<result property="productTemplateId" column="product_template_id" />
+		<result property="productName" column="product_name" />
+		<result property="productInformation" column="product_information" />
+		<result property="productSpecification" column="product_specification" />
+		<result property="brandId" column="brand_id" />
+		<result property="productCategoryId" column="product_category_id" />
+		<result property="taxApplicable" column="tax_applicable" />
+		<result property="isProductToAll" column="is_product_to_all" />
+		<result property="hsnCode" column="hsn_code" />
+		<result property="uomId" column="uom_id" />
+		<result property="isActive" column="is_active" />
+		<result property="isDeleted" column="is_deleted" />
+		<result property="productImage" column="product_image" />
+		<result property="productSubCategoryId" column="product_sub_category_id" />
+		
+		<result property="createdBy" column="created_by" />
+		<result property="createdAt" column="created_at" />
+		<result property="updatedBy" column="updated_by" />
+		<result property="updatedAt" column="updated_at" />
+		
+		<result property="brandName" column="brandName" />
+		<result property="productCategory" column="productCategory" />
+		<result property="uomName" column="uomName" />
+	
+	</resultMap>
+	
+	<sql id="ProductTemplateColumns">
+		pt.product_template_id, pt.product_name, pt.product_information,
+		pt.product_specification, pt.brand_id, pt.product_category_id,
+		pt.tax_applicable,pt.is_product_to_all, pt.hsn_code, pt.uom_id, pt.is_active, 
+		pt.is_deleted, pt.created_by, pt.created_at, pt.updated_by, pt.updated_at,
+		pt.product_image, pt.product_sub_category_id
+	</sql>
+	
+	<select id="isProductNameExists" resultType="boolean">
+		
+		SELECT
+			(count(*)>0)
+		FROM
+			product_templates pt
+		WHERE
+			pt.product_name = #{productName}
+		<if test="productTemplateId!=null">
+		AND
+			pt.product_template_id != #{productTemplateId}
+		</if>
+		
+	</select>
+	
+	<insert id="insertProductTemplate" parameterType="ProductTemplateModel">
+	
+		INSERT INTO product_templates
+			(
+				product_template_id, product_name, product_information, product_specification, 
+				brand_id, product_category_id, tax_applicable, is_product_to_all, 
+				hsn_code, uom_id, is_active, is_deleted, created_by, 
+				created_at, updated_by, updated_at, product_image, product_sub_category_id
+			)
+		VALUES 
+			(
+				#{productTemplateId}, #{productName}, #{productInformation}, #{productSpecification}, 
+				#{brandId}, #{productCategoryId}, #{taxApplicable}, #{isProductToAll}, 
+				#{hsnCode}, #{uomId}, #{isActive}, #{isDeleted}, #{createdBy}, 
+				#{createdAt}, #{updatedBy}, #{updatedAt}, #{productImage}, #{productSubCategoryId}
+			);
+	
+	</insert>
+	
+	<select id="getProductTemplateDetailsByProductTemplateId" resultMap="ProductTemplateResultMap">
+		
+		SELECT
+			<include refid="ProductTemplateColumns"></include>
+		FROM
+			product_templates pt
+		WHERE
+			pt.product_template_id = #{productTemplateId}
+		
+	</select>
+	
+	<update id="updateProductTemplate" parameterType="ProductTemplateModel">
+		
+		UPDATE 
+			product_templates
+		SET 
+			product_name = #{productName},
+			product_information = #{productInformation},
+			product_specification = #{productSpecification},
+			brand_id = #{brandId},
+			product_category_id = #{productCategoryId},
+			tax_applicable =  #{taxApplicable},
+			is_product_to_all = #{isProductToAll},
+			hsn_code = #{hsnCode}, 
+			uom_id = #{uomId},
+			product_image = #{productImage},
+			product_sub_category_id = #{productSubCategoryId},
+			updated_by = #{updatedBy}, 
+			updated_at = #{updatedAt}
+		WHERE 
+			product_template_id = #{productTemplateId}
+		
+	</update>
+	
+	<select id="getProductTemplatesCount" resultType="int">
+	
+		SELECT
+			count(pt.product_template_id)
+		FROM
+			product_templates pt
+		WHERE
+			pt.created_at &gt;= #{startDatelong}
+		AND
+			pt.created_at &lt;= #{endDatelong}
+		<if test="userIdList!=null">
+		AND	
+			pt.created_by IN
+				<foreach item="item" index="index" collection="userIdList" open="(" separator="," close=")">
+					#{item}
+				</foreach>
+		</if>
+	</select>
+	
+	<select id="getProductTemplateSearch" resultMap="ProductTemplateResultMap">
+	
+		SELECT
+			<include refid="ProductTemplateColumns"></include>,
+				b.brand_name as brandName,pc.product_category_name as productCategory,
+				uom.uom_name as uomName
+		FROM
+			product_templates pt
+		INNER JOIN brands b ON b.brand_id = pt.brand_id
+		INNER JOIN product_category pc ON  pc.product_category_id = pt.product_category_id 
+		INNER JOIN unit_of_measures uom ON uom.uom_id = pt.uom_id	
+		WHERE
+			(
+				pt.product_name ilike #{searchKey}
+			OR
+				pt.product_information ilike #{searchKey}
+			OR
+				b.brand_name ilike #{searchKey}
+			OR
+				b.brand_description ilike #{searchKey}	
+			)
+		<if test="startDatelong>0">
+		AND
+			pt.created_at &gt;= #{startDatelong}
+		AND
+			pt.created_at &lt;= #{endDatelong}
+		</if>
+		
+		<if test="userIdList!=null">
+		AND	
+			pt.created_by IN
+				<foreach item="item" index="index" collection="userIdList" open="(" separator="," close=")">
+					#{item}
+				</foreach>
+		</if>
+		
+		<if test="length>0">
+		ORDER BY pt.updated_at DESC
+		LIMIT #{length} OFFSET #{start}
+		</if>
+		
+		<if test="length==0">
+		ORDER BY pt.product_name ASC
+		</if>
+
+	</select>
+	
+	<select id="getProductTemplateSearchCount" resultType="int">
+	
+		SELECT
+			count(pt.product_template_id)
+		FROM
+			product_templates pt
+		INNER JOIN brands b ON b.brand_id = pt.brand_id
+		INNER JOIN product_category pc ON  pc.product_category_id = pt.product_category_id
+		INNER JOIN unit_of_measures uom ON uom.uom_id = pt.uom_id
+		
+		WHERE
+			(
+				pt.product_name ilike #{searchKey}
+			OR
+				pt.product_information ilike #{searchKey}
+			OR
+				b.brand_name ilike #{searchKey}
+			OR
+				b.brand_description ilike #{searchKey}	
+			)
+		<if test="startDatelong>0">
+		AND
+			pt.created_at &gt;= #{startDatelong}
+		AND
+			pt.created_at &lt;= #{endDatelong}
+		</if>
+		
+		<if test="userIdList!=null">
+		AND	
+			pt.created_by IN
+				<foreach item="item" index="index" collection="userIdList" open="(" separator="," close=")">
+					#{item}
+				</foreach>
+		</if>
+	
+	</select>
+	
+	<update id="updateProductTemplateStatus" parameterType="ProductTemplateModel">
+	
+		UPDATE 
+			product_templates
+		SET
+			is_active = #{isActive},
+			is_deleted = #{isDeleted}
+		WHERE
+			product_template_id = #{productTemplateId}
+	
+	</update>
+	
+	<select id="getProductTemplateList" resultMap="ProductTemplateResultMap">
+	
+		SELECT
+			<include refid="ProductTemplateColumns"></include>,
+			b.brand_name as brandName,pc.product_category_name as productCategory,
+			uom.uom_name as uomName
+		FROM
+			product_templates pt
+		INNER JOIN brands b ON b.brand_id = pt.brand_id
+		INNER JOIN product_category pc ON  pc.product_category_id = pt.product_category_id 
+		INNER JOIN unit_of_measures uom ON uom.uom_id = pt.uom_id	
+		WHERE
+			pt.is_active = true
+		AND
+			pt.is_deleted = false	
+		<if test="userIdList!=null">
+		AND	
+			pt.created_by IN
+				<foreach item="item" index="index" collection="userIdList" open="(" separator="," close=")">
+					#{item}
+				</foreach>
+		</if>
+		
+		<if test="brandId!=null">
+		AND	
+			pt.brand_id  = #{brandId}
+		</if>
+		
+		<if test="productCategoryId!=null">
+		AND	
+			pt.product_category_id  = #{productCategoryId}
+		</if>
+		
+		ORDER BY pt.product_name ASC
+
+	</select>
+	
+	<select id="isProductNameAndUomIdExists" resultType="boolean">
+		
+		SELECT
+			(count(*)>0)
+		FROM
+			product_templates pt
+		WHERE
+			UPPER(pt.product_name) = #{productName}
+		AND
+			pt.uom_id = #{uomId}	
+		<if test="productTemplateId!=null">
+		AND
+			pt.product_template_id != #{productTemplateId}
+		</if>
+		
+	</select>
+	
+	<select id="isProductNameAndUomIdListExists" resultType="boolean">
+		
+		SELECT
+			(count(*)>0)
+		FROM
+			product_templates pt
+		WHERE
+			UPPER(pt.product_name) = #{productName}
+			
+		<if test="uomList!=null">
+		AND	
+			pt.uom_id IN
+				<foreach item="item" index="index" collection="uomList" open="(" separator="," close=")">
+					#{item}::Integer
+				</foreach>
+		</if>
+		
+	</select>
+	
+</mapper>

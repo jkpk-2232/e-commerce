@@ -1,0 +1,233 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.webapp.daos.VendorCarFareDao">
+
+	<resultMap id="vendorCarFareResultMap" type="VendorCarFareModel" >
+	    
+	    <result property="vendorCarFareId" column="vendor_car_fare_id" />
+	    <result property="vendorId" column="vendor_id" />
+	    <result property="multicityCityRegionId" column="multicity_city_region_id" />
+		<result property="multicityCountryId" column="multicity_country_id" />
+		<result property="carTypeId" column="car_type_id" />
+		<result property="initialFare" column="initial_fare" />
+		<result property="perKmFare" column="per_km_fare" />
+		<result property="perMinuteFare" column="per_minute_fare" />
+		<result property="bookingFees" column="booking_fees" />
+		<result property="minimumFare" column="minimum_fare" />
+		<result property="discount" column="discount" />
+		<result property="driverPayablePercentage" column="driver_payable_percentage" />
+		<result property="freeDistance" column="free_distance" />
+		<result property="fareAfterSpecificKm" column="fare_after_specific_km" />
+		<result property="kmToIncreaseFare" column="km_to_increase_fare" />
+		<result property="airportRegionId" column="airport_region_id" />
+		<result property="airportBookingType" column="airport_booking_type" />
+		
+		<result property="carType" column="car_type" />
+		<result property="isFixedFare" column="is_fixed_fare" />
+		<result property="isDayFare" column="is_day_fare" />
+		
+		<result property="serviceTypeId" column="service_type_id" />
+		
+		<result property="createdAt" column="created_at" />
+		<result property="updatedAt" column="updated_at" />
+		<result property="createdBy" column="created_by" />
+		<result property="updatedBy" column="updated_by" />
+		
+	</resultMap>
+	
+	<sql id="vendorCarFareFields">
+		vcf.vendor_car_fare_id, vcf.vendor_id, vcf.multicity_city_region_id, vcf.multicity_country_id, 
+        vcf.car_type_id, vcf.initial_fare, vcf.per_km_fare, vcf.per_minute_fare, vcf.booking_fees, 
+        vcf.minimum_fare, vcf.discount, vcf.driver_payable_percentage, vcf.free_distance, 
+        vcf.fare_after_specific_km, vcf.km_to_increase_fare, vcf.airport_region_id, 
+        vcf.airport_booking_type, vcf.is_fixed_fare, vcf.is_day_fare, 
+        vcf.created_by, vcf.created_at, vcf.updated_by, vcf.updated_at, vcf.service_type_id
+	</sql>
+	
+	<insert id="addVendorCarFare" parameterType="VendorCarFareModel" useGeneratedKeys="false">
+	
+		INSERT INTO vendor_car_fare
+				(
+		            vendor_car_fare_id, vendor_id, multicity_city_region_id, multicity_country_id, 
+		            car_type_id, initial_fare, per_km_fare, per_minute_fare, booking_fees, 
+		            minimum_fare, discount, driver_payable_percentage, free_distance, 
+		            fare_after_specific_km, km_to_increase_fare,
+		            created_by, created_at, updated_by, updated_at, service_type_id
+		        )
+	    VALUES 	(
+	    			#{vendorCarFareId}, #{vendorId}, #{multicityCityRegionId}, #{multicityCountryId}, 
+	    			#{carTypeId}, #{initialFare}, #{perKmFare}, #{perMinuteFare}, #{bookingFees}, 
+	    			#{minimumFare},#{discount}, #{driverPayablePercentage}, #{freeDistance}, 
+	    			#{fareAfterSpecificKm}, #{kmToIncreaseFare}, 
+	    			#{createdBy}, #{createdAt}, #{updatedBy}, #{updatedAt}, #{serviceTypeId}
+	            )
+	
+	</insert>
+	
+	<insert id="batchInsert" parameterType="java.util.List">
+	
+		INSERT INTO vendor_car_fare
+				(
+		            vendor_car_fare_id, vendor_id, multicity_city_region_id, multicity_country_id, 
+		            car_type_id, initial_fare, per_km_fare, per_minute_fare, booking_fees, 
+		            minimum_fare, discount, driver_payable_percentage, free_distance, 
+		            fare_after_specific_km, km_to_increase_fare, 
+		            created_by, created_at, updated_by, updated_at, service_type_id
+		        )
+	    VALUES 	
+				<foreach collection="list" item="modal"  separator=",">
+				(	
+					#{modal.vendorCarFareId}, #{modal.vendorId}, #{modal.multicityCityRegionId}, #{modal.multicityCountryId}, 
+	    			#{modal.carTypeId}, #{modal.initialFare}, #{modal.perKmFare}, #{modal.perMinuteFare}, #{modal.bookingFees}, 
+	    			#{modal.minimumFare},#{modal.discount}, #{modal.driverPayablePercentage}, #{modal.freeDistance}, 
+	    			#{modal.fareAfterSpecificKm}, #{modal.kmToIncreaseFare},
+	    			#{modal.createdBy}, #{modal.createdAt}, #{modal.updatedBy}, #{modal.updatedAt}, #{modal.serviceTypeId}
+				)
+				</foreach>
+				
+	</insert>
+
+	<select id="getVendorCarFare" parameterType="String" resultMap="vendorCarFareResultMap">
+	
+		SELECT
+			<include refid="vendorCarFareFields"></include>,
+			ct.car_type
+		FROM 
+			vendor_car_fare vcf
+		INNER JOIN car_type ct ON ct.car_type_id = vcf.car_type_id
+		WHERE 
+			vcf.vendor_id = #{vendorId}
+		AND
+			vcf.service_type_id = #{serviceTypeId}
+	    
+	</select>
+	
+	<select id="getVendorCarFareById" parameterType="String" resultMap="vendorCarFareResultMap">
+	
+		SELECT
+			<include refid="vendorCarFareFields"></include>,
+			ct.car_type
+		FROM 
+			vendor_car_fare vcf
+		INNER JOIN car_type ct ON ct.car_type_id = vcf.car_type_id
+		WHERE 
+			vcf.car_type_id = #{carTypeId}
+		AND
+			vcf.vendor_id = #{vendorId}
+		AND
+			vcf.service_type_id = #{serviceTypeId}
+	    
+	</select>
+	
+	<select id="getVendorCarFareDetailsByRegionCountryAndId" parameterType="map" resultMap="vendorCarFareResultMap">
+	
+		SELECT
+			<include refid="vendorCarFareFields"></include>,
+			ct.car_type
+		FROM 
+			vendor_car_fare vcf
+		INNER JOIN car_type ct ON ct.car_type_id = vcf.car_type_id
+		WHERE 
+			vcf.car_type_id = #{carTypeId}
+		AND
+			vcf.vendor_id = #{vendorId}
+		AND
+			vcf.multicity_city_region_id = #{multicityCityRegionId}
+		AND
+			vcf.multicity_country_id = #{multicityCountryId}
+		AND
+			vcf.service_type_id = #{serviceTypeId}
+	    
+	</select>
+	
+	<update id="updateVendorCarFareForMultiCity" parameterType="VendorCarFareModel" >
+	
+		UPDATE 
+			vendor_car_fare 
+		SET 
+			initial_fare = #{initialFare},
+			per_km_fare = #{perKmFare},
+			per_minute_fare = #{perMinuteFare},
+			booking_fees = #{bookingFees},
+			minimum_fare = #{minimumFare},
+			discount = #{discount},
+			driver_payable_percentage = #{driverPayablePercentage},
+			free_distance = #{freeDistance},
+			fare_after_specific_km = #{fareAfterSpecificKm}, 
+			km_to_increase_fare = #{kmToIncreaseFare},
+			updated_at = #{updatedAt},
+			updated_by = #{updatedBy}
+		WHERE  
+			vendor_car_fare_id = #{vendorCarFareId} 
+			
+	</update>
+	
+	<delete id="deleteRegionFare" parameterType="VendorCarFareModel">
+	
+		DELETE FROM vendor_car_fare WHERE multicity_city_region_id = #{multicityCityRegionId} AND service_type_id = #{serviceTypeId}
+	
+	</delete>
+	
+	<select id="isEntryExist" parameterType="String" resultType="boolean">
+	
+		SELECT
+			(count(*)>0)
+		FROM
+			vendor_car_fare
+		WHERE
+			vendor_id = #{vendorId}
+		AND
+			multicity_city_region_id = #{multicityCityRegionId}
+		AND
+			service_type_id = #{serviceTypeId}
+	
+	</select>
+
+	<update id="deleteVendorCarFareByRegionIdAndCarTypeList" parameterType="map">
+	
+		DELETE FROM 
+			vendor_car_fare
+		WHERE
+			multicity_city_region_id = #{multicityCityRegionId}
+		AND  
+		    car_type_id IN
+	    	<foreach item="item" index="index" collection="deleteList" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		AND
+			service_type_id = #{serviceTypeId}
+		    
+	</update>
+	
+	<select id="getVendorCarFareListByRegionIdAndVendorId" parameterType="map" resultMap="vendorCarFareResultMap">
+	
+		SELECT
+			<include refid="vendorCarFareFields"></include>,
+			ct.car_type
+		FROM 
+			vendor_car_fare vcf
+		INNER JOIN car_type ct ON ct.car_type_id = vcf.car_type_id
+		WHERE 
+			vcf.vendor_id = #{vendorId}
+		AND
+			vcf.multicity_city_region_id = #{multicityCityRegionId}
+		AND
+			vcf.service_type_id = #{serviceTypeId}
+	    
+	</select>
+	
+	<update id="deleteExistingVendorCarFare" parameterType="VendorCarFareModel">
+	
+		DELETE FROM 
+			vendor_car_fare
+		WHERE
+			multicity_city_region_id = #{multicityCityRegionId}
+		AND  
+			vendor_id = #{vendorId}
+		AND
+			service_type_id = #{serviceTypeId}
+			
+	</update>
+	
+</mapper> 

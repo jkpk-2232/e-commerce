@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.webapp.daos.VendorServiceCategoryDao">
+
+	<resultMap id="VendorServiceCategoryResultMap" type="VendorServiceCategoryModel">
+	
+		<result property="vendorServiceCategoryId" column="vendor_service_category_id" />
+		<result property="vendorId" column="vendor_id" />
+		<result property="serviceId" column="service_id" />
+		<result property="categoryId" column="category_id" />
+		
+		<result property="createdBy" column="created_by" />
+		<result property="createdAt" column="created_at" />
+		<result property="updatedBy" column="updated_by" />
+		<result property="updatedAt" column="updated_at" />
+		
+		<result property="serviceTypeId" column="service_type_id" />
+		<result property="serviceTypeName" column="service_type_name" />
+		<result property="serviceName" column="service_name" />
+		<result property="categoryName" column="category_name" />
+		
+	</resultMap>
+	
+	<sql id="VendorServiceCategoryColumns">
+		vsc.vendor_service_category_id, vsc.vendor_id, vsc.service_id, vsc.category_id, 
+		vsc.created_by, vsc.created_at, vsc.updated_by, vsc.updated_at
+	</sql>
+	
+	<insert id="insertVendorServiceCategory" parameterType="VendorServiceCategoryModel">
+	
+		INSERT INTO vendor_service_categories
+			(
+				vendor_service_category_id, vendor_id, service_id, category_id, 
+				created_by, created_at, updated_by, updated_at
+			)
+		VALUES 
+			(
+				#{vendorServiceCategoryId}, #{vendorId}, #{serviceId}, #{categoryId}, 
+				#{createdBy}, #{createdAt}, #{updatedBy}, #{updatedAt}
+			);
+	
+	</insert>
+	
+	<delete id="deleteVendorServiceCategoryByVendorId" parameterType="VendorServiceCategoryModel">
+		
+		DELETE FROM 
+			vendor_service_categories 
+		WHERE 
+			vendor_id = #{vendorId}
+			
+	</delete>
+	
+	<select id="getVendorServiceCategoryByVendorId" resultMap="VendorServiceCategoryResultMap">
+	
+		SELECT
+			<include refid="VendorServiceCategoryColumns"></include>,
+			st.service_type_id, st.service_type_name, s.service_name,
+			c.category_name
+		FROM 
+			vendor_service_categories vsc
+		INNER JOIN services s ON vsc.service_id = s.service_id
+		INNER JOIN categories c ON vsc.category_id = c.category_id
+		INNER JOIN service_types st ON st.service_type_id = s.service_type_id
+		WHERE
+			vsc.vendor_id = #{vendorId}
+	
+	</select>
+	
+</mapper>

@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.webapp.daos.VendorMonthlySubscriptionHistoryDao">
+
+	<resultMap id="VendorMonthlySubscriptionHistoryResultMap" type="VendorMonthlySubscriptionHistoryModel">
+	
+		<result property="vendorMonthlySubscriptionHistoryId" column="vendor_monthly_subscription_history_id" />
+		<result property="vendorMonthlySubscriptionHistorySerialId" column="vendor_monthly_subscription_history_serial_id" />
+		<result property="vendorId" column="vendor_id" />
+		<result property="vendorMonthlySubscriptionFee" column="vendor_monthly_subscription_fee" />
+		<result property="paymentType" column="payment_type" />
+		<result property="transactionId" column="transaction_id" />
+		<result property="startDateTime" column="start_date_time" />
+		<result property="endDateTime" column="end_date_time" />
+		<result property="isFreeSubscriptionEntry" column="is_free_subscription_entry" />
+		<result property="isVendorSubscriptionCurrentActive" column="is_vendor_subscription_current_active" />
+		
+		<result property="vendorName" column="vendorName" />
+
+		<result property="createdBy" column="created_by" />
+		<result property="createdAt" column="created_at" />
+		<result property="updatedBy" column="updated_by" />
+		<result property="updatedAt" column="updated_at" />
+		
+	</resultMap>
+	
+	<sql id="VendorMonthlySubscriptionHistoryColumns">
+		vmsh.vendor_monthly_subscription_history_id, vmsh.vendor_monthly_subscription_history_serial_id,
+		vmsh.vendor_id, vmsh.vendor_monthly_subscription_fee, vmsh.payment_type, 
+		vmsh.transaction_id, vmsh.start_date_time, vmsh.end_date_time, 
+		vmsh.created_by, vmsh.created_at, vmsh.updated_by, vmsh.updated_at,
+		vmsh.is_free_subscription_entry, vmsh.is_vendor_subscription_current_active
+	</sql>
+	
+	<insert id="insertVendorMonthlySubscriptionHistory" parameterType="VendorMonthlySubscriptionHistoryModel">
+	
+		INSERT INTO vendor_monthly_subscription_history
+			(
+				vendor_monthly_subscription_history_id, vendor_id, 
+				vendor_monthly_subscription_fee, payment_type, 
+				transaction_id, start_date_time, end_date_time,
+				created_by, created_at, updated_by, updated_at,
+				is_free_subscription_entry, is_vendor_subscription_current_active
+			)
+		VALUES 
+			(
+				#{vendorMonthlySubscriptionHistoryId}, #{vendorId}, 
+				#{vendorMonthlySubscriptionFee}, #{paymentType}, 
+				#{transactionId}, #{startDateTime}, #{endDateTime}, 
+				#{createdBy}, #{createdAt}, #{updatedBy}, #{updatedAt},
+				#{isFreeSubscriptionEntry}, #{isVendorSubscriptionCurrentActive}
+			);
+	
+	</insert>
+	
+	<select id="getVendorMonthlySubscriptionHistoryCount" resultType="int">
+		
+		SELECT
+			count(vmsh.vendor_monthly_subscription_history_id)
+		FROM
+			vendor_monthly_subscription_history vmsh
+		INNER JOIN user_info vui ON vui.user_id = vmsh.vendor_id
+		WHERE
+			vmsh.created_at &gt;= #{startDatelong}
+		AND
+			vmsh.created_at &lt;= #{endDatelong}
+		<if test="vendorId!=null">
+		AND
+			vmsh.vendor_id = #{vendorId}	
+		</if>	
+	
+	</select>
+	
+	<select id="getVendorMonthlySubscriptionHistorySearch" resultMap="VendorMonthlySubscriptionHistoryResultMap">
+		
+		SELECT
+			<include refid="VendorMonthlySubscriptionHistoryColumns"></include>,
+			concat(vui.first_name,' ',vui.last_name) AS vendorName
+		FROM
+			vendor_monthly_subscription_history vmsh
+		INNER JOIN user_info vui ON vui.user_id = vmsh.vendor_id
+		WHERE
+			(
+				vui.first_name ilike #{searchKey}
+			OR
+				vui.last_name ilike #{searchKey}
+			OR
+				concat(vui.first_name,' ',vui.last_name ) ilike #{searchKey}
+			OR
+				vui.vendor_brand_name ilike #{searchKey}
+			)
+		<if test="startDatelong>0">
+		AND
+			vmsh.created_at &gt;= #{startDatelong}
+		AND
+			vmsh.created_at &lt;= #{endDatelong}
+		</if>
+		<if test="vendorId!=null">
+		AND
+			vmsh.vendor_id = #{vendorId}	
+		</if>	
+		ORDER BY vmsh.updated_at DESC
+		<if test="length>0">
+		LIMIT #{length} OFFSET #{start}
+		</if>	
+	
+	</select>
+	
+	<select id="getVendorMonthlySubscriptionHistorySearchCount" resultType="int">
+		
+		SELECT
+			count(vmsh.vendor_monthly_subscription_history_id)
+		FROM
+			vendor_monthly_subscription_history vmsh
+		INNER JOIN user_info vui ON vui.user_id = vmsh.vendor_id
+		WHERE
+			(
+				vui.first_name ilike #{searchKey}
+			OR
+				vui.last_name ilike #{searchKey}
+			OR
+				concat(vui.first_name,' ',vui.last_name ) ilike #{searchKey}
+			OR
+				vui.vendor_brand_name ilike #{searchKey}
+			)
+		<if test="startDatelong>0">
+		AND
+			vmsh.created_at &gt;= #{startDatelong}
+		AND
+			vmsh.created_at &lt;= #{endDatelong}
+		</if>
+		<if test="vendorId!=null">
+		AND
+			vmsh.vendor_id = #{vendorId}	
+		</if>	
+	
+	</select>
+	
+	<select id="getLastVendorMonthlySubscriptionHistoryEntry" resultMap="VendorMonthlySubscriptionHistoryResultMap">
+		
+		SELECT
+			<include refid="VendorMonthlySubscriptionHistoryColumns"></include>,
+			concat(vui.first_name,' ',vui.last_name) AS vendorName
+		FROM
+			vendor_monthly_subscription_history vmsh
+		INNER JOIN user_info vui ON vui.user_id = vmsh.vendor_id
+		WHERE
+			vmsh.vendor_id = #{vendorId}	
+		ORDER BY vmsh.created_at DESC LIMIT 1
+	
+	</select>
+	
+	<update id="updateVendorSubscriptionCurrentActive" parameterType="VendorMonthlySubscriptionHistoryModel">
+		
+		UPDATE
+			vendor_monthly_subscription_history
+		SET
+			is_vendor_subscription_current_active = #{isVendorSubscriptionCurrentActive}
+		WHERE
+			vendor_monthly_subscription_history_id = #{vendorMonthlySubscriptionHistoryId}
+	
+	</update>
+	
+	<update id="updateVendorSubscriptionAccountExpired" parameterType="VendorMonthlySubscriptionHistoryModel">
+		
+		<foreach collection="updateVendorMonthlySubscriptionToExpiredList" item="model" separator=";">
+			
+			UPDATE
+				vendor_monthly_subscription_history
+			SET
+				is_vendor_subscription_current_active = #{model.isVendorSubscriptionCurrentActive}
+			WHERE
+				vendor_monthly_subscription_history_id = #{model.vendorMonthlySubscriptionHistoryId}
+		
+		</foreach>
+		
+	</update>
+	
+</mapper>

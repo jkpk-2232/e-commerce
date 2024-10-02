@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.webapp.daos.WhmgmtRackSlotDao">
+	
+	<resultMap id="WhmgmtRackSlotMap" type="WhmgmtRackSlotModel">
+			
+			<result property="slotId" column="slotId" />
+			<result property="slotNumber" column="slotNumber" />
+			<result property="slotStatus" column="slotStatus" />
+			<result property="productId" column="productId_id" />
+			<result property="rackId" column="rackId_id" />
+			
+	</resultMap>
+	
+	<sql id="WhmgmtRackSlotColumns">
+		"wrs"."slotId", "wrs"."slotNumber", "wrs"."slotStatus", "wrs"."productId_id",
+		"wrs"."rackId_id"
+	</sql>
+	
+	<insert id="insertSlots" parameterType="WhmgmtRackSlotModel">
+	
+		INSERT INTO whmgmt_rackslots
+			(
+				"slotId", "slotNumber", "slotStatus", "productId_id",
+				"rackId_id"
+			)
+		VALUES 
+		<foreach collection="whmgmtRackSlotList" item="model" separator=","> 
+			(
+				#{model.slotId}, #{model.slotNumber}, #{model.slotStatus}, #{model.productId}, 
+				#{model.rackId}
+			)
+		</foreach>
+	
+	</insert>
+	
+	
+</mapper>

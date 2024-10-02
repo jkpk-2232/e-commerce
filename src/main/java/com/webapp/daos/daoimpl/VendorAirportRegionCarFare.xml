@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.webapp.daos.VendorAirportRegionCarFareDao">
+
+	<resultMap id="VendorAirportRegionCarFareResultMap" type="VendorAirportRegionCarFareModel" >
+	    
+	    <result property="vendorAirportRegionCarFareId" column="vendor_airport_region_car_fare_id" />
+	    <result property="vendorAirportRegionId" column="vendor_airport_region_id" />
+	    <result property="vendorId" column="vendor_id" />
+	    <result property="airportRegionId" column="airport_region_id" />
+		<result property="airportBookingType" column="airport_booking_type" />
+	    <result property="multicityCityRegionId" column="multicity_city_region_id" />
+		<result property="multicityCountryId" column="multicity_country_id" />
+		
+		<result property="carTypeId" column="car_type_id" />
+		<result property="initialFare" column="initial_fare" />
+		<result property="perKmFare" column="per_km_fare" />
+		<result property="perMinuteFare" column="per_minute_fare" />
+		<result property="freeDistance" column="free_distance" />
+		<result property="fareAfterSpecificKm" column="fare_after_specific_km" />
+		<result property="kmToIncreaseFare" column="km_to_increase_fare" />
+		
+		<result property="isActive" column="is_active" />
+		<result property="createdAt" column="created_at" />
+		<result property="updatedAt" column="updated_at" />
+		<result property="createdBy" column="created_by" />
+		<result property="updatedBy" column="updated_by" />
+		
+	</resultMap>
+	
+	<sql id="VendorAirportRegionCarFareFields">
+		varcf.vendor_airport_region_car_fare_id, varcf.vendor_airport_region_id, 
+    	varcf.vendor_id, varcf.airport_region_id, varcf.airport_booking_type, varcf.multicity_city_region_id, 
+       	varcf.multicity_country_id, varcf.car_type_id, varcf.initial_fare, varcf.per_km_fare, 
+       	varcf.per_minute_fare, varcf.free_distance, varcf.fare_after_specific_km, varcf.km_to_increase_fare, 
+       	varcf.is_active, varcf.created_by, varcf.created_at, varcf.updated_by, varcf.updated_at
+	</sql>
+	
+	<insert id="addVendorAirportRegionCarFare" parameterType="VendorAirportRegionCarFareModel" useGeneratedKeys="false">
+	
+		INSERT INTO vendor_airport_region_car_fare
+			(
+	            vendor_airport_region_car_fare_id, vendor_airport_region_id, 
+	            vendor_id, airport_region_id, airport_booking_type, multicity_city_region_id, 
+	            multicity_country_id, car_type_id, initial_fare, per_km_fare, 
+	            per_minute_fare, free_distance, fare_after_specific_km, km_to_increase_fare, 
+	            is_active, created_by, created_at, updated_by, updated_at
+	        )
+	    VALUES 	
+	    	(
+	   			#{vendorAirportRegionCarFareId}, #{vendorAirportRegionId}, 
+	   			#{vendorId}, #{airportRegionId}, #{airportBookingType}, #{multicityCityRegionId},
+	   			#{multicityCountryId}, #{carTypeId}, #{initialFare}, #{perKmFare}, 
+	   			#{perMinuteFare}, #{freeDistance}, #{fareAfterSpecificKm}, #{kmToIncreaseFare}, 
+	   			#{isActive}, #{createdBy}, #{createdAt}, #{updatedBy}, #{updatedAt}
+	        )
+	
+	</insert>
+	
+	<insert id="batchInsert" parameterType="java.util.List">
+	
+		INSERT INTO vendor_airport_region_car_fare
+				(
+		            vendor_airport_region_car_fare_id, vendor_airport_region_id, 
+		            vendor_id, airport_region_id, airport_booking_type, multicity_city_region_id, 
+		            multicity_country_id, car_type_id, initial_fare, per_km_fare, 
+		            per_minute_fare, free_distance, fare_after_specific_km, km_to_increase_fare, 
+		            is_active, created_by, created_at, updated_by, updated_at
+		        )
+	    VALUES 	
+				<foreach collection="fareList" item="modal"  separator=",">
+				(	
+					#{modal.vendorAirportRegionCarFareId}, #{modal.vendorAirportRegionId}, 
+		   			#{modal.vendorId}, #{modal.airportRegionId}, #{modal.airportBookingType}, #{modal.multicityCityRegionId},
+		   			#{modal.multicityCountryId}, #{modal.carTypeId}, #{modal.initialFare}, #{modal.perKmFare}, 
+		   			#{modal.perMinuteFare}, #{modal.freeDistance}, #{modal.fareAfterSpecificKm}, #{modal.kmToIncreaseFare}, 
+		   			#{modal.isActive}, #{modal.createdBy}, #{modal.createdAt}, #{modal.updatedBy}, #{modal.updatedAt}
+				)
+				</foreach>
+				
+	</insert>
+	
+	<update id="updateMulticityRegionId" parameterType="VendorAirportRegionCarFareModel">
+	
+		UPDATE
+			vendor_airport_region_car_fare
+		SET
+			multicity_city_region_id = #{multicityCityRegionId}
+		WHERE
+			airport_region_id = #{airportRegionId}
+	
+	</update>
+	
+	<select id="getCarFareDetailsByVendorIdAirportIdAndCarTypeId" resultMap="VendorAirportRegionCarFareResultMap">
+	
+		SELECT
+			<include refid="VendorAirportRegionCarFareFields"></include>
+		FROM
+			vendor_airport_region_car_fare varcf
+		WHERE
+			varcf.vendor_id = #{vendorId}
+		AND
+			varcf.airport_region_id = #{airportRegionId}
+		AND
+			varcf.car_type_id = #{carTypeId}
+		AND
+			varcf.airport_booking_type = #{airportBookingType}
+			
+	</select>
+	
+	<update id="deleteExistingData" parameterType="VendorAirportRegionCarFareModel">
+	
+		DELETE FROM
+			vendor_airport_region_car_fare
+		WHERE
+			vendor_id = #{vendorId}
+		AND
+			airport_region_id = #{airportRegionId}
+	
+	</update>
+	
+</mapper> 

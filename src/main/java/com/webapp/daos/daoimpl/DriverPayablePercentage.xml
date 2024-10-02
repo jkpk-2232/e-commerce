@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.webapp.daos.DriverPayablePercentageDao">
+
+	<resultMap id="payablePercentageResult" type="DriverPayablePercentageModel" >
+	    
+		<result property="driverPayablePercentageId" column="driver_payable_percentage_id" />
+		<result property="userId" column="user_id" />
+		<result property="percentage" column="percentage" /> 		
+		<result property="createdAt" column="created_at" />
+		<result property="updatedAt" column="updated_at" />
+		<result property="createdBy" column="created_by" />
+		<result property="updatedBy" column="updated_by" />
+		
+	</resultMap>
+	
+	<update id="updatePayablePercentage" parameterType="DriverPayablePercentageModel"  > 
+        	
+		UPDATE 
+			driver_payable_percentage 
+		SET 
+			percentage = #{percentage},
+			updated_by = #{updatedBy},
+			updated_at = #{updatedAt}
+		
+	</update>
+	 	
+	<select id="getPayablePercentage" resultMap="payablePercentageResult">
+	    
+		SELECT 
+			driver_payable_percentage_id, percentage, 
+			created_at, updated_at, created_by, updated_by
+		FROM 
+			driver_payable_percentage 
+		
+ 	</select>
+	
+</mapper> 

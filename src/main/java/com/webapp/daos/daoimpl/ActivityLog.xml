@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.webapp.daos.ActivityLogDao">
+
+	<resultMap id="roleResultMap" type="ActivityLogModel" >
+	
+		<id property="activityLogId" column="activity_log_id" />
+		<result property="log" column="log" />	
+		<result property="action" column="action" />	
+		<result property="description" column="description" />
+		<result property="createdAt" column="created_at" />
+		<result property="createdBy" column="created_by" />
+		
+	</resultMap>
+	
+	<insert id="addInsertLogAb" keyColumn="activity_log_id" useGeneratedKeys="true" parameterType="ActivityLogModel">
+
+		INSERT INTO 
+			activity_logs
+				(
+					activity_log_id, log, action,description, created_at, created_by
+				)
+		VALUES
+				(
+					#{activityLogId},#{log},#{action},#{description},#{createdAt},#{createdBy}
+				)
+				
+	</insert>
+	
+</mapper>

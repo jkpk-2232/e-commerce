@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.webapp.daos.VendorFeedViewDao">
+
+	<resultMap id="VendorFeedViewResultMap" type="VendorFeedViewModel">
+	
+		<result property="vendorFeedViewId" column="vendor_feed_view_id" />
+		<result property="vendorFeedId" column="vendor_feed_id" />
+		<result property="vendorId" column="vendor_id" />
+		<result property="userId" column="user_id" />
+		<result property="createdBy" column="created_by" />
+		<result property="createdAt" column="created_at" />
+		<result property="updatedBy" column="updated_by" />
+		<result property="updatedAt" column="updated_at" />
+		
+	</resultMap>
+	
+	<sql id="VendorFeedViewColumns">
+		vfv.vendor_feed_view_id, vfv.vendor_feed_id, vfv.vendor_id, vfv.user_id, 
+		vfv.created_by, vfv.created_at, vfv.updated_by, vfv.updated_at
+	</sql>
+	
+	<insert id="insertVendorFeedView" parameterType="VendorFeedViewModel">
+	
+		INSERT INTO vendor_feed_views
+			(
+				vendor_feed_view_id, vendor_feed_id, vendor_id, user_id, 
+				created_by, created_at, updated_by, updated_at
+			)
+		VALUES 
+			(
+				#{vendorFeedViewId}, #{vendorFeedId}, #{vendorId}, #{userId}, 
+				#{createdBy}, #{createdAt}, #{updatedBy}, #{updatedAt}
+			);
+	
+	</insert>
+	
+	<delete id="deleteVendorFeedViewsByVendorFeedId">
+		DELETE FROM vendor_feed_views WHERE vendor_feed_id = #{vendorFeedId}
+	</delete>
+	
+	<select id="isVendorFeedViewedByUserId" resultType="boolean">
+		
+		SELECT
+			(count(vfv.vendor_feed_view_id)>0)
+		FROM
+			vendor_feed_views vfv
+		WHERE
+			vfv.vendor_feed_id = #{vendorFeedId}
+		AND
+			vfv.user_id = #{userId}
+		
+	</select>
+	
+	<select id="getVendorFeedViewsCount" resultType="int">
+		
+		SELECT
+			count(vfv.vendor_feed_view_id)
+		FROM
+			vendor_feed_views vfv
+		WHERE
+			vfv.vendor_feed_id = #{vendorFeedId}
+		
+	</select>
+	
+</mapper>

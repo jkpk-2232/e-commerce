@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.webapp.daos.WhmgmtRackSlotBookingDao">
+
+	<resultMap id="WhmgmtRackSlotBookingResultMap" type="WhmgmtRackSlotBookingModel">
+			
+			<result property="id" column="id" />
+			<result property="startDate" column="startDate" />
+			<result property="endDate" column="endDate" />
+			<result property="isActive" column="isActive" />
+			<result property="createdAt" column="createdAt" />
+			<result property="updatedAt" column="updatedAt" />
+			<result property="vendorId" column="vendorId_id" />
+			<result property="slotId" column="slotId_id" />
+			<result property="orderId" column="order_id" />
+			
+			<result property="userName" column="userName" />
+			<result property="phoneNumber" column="phone_no"/>
+			<result property="slotNumber" column="slotNumber" />
+			<result property="slotStatus" column="slotStatus" />
+			<result property="productId" column="productId_id" />
+			<result property="rackId" column="rackId" />
+			<result property="rackNumber" column="rackNumber" />
+			<result property="storeId" column="storeId_id" />
+			<result property="orginalVendorId" column="vendorId_id" />
+			<result property="productName" column="product_name" />	
+					
+	</resultMap>
+	
+	<sql id="WhmgmtRackSlotBookingColumns">
+		"wrsb"."id", "wrsb"."startDate", "wrsb"."endDate", "wrsb"."isActive", "wrsb"."createdAt",
+		"wrsb"."updatedAt", "wrsb"."vendorId_id", "wrsb"."slotId_id", "wrsb"."order_id"
+	</sql>
+	
+	<select id="getRackSlotBookingCount" resultType="int">
+	
+		SELECT
+			 count(wrsb.id)
+		FROM whmgmt_rackslotbookings wrsb
+
+		INNER JOIN whmgmt_rackslots wrs ON wrs."slotId" = wrsb."slotId_id"
+		INNER JOIN user_info ui ON ui.user_id = "wrsb"."vendorId_id"
+		INNER JOIN users u ON u.user_id = "wrsb"."vendorId_id"
+		INNER JOIN whmgmt_rackslist wr ON wr."rackId" = wrs."rackId_id"
+		LEFT JOIN  vendor_products vp ON vp.vendor_product_id = wrs."productId_id"
+
+		<if test="vendorId!=null">
+		WHERE 
+			wr."vendorId_id" = #{vendorId}
+		</if>
+		<if test="vendorStoreId!=null">	
+		AND   
+			wr."storeId_id" = #{vendorStoreId}
+		</if>
+	</select>
+	
+	<!-- <select id="getRackSlotBookingSearch" resultType="WhmgmtRackSlotBookingResultMap">
+	
+		SELECT
+			<include refid="WhmgmtRackSlotBookingColumns"></include>
+			concat(ui.first_name,' ',ui.last_name) as userName, "slotNumber", "slotStatus",
+			"productId_id", "rackId", "rackNumber", "storeId_id", wr."vendorId_id"
+			 
+		FROM whmgmt_rackslotbookings wrsb
+
+		INNER JOIN whmgmt_rackslots wrs ON wrs."slotId" = wrsb."slotId_id"
+		INNER JOIN user_info ui ON ui.user_id = "wrsb"."vendorId_id"
+		INNER JOIN users u ON u.user_id = "wrsb"."vendorId_id"
+		INNER JOIN whmgmt_rackslist wr ON wr."rackId" = wrs."rackId_id"
+		LEFT JOIN  vendor_products vp ON vp.vendor_product_id = wrs."productId_id"
+
+		<if test="vendorId!=null">
+		WHERE 
+			wr."vendorId_id" = #{vendorId}
+		</if>
+		<if test="vendorStoreId!=null">	
+		AND   
+			wr."storeId_id" = #{vendorStoreId}
+		</if>
+	</select> -->
+	
+	<select id="getRackSlotBookingSearch" resultMap="WhmgmtRackSlotBookingResultMap">
+	
+		SELECT
+		
+			<include refid="WhmgmtRackSlotBookingColumns"></include>,
+			concat(ui.first_name,' ',ui.last_name) as userName, ui.phone_no, "slotNumber", "slotStatus",
+			"productId_id", "rackId", "rackNumber", "storeId_id", wr."vendorId_id", vp."product_name"
+			
+		FROM
+			whmgmt_rackslotbookings wrsb
+		INNER JOIN whmgmt_rackslots wrs ON wrs."slotId" = wrsb."slotId_id"
+		INNER JOIN user_info ui ON ui.user_id = "wrsb"."vendorId_id"
+		INNER JOIN users u ON u.user_id = "wrsb"."vendorId_id"
+		INNER JOIN whmgmt_rackslist wr ON wr."rackId" = wrs."rackId_id"
+		LEFT JOIN  vendor_products vp ON vp.vendor_product_id = wrs."productId_id"
+		
+		
+		<if test="vendorId!=null">
+		WHERE 
+			wr."vendorId_id" = #{vendorId}
+		</if>
+		<if test="vendorStoreId!=null">	
+		AND   
+			wr."storeId_id" = #{vendorStoreId}
+		</if>
+		<if test="length>0">
+		LIMIT #{length} OFFSET #{start}
+		</if>
+	
+	</select>
+	
+</mapper>

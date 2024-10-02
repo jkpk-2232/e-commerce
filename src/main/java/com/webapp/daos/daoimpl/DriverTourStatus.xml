@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.webapp.daos.DriverTourStatusDao">
+
+	<resultMap id="driverTourStatusResultMap" type="DriverTourStatusModel" >
+	    
+		<result property="driverTourStatusId" column="driver_tour_status_id" />
+		<result property="status" column="status" />
+		<result property="driverId" column="driver_id" />
+		
+		<result property="createdAt" column="created_at" />
+		<result property="updatedAt" column="updated_at" />
+		<result property="createdBy" column="created_by" />
+		<result property="updatedBy" column="updated_by" />
+		
+	</resultMap>
+
+	<insert id="createDriverTourStatus" useGeneratedKeys="true" parameterType="DriverTourStatusModel">
+
+		INSERT INTO 
+			driver_tour_status
+				(
+					driver_tour_status_id,status,driver_id,
+					created_at,created_by,updated_at,updated_by
+				)
+		VALUES
+				(
+					#{driverTourStatusId},#{status},#{driverId},
+					#{createdAt},#{createdBy},#{updatedAt},#{updatedBy}
+				)
+		
+	</insert>
+	
+	<select id="getDriverTourStatus" resultType="DriverTourStatusModel" parameterType="String">
+		
+		 SELECT 
+		 	driver_tour_status_id,status,driver_id 
+		 FROM 
+		 	driver_tour_status 
+		 WHERE 
+		 	driver_id=#{driverId}
+	    
+	</select>
+	
+	<update id="updateDriverTourStatus"  parameterType="DriverTourStatusModel">
+		UPDATE 
+			driver_tour_status
+		SET
+			status = #{status}, updated_at = #{updatedAt}, updated_by = #{updatedBy}		
+		WHERE 
+			driver_id = #{driverId}
+	</update>
+	
+</mapper> 

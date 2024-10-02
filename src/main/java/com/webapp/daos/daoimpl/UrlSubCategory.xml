@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.webapp.daos.UrlSubCategoryDao">
+
+	<resultMap id="UrlSubCategoryResultMap" type="UrlSubCategoryModel">
+	
+		<result property="urlSubCategoryId" column="url_sub_category_id" />
+		<result property="urlId" column="url_id" />
+		<result property="urlTitle" column="url_title" />
+		<result property="url" column="url" />
+		<result property="urlIcon" column="url_icon" />
+		<result property="menuPriority" column="menu_priority" />
+		
+	</resultMap>
+	
+	<select id="getSubPriorityMenus" parameterType="String" resultMap="UrlSubCategoryResultMap">
+	
+		SELECT  
+			USC.url_sub_category_id, USC.url_id, USC.url_title, 
+			USC.url, USC.url_icon, USC.menu_priority
+		FROM  
+			url_sub_categories USC
+		INNER JOIN urls U ON u.url_id = USC.url_id 
+		INNER JOIN url_groups UG ON UG.url_group_id = U.url_group_id
+		INNER JOIN url_accesses UA ON U.url_id = UA.url_id
+		WHERE 
+			UA.user_id = #{userId}
+		GROUP BY USC.url_id, USC.menu_priority, USC.url_sub_category_id, USC.url_title, USC.url, USC.url_icon
+		ORDER BY 
+			USC.url_id, USC.menu_priority
+			
+	</select>
+	
+</mapper>

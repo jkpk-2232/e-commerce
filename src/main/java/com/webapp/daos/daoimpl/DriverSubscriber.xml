@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.webapp.daos.DriverSubscriberDao">
+
+	<resultMap id="DriverSubscriberResultMap" type="DriverSubscriberModel">
+	
+		<result property="driverSubscriberId" column="driver_subscriber_id" />
+		<result property="driverId" column="driver_id" />
+		<result property="userId" column="user_id" />
+		<result property="priorityNumber" column="priority_number" />
+		
+		<result property="driverName" column="driverName" />
+		<result property="subscriberName" column="subscriberName" />
+
+		<result property="createdBy" column="created_by" />
+		<result property="createdAt" column="created_at" />
+		<result property="updatedBy" column="updated_by" />
+		<result property="updatedAt" column="updated_at" />
+		
+	</resultMap>
+	
+	<sql id="DriverSubscriberColumns">
+		ds.driver_subscriber_id, ds.driver_id, ds.user_id, ds.priority_number,
+		ds.created_by, ds.created_at, ds.updated_by, ds.updated_at
+	</sql>
+	
+	<insert id="insertDriverSubscriber" parameterType="DriverSubscriberModel">
+	
+		INSERT INTO driver_subscribers
+			(
+				driver_subscriber_id, driver_id, user_id, priority_number,
+				created_by, created_at, updated_by, updated_at
+			)
+		VALUES 
+			(
+				#{driverSubscriberId}, #{driverId}, #{userId}, #{priorityNumber},
+				#{createdBy}, #{createdAt}, #{updatedBy}, #{updatedAt}
+			);
+	
+	</insert>
+	
+	<select id="getDriverSubscribedBySubsciberIdCount" resultType="int">
+		
+		SELECT
+			count(ds.driver_subscriber_id)
+		FROM
+			driver_subscribers ds
+		WHERE
+			ds.created_at &gt;= #{startDatelong}
+		AND
+			ds.created_at &lt;= #{endDatelong}
+		<if test="subscriberUserId!=null">
+		AND
+			ds.user_id = #{subscriberUserId}
+		</if>		
+	
+	</select>
+	
+	<select id="getDriverSubscribedBySubsciberIdSearch" resultMap="DriverSubscriberResultMap">
+		
+		SELECT
+			<include refid="DriverSubscriberColumns"></include>,
+			concat(dui.first_name,' ',dui.last_name) AS driverName,
+			concat(sui.first_name,' ',sui.last_name) AS subscriberName
+		FROM
+			driver_subscribers ds
+		INNER JOIN user_info dui ON dui.user_id = ds.driver_id
+		INNER JOIN user_info sui ON sui.user_id = ds.user_id
+		WHERE
+			(
+				dui.first_name ilike #{searchKey}
+			OR
+				dui.last_name ilike #{searchKey}
+			OR
+				concat(dui.first_name,' ',dui.last_name ) ilike #{searchKey}
+			OR
+				sui.first_name ilike #{searchKey}
+			OR
+				sui.last_name ilike #{searchKey}
+			OR
+				concat(sui.first_name,' ',sui.last_name ) ilike #{searchKey}
+			)
+		<if test="startDatelong>0">
+		AND
+			ds.created_at &gt;= #{startDatelong}
+		AND
+			ds.created_at &lt;= #{endDatelong}
+		</if>
+		<if test="subscriberUserId!=null">
+		AND
+			ds.user_id = #{subscriberUserId}
+		</if>	
+		ORDER BY ds.priority_number ASC
+		<if test="length>0">
+		LIMIT #{length} OFFSET #{start}
+		</if>	
+	
+	</select>
+	
+	<select id="getDriverSubscribedBySubsciberIdSearchCount" resultType="int">
+		
+		SELECT
+			count(ds.driver_subscriber_id)
+		FROM
+			driver_subscribers ds
+		INNER JOIN user_info dui ON dui.user_id = ds.driver_id
+		INNER JOIN user_info sui ON sui.user_id = ds.user_id
+		WHERE
+			(
+				dui.first_name ilike #{searchKey}
+			OR
+				dui.last_name ilike #{searchKey}
+			OR
+				concat(dui.first_name,' ',dui.last_name ) ilike #{searchKey}
+			OR
+				sui.first_name ilike #{searchKey}
+			OR
+				sui.last_name ilike #{searchKey}
+			OR
+				concat(sui.first_name,' ',sui.last_name ) ilike #{searchKey}
+			)
+		<if test="startDatelong>0">
+		AND
+			ds.created_at &gt;= #{startDatelong}
+		AND
+			ds.created_at &lt;= #{endDatelong}
+		</if>
+		<if test="subscriberUserId!=null">
+		AND
+			ds.user_id = #{subscriberUserId}
+		</if>	
+	
+	</select>
+	
+	<select id="isUserSubscribedToDriver" resultType="boolean">
+		
+		SELECT
+			(count(*)>0)
+		FROM 
+			driver_subscribers ds
+		WHERE
+			ds.driver_id = #{driverId}
+		AND
+			ds.user_id = #{userId}
+		
+	</select>
+	
+	<delete id="deleteDriverSubscriber" parameterType="DriverSubscriberModel">
+		
+		DELETE FROM 
+			driver_subscribers ds
+		WHERE
+			ds.driver_id = #{driverId}
+		AND
+			ds.user_id = #{userId}
+		
+	</delete>
+	
+	<select id="getDriverSubscriptionCount" resultType="int">
+		
+		SELECT
+			count(*)
+		FROM 
+			driver_subscribers ds
+		WHERE
+			ds.driver_id = #{driverId}
+		AND
+			ds.created_at &gt;= #{startTime}
+		AND
+			ds.created_at &lt;= #{endTime}
+		
+	</select>
+	
+	<select id="getUserSubscribedCountByDriverId" resultType="int">
+		
+		SELECT
+			count(ds.driver_subscriber_id)
+		FROM
+			driver_subscribers ds
+		WHERE
+			
+			ds.driver_id = #{driverId}
+	
+	</select>
+	
+</mapper>

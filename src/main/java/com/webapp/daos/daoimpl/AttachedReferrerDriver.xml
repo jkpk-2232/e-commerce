@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.webapp.daos.AttachedReferrerDriverDao">
+
+	<resultMap id="AttachedReferrerDriverResultMap" type="AttachedReferrerDriverModel" >
+	    
+		<result property="attachedReferrerDriverId" column="attached_referrer_driver_id" />
+		<result property="attachedDriverId" column="attached_driver_id" />
+		<result property="userId" column="user_id" />
+		<result property="referredUserRoleId" column="referred_user_role_id" />
+		<result property="recordStatus" column="record_status" />
+		<result property="createdAt" column="created_at" />
+		<result property="updatedAt" column="updated_at" />
+		<result property="createdBy" column="created_by" />
+		<result property="updatedBy" column="updated_by" />
+		
+	</resultMap>
+	
+	
+	<insert id="addAttachedReferrerDriver" parameterType="AttachedReferrerDriverModel" useGeneratedKeys="false">
+	
+		INSERT INTO 
+			attached_referrer_driver
+				(
+					attached_referrer_driver_id,attached_driver_id,user_id,referred_user_role_id,record_status,
+					created_at,created_by,
+					updated_at,updated_by
+				)
+		VALUES
+				(
+					#{attachedReferrerDriverId},#{attachedDriverId},#{userId},#{referredUserRoleId},#{recordStatus},
+					#{createdAt},#{createdBy},
+					#{updatedAt},#{updatedBy}
+				)
+	</insert>
+	
+</mapper> 

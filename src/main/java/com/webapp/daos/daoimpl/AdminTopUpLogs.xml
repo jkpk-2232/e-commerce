@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.webapp.daos.AdminTopUpLogsDao">
+
+	<resultMap id="adminTopUpLogsResultMap" type="AdminTopUpLogsModel" >
+	    
+		<result property="adminTopUpLogsId" column="admin_top_up_logs_id" />
+		<result property="adminId" column="admin_id" />
+		<result property="passengerId" column="passenger_id" />
+		<result property="previousAmount" column="previous_amount" />
+		<result property="newAmount" column="new_amount" />
+		<result property="status" column="status" />
+		<result property="recordStatus" column="record_status" />
+		<result property="createdAt" column="created_at" />
+		<result property="updatedAt" column="updated_at" />
+		<result property="createdBy" column="created_by" />
+		<result property="updatedBy" column="updated_by" />
+		
+	</resultMap>
+
+	<sql id="adminTopUpLogsTableColsWithOutTypeAlias">
+		 admin_top_up_logs_id, admin_id, passenger_id, previous_amount, new_amount, 
+		 status, record_status, created_by, created_at, updated_by, updated_at
+	</sql>
+	
+	<sql id="adminTopUpLogsColsWithOutTypeAlias">
+		#{adminTopUpLogsId}, #{adminId}, #{passengerId}, #{previousAmount}, #{newAmount}, 
+		#{status}, 'A', #{createdBy},#{createdAt},#{updatedBy},#{updatedAt}
+	</sql>
+
+	<insert id="addAdminTopUpLogs" parameterType="AdminTopUpLogsModel">
+
+		INSERT INTO 
+			admin_top_up_logs
+				(
+					<include refid="adminTopUpLogsTableColsWithOutTypeAlias" /> 
+				)
+		VALUES
+				(
+					<include refid="adminTopUpLogsColsWithOutTypeAlias" /> 
+				)
+				
+	</insert>
+
+</mapper> 

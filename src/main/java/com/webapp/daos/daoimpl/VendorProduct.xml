@@ -1,0 +1,1366 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.webapp.daos.VendorProductDao">
+
+	<resultMap id="VendorProductResultMap" type="VendorProductModel">
+	
+		<result property="vendorProductId" column="vendor_product_id" />
+		<result property="vendorId" column="vendor_id" />
+		<result property="productName" column="product_name" />
+		<result property="productInformation" column="product_information" />
+		<result property="productActualPrice" column="product_actual_price" />
+		<result property="productDiscountedPrice" column="product_discounted_price" />
+		<result property="productWeight" column="product_weight" />
+		<result property="productWeightUnit" column="product_weight_unit" />
+		<result property="productSpecification" column="product_specification" />
+		<result property="productImage" column="product_image" />
+		<result property="isActive" column="is_active" />
+		<result property="isDeleted" column="is_deleted" />
+		<result property="isPaid" column="is_paid" />
+		<result property="vendorStoreId" column="vendor_store_id" />
+		<result property="isProductForAllVendorStores" column="is_product_for_all_vendor_stores" />
+		<result property="productSku" column="product_sku" />
+		<result property="productCategory" column="product_category" />
+		<result property="productInventoryCount" column="product_inventory_count" />
+		<result property="productBarcode" column="product_barcode" />
+		<result property="productCategoryId" column="product_category_id" />
+		<result property="prdQtyType" column="product_quantity_type" />
+		<result property="isNonVeg" column="is_non_veg" />
+		<result property="gst" column="gst" />
+		<result property="productSubCategoryId" column="product_sub_category_id" />
+		<result property="storePrice" column="store_price"/>
+		<result property="userProductSku" column="user_product_sku"/>
+		<result property="productTemplateId" column="product_template_id"/>
+		<result property="productVariantId" column="product_variant_id"/>
+		
+		<result property="vendorName" column="vendorName" />
+		<result property="storeName" column="store_name" />
+		<result property="uomName" column="uomName" />
+		<result property="productsInCart" column="products_in_cart" />
+		<result property="cartValue" column="cart_value" />
+		<result property="storeLat" column="store_lat" />
+		<result property="storeLng" column="store_lng" />
+		<result property="storeImage" column="store_image" />
+		<result property="storeAddress" column="store_address" />
+		<result property="isClosedToday" column="is_closed_today" />
+		<result property="serviceId" column="service_id" />
+		
+		<result property="createdBy" column="created_by" />
+		<result property="createdAt" column="created_at" />
+		<result property="updatedBy" column="updated_by" />
+		<result property="updatedAt" column="updated_at" />
+		
+	</resultMap>
+	
+	<sql id="VendorProductColumns">
+		vp.vendor_product_id, vp.vendor_id,
+		vp.product_name, vp.product_information, vp.product_actual_price, 
+		vp.product_discounted_price, vp.product_weight, vp.product_specification, 
+		vp.product_image, vp.is_active, vp.is_deleted, vp.is_paid, 
+		vp.created_by, vp.created_at, vp.updated_by, vp.updated_at,
+		vp.product_weight_unit, vp.vendor_store_id, vp.is_product_for_all_vendor_stores,
+		vp.product_sku, vp.product_category, vp.product_inventory_count,
+		vp.product_barcode, vp.product_category_id, vp.product_quantity_type,
+		vp.is_non_veg, vp.gst, vp.product_sub_category_id,
+		vp.store_price, vp.user_product_sku, vp.product_template_id, vp.product_variant_id
+	</sql>
+	
+	<insert id="insertVendorProducts" parameterType="VendorProductModel">
+	
+		INSERT INTO vendor_products
+			(
+				vendor_product_id, vendor_id,
+				product_name, product_information, product_actual_price, 
+				product_discounted_price, product_weight, product_specification, 
+				product_image, is_active, is_deleted, is_paid, 
+				created_by, created_at, updated_by, updated_at, product_weight_unit,
+				vendor_store_id, is_product_for_all_vendor_stores, product_sku,
+				product_category, product_inventory_count, 
+				product_barcode, product_category_id, product_quantity_type,
+				is_non_veg, gst, product_sub_category_id, store_price, user_product_sku,
+				product_template_id, product_variant_id
+			)
+		VALUES 
+			(
+				#{vendorProductId}, #{vendorId},
+				#{productName}, #{productInformation}, #{productActualPrice},
+				#{productDiscountedPrice}, #{productWeight}, #{productSpecification},
+				#{productImage}, #{isActive}, #{isDeleted}, #{isPaid}, 
+				#{createdBy}, #{createdAt}, #{updatedBy}, #{updatedAt}, #{productWeightUnit},
+				#{vendorStoreId}, #{isProductForAllVendorStores}, #{productSku},
+				#{productCategory}, #{productInventoryCount},
+				#{productBarcode}, #{productCategoryId}, #{prdQtyType},
+				#{isNonVeg}, #{gst}, #{productSubCategoryId}, #{storePrice}, #{userProductSku},
+				#{productTemplateId}, #{productVariantId}
+			);
+	
+	</insert>
+	
+	<insert id="insertVendorProductsBatchInsert" parameterType="VendorProductModel">
+	
+		INSERT INTO vendor_products
+			(
+				vendor_product_id, vendor_id,
+				product_name, product_information, product_actual_price, 
+				product_discounted_price, product_weight, product_specification, 
+				product_image, is_active, is_deleted, is_paid, 
+				created_by, created_at, updated_by, updated_at, product_weight_unit,
+				vendor_store_id, is_product_for_all_vendor_stores, product_sku,
+				product_category, product_inventory_count,
+				product_barcode, product_category_id, product_quantity_type,
+				is_non_veg, gst, product_sub_category_id, store_price, user_product_sku,
+				product_template_id, product_variant_id
+			)
+		VALUES 
+		<foreach collection="vendorProductList" item="model" separator=","> 
+			(
+				#{model.vendorProductId}, #{model.vendorId},
+				#{model.productName}, #{model.productInformation}, #{model.productActualPrice},
+				#{model.productDiscountedPrice}, #{model.productWeight}, #{model.productSpecification},
+				#{model.productImage}, #{model.isActive}, #{model.isDeleted}, #{model.isPaid}, 
+				#{model.createdBy}, #{model.createdAt}, #{model.updatedBy}, #{model.updatedAt}, #{model.productWeightUnit},
+				#{model.vendorStoreId}, #{model.isProductForAllVendorStores}, #{model.productSku},
+				#{model.productCategory}, #{model.productInventoryCount},
+				#{model.productBarcode}, #{model.productCategoryId}, #{model.prdQtyType},
+				#{model.isNonVeg}, #{model.gst}, #{model.productSubCategoryId}, #{model.storePrice}, #{model.userProductSku},
+				#{model.productTemplateId}, #{model.productVariantId}
+			)
+		</foreach>
+	
+	</insert>
+	
+	<update id="updateVendorProducts" parameterType="VendorProductModel">
+		
+		UPDATE 
+			vendor_products
+		SET 
+			vendor_id = #{vendorId}, 
+			product_name = #{productName}, 
+			product_information = #{productInformation}, 
+			product_actual_price = #{productActualPrice}, 
+			product_discounted_price = #{productDiscountedPrice}, 
+			product_weight = #{productWeight}, 
+			product_weight_unit = #{productWeightUnit},
+			product_specification = #{productSpecification}, 
+			product_image = #{productImage}, 
+			product_sku = #{productSku}, 
+			product_category = #{productCategory}, 
+			product_inventory_count = #{productInventoryCount}, 
+			updated_by = #{updatedBy}, 
+			updated_at = #{updatedAt},
+			product_barcode = #{productBarcode},
+			product_category_id = #{productCategoryId},
+			product_quantity_type = #{prdQtyType},
+			is_non_veg = #{isNonVeg},
+			gst = #{gst},
+			product_sub_category_id = #{productSubCategoryId},
+			store_price = #{storePrice},
+			user_product_sku = #{userProductSku},
+			product_template_id = #{productTemplateId},
+			product_variant_id = #{productVariantId}
+		WHERE 
+			vendor_product_id = #{vendorProductId}
+		
+	</update>
+	
+	<select id="getVendorProductsCount" resultType="int">
+	
+		SELECT
+			count(vp.vendor_product_id)
+		FROM
+			vendor_products vp
+		INNER JOIN user_info ui ON ui.user_id = vp.vendor_id
+		INNER JOIN users u ON u.user_id = vp.vendor_id
+		INNER JOIN vendor_service_categories vsc ON vsc.vendor_id = vp.vendor_id
+		INNER JOIN services s ON s.service_id = vsc.service_id
+		INNER JOIN categories c ON c.category_id = vsc.category_id
+		INNER JOIN vendor_stores vs ON vs.vendor_store_id = vp.vendor_store_id
+		WHERE
+			vp.created_at &gt;= #{startDatelong}
+		AND
+			vp.created_at &lt;= #{endDatelong}
+		<if test="vendorId!=null">
+		AND
+			vp.vendor_id = #{vendorId}
+		</if>
+		<if test="vendorStoreId!=null">
+		AND
+			vp.vendor_store_id = #{vendorStoreId}
+		</if>
+		<if test="serviceId!=null">
+		AND
+			vsc.service_id = #{serviceId}
+		</if>
+		<if test="categoryId!=null">
+		AND
+			vsc.category_id = #{categoryId}
+		</if>
+	
+	</select>
+	
+	<select id="getVendorProductsSearch" resultMap="VendorProductResultMap">
+	
+		SELECT
+			<include refid="VendorProductColumns"></include>,
+			concat(ui.first_name,' ',ui.last_name) as vendorName,
+			vs.store_name
+		FROM
+			vendor_products vp
+		INNER JOIN user_info ui ON ui.user_id = vp.vendor_id
+		INNER JOIN users u ON u.user_id = vp.vendor_id
+		INNER JOIN vendor_service_categories vsc ON vsc.vendor_id = vp.vendor_id
+		INNER JOIN services s ON s.service_id = vsc.service_id
+		INNER JOIN categories c ON c.category_id = vsc.category_id
+		INNER JOIN vendor_stores vs ON vs.vendor_store_id = vp.vendor_store_id
+		WHERE
+			(
+				vp.product_sku ilike #{searchKey}
+			OR
+				vp.product_category ilike #{searchKey}
+			OR
+				vp.product_name ilike #{searchKey}
+			OR 
+				vp.product_information ilike #{searchKey}
+			OR
+				ui.first_name ilike #{searchKey}
+			OR
+				ui.last_name ilike #{searchKey}
+			OR
+				concat(ui.first_name,' ',ui.last_name ) ilike #{searchKey}
+			OR	
+				c.category_name ilike #{searchKey}
+			OR
+				c.category_description ilike #{searchKey}
+			OR
+				s.service_name ilike #{searchKey}
+			OR
+				s.service_description ilike #{searchKey}
+			)
+		<if test="startDatelong>0">
+		AND
+			vp.created_at &gt;= #{startDatelong}
+		AND
+			vp.created_at &lt;= #{endDatelong}
+		</if>
+<!-- 		<if test="displayType==1"> -->
+<!-- 		AND -->
+<!-- 			vp.is_active = true -->
+<!-- 		AND -->
+<!-- 			vp.is_deleted = false -->
+<!-- 		</if> -->
+		<if test="vendorId!=null">
+		AND
+			vp.vendor_id = #{vendorId}
+		</if>
+		<if test="vendorStoreId!=null">
+		AND
+			vp.vendor_store_id = #{vendorStoreId}
+		</if>
+		<if test="serviceId!=null">
+		AND
+			vsc.service_id = #{serviceId}
+		</if>
+		<if test="categoryId!=null">
+		AND
+			vsc.category_id = #{categoryId}
+		</if>
+		ORDER BY ${orderColumn}
+		<if test="length>0">
+		LIMIT #{length} OFFSET #{start}
+		</if>
+	
+	</select>
+	
+	<select id="getVendorProductsSearchCount" resultType="int">
+	
+		SELECT
+			count(vp.vendor_product_id)
+		FROM
+			vendor_products vp
+		INNER JOIN user_info ui ON ui.user_id = vp.vendor_id
+		INNER JOIN users u ON u.user_id = vp.vendor_id
+		INNER JOIN vendor_service_categories vsc ON vsc.vendor_id = vp.vendor_id
+		INNER JOIN services s ON s.service_id = vsc.service_id
+		INNER JOIN categories c ON c.category_id = vsc.category_id
+		INNER JOIN vendor_stores vs ON vs.vendor_store_id = vp.vendor_store_id
+		WHERE
+			(
+				vp.product_sku ilike #{searchKey}
+			OR
+				vp.product_category ilike #{searchKey}
+			OR
+				vp.product_name ilike #{searchKey}
+			OR 
+				vp.product_information ilike #{searchKey}
+			OR
+				ui.first_name ilike #{searchKey}
+			OR
+				ui.last_name ilike #{searchKey}
+			OR
+				concat(ui.first_name,' ',ui.last_name ) ilike #{searchKey}
+			OR	
+				c.category_name ilike #{searchKey}
+			OR
+				c.category_description ilike #{searchKey}
+			OR
+				s.service_name ilike #{searchKey}
+			OR
+				s.service_description ilike #{searchKey}
+			)
+		<if test="startDatelong>0">
+		AND
+			vp.created_at &gt;= #{startDatelong}
+		AND
+			vp.created_at &lt;= #{endDatelong}
+		</if>
+<!-- 		<if test="displayType==1"> -->
+<!-- 		AND -->
+<!-- 			vp.is_active = true -->
+<!-- 		AND -->
+<!-- 			vp.is_deleted = false -->
+<!-- 		</if> -->
+		<if test="vendorId!=null">
+		AND
+			vp.vendor_id = #{vendorId}
+		</if>
+		<if test="vendorStoreId!=null">
+		AND
+			vp.vendor_store_id = #{vendorStoreId}
+		</if>
+		<if test="serviceId!=null">
+		AND
+			vsc.service_id = #{serviceId}
+		</if>
+		<if test="categoryId!=null">
+		AND
+			vsc.category_id = #{categoryId}
+		</if>
+	
+	</select>
+	
+	<update id="updateVendorProductsStatus" parameterType="VendorProductModel">
+	
+		UPDATE 
+			vendor_products
+		SET
+			is_active = #{isActive},
+			is_deleted = #{isDeleted}
+		WHERE
+			vendor_product_id = #{vendorProductId}
+	
+	</update>
+	
+	<select id="getVendorProductsDetailsByProductId" resultMap="VendorProductResultMap">
+		
+		SELECT
+			<include refid="VendorProductColumns"></include>
+		FROM
+			vendor_products vp
+		WHERE
+			vp.vendor_product_id = #{vendorProductId}
+		
+	</select>
+	
+	<select id="getProductDetailsByVendorProductsIdsAndVendorStoreIdList" resultMap="VendorProductResultMap">
+		
+		SELECT
+			<include refid="VendorProductColumns"></include>
+		FROM
+			vendor_products vp
+		INNER JOIN user_info ui ON ui.user_id = vp.vendor_id
+		INNER JOIN users u ON u.user_id = vp.vendor_id AND u.is_active = true
+		INNER JOIN vendor_service_categories vsc ON vsc.vendor_id = vp.vendor_id
+		INNER JOIN services s ON s.service_id = vsc.service_id AND s.is_active = true
+		INNER JOIN categories c ON c.category_id = vsc.category_id AND c.is_active = true
+		INNER JOIN vendor_stores vs ON vs.vendor_store_id = vp.vendor_store_id AND vs.is_active = true
+		WHERE
+			vp.is_active = true
+		AND
+			vp.is_deleted = false
+		AND
+			vp.vendor_store_id = #{vendorStoreId}
+		AND
+			vp.vendor_product_id IN
+			<foreach item="item" index="index" collection="vendorProductIds" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		
+	</select>
+	
+	<select id="getProductListApi" resultMap="VendorProductResultMap">
+		
+		SELECT
+			<include refid="VendorProductColumns"></include>,
+			concat(ui.first_name,' ',ui.last_name) as vendorName,
+			vs.store_name
+		FROM
+			vendor_products vp
+		INNER JOIN user_info ui ON ui.user_id = vp.vendor_id
+		INNER JOIN users u ON u.user_id = vp.vendor_id AND u.is_active = true
+		INNER JOIN vendor_service_categories vsc ON vsc.vendor_id = vp.vendor_id
+		INNER JOIN services s ON s.service_id = vsc.service_id AND s.is_active = true
+		INNER JOIN categories c ON c.category_id = vsc.category_id AND c.is_active = true
+		INNER JOIN vendor_stores vs ON vs.vendor_store_id = vp.vendor_store_id AND vs.is_active = true
+		WHERE
+			vp.vendor_id = #{vendorId}
+		AND
+			(
+				vp.product_sku ilike #{searchKey}
+			OR
+				vp.product_category ilike #{searchKey}
+			OR
+				vp.product_name ilike #{searchKey}
+			OR 
+				vp.product_information ilike #{searchKey}
+			)
+		<if test="vendorStoreIdList!=null">
+		AND
+			vp.vendor_store_id IN
+			<foreach item="item" index="index" collection="vendorStoreIdList" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+		<if test="productStatus!=null">
+		
+			<if test="productStatus==1">
+				AND
+					vp.is_active = true
+				AND
+					vp.is_deleted = false
+			</if>
+		
+			<if test="productStatus==2">
+				AND
+					vp.is_active = false
+				AND
+					vp.is_deleted = true
+			</if>
+			
+			<if test="productStatus==3">
+				AND
+					vp.product_inventory_count &lt;= 0
+			</if>
+			
+		</if>
+		<if test="filterOrder!=null">
+		ORDER BY vp.product_inventory_count ${filterOrder}, vp.product_name ASC
+		</if>
+		<if test="filterOrder==null">
+		ORDER BY vp.product_name ASC
+		</if>
+		<if test="length>0">
+		LIMIT #{length} OFFSET #{start}
+		</if>
+		
+	</select>
+	
+	<select id="getVendorProductListByProductSkus" resultMap="VendorProductResultMap">
+		
+		SELECT
+			<include refid="VendorProductColumns"></include>
+		FROM
+			vendor_products vp
+		INNER JOIN user_info ui ON ui.user_id = vp.vendor_id
+		INNER JOIN users u ON u.user_id = vp.vendor_id AND u.is_active = true
+		INNER JOIN vendor_service_categories vsc ON vsc.vendor_id = vp.vendor_id
+		INNER JOIN services s ON s.service_id = vsc.service_id AND s.is_active = true
+		INNER JOIN categories c ON c.category_id = vsc.category_id AND c.is_active = true
+		INNER JOIN vendor_stores vs ON vs.vendor_store_id = vp.vendor_store_id AND vs.is_active = true
+		WHERE
+			vp.is_active = true
+		AND
+			vp.is_deleted = false
+		AND
+			vp.vendor_id = #{vendorId}
+		<if test="vendorStoreIdList!=null">
+		AND
+			vp.vendor_store_id IN
+			<foreach item="item" index="index" collection="vendorStoreIdList" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+		AND
+			vp.product_sku IN
+			<foreach item="item" index="index" collection="productSkus" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		ORDER BY vp.created_at ASC
+		
+	</select>
+	
+	<update id="updateProductInventoryCount" parameterType="VendorProductModel">
+	
+		<foreach collection="vpmList" item="model"  separator=";">
+			UPDATE 
+				vendor_products
+			SET
+				product_inventory_count = #{model.productInventoryCount}
+			WHERE
+				vendor_product_id = #{model.vendorProductId}
+		</foreach>
+	
+	</update>
+	
+	<select id="getProductListByVendorId" resultMap="VendorProductResultMap">
+		
+		SELECT
+			<include refid="VendorProductColumns"></include>,
+			concat(ui.first_name,' ',ui.last_name) as vendorName,
+			vs.store_name
+		FROM
+			vendor_products vp
+		INNER JOIN user_info ui ON ui.user_id = vp.vendor_id
+		INNER JOIN users u ON u.user_id = vp.vendor_id AND u.is_active = true
+		INNER JOIN vendor_service_categories vsc ON vsc.vendor_id = vp.vendor_id
+		INNER JOIN services s ON s.service_id = vsc.service_id AND s.is_active = true
+		INNER JOIN categories c ON c.category_id = vsc.category_id AND c.is_active = true
+		INNER JOIN vendor_stores vs ON vs.vendor_store_id = vp.vendor_store_id AND vs.is_active = true
+		WHERE
+			vp.is_active = true
+		AND
+			vp.is_deleted = false
+		AND
+			vp.vendor_id = #{vendorId}
+		<!-- <if test="vendorStoreId!=null">
+		AND
+			vp.vendor_store_id = #{vendorStoreId}
+		</if>
+		AND
+			vp.product_sku IN
+			<foreach item="item" index="index" collection="productSkus" open="(" separator="," close=")">
+				#{item}
+			</foreach> -->
+		ORDER BY vp.created_at ASC
+		
+	</select>
+	
+	<select id="getvendorProductByVendorIdAndProductSkuAndProductNameAndProductCategoryAndVendorStoreIdAndProductBarcode" resultMap="VendorProductResultMap">
+		
+		SELECT
+			<include refid="VendorProductColumns"></include>,
+			concat(ui.first_name,' ',ui.last_name) as vendorName,
+			vs.store_name
+		FROM
+			vendor_products vp
+		INNER JOIN user_info ui ON ui.user_id = vp.vendor_id
+		INNER JOIN users u ON u.user_id = vp.vendor_id AND u.is_active = true
+		INNER JOIN vendor_service_categories vsc ON vsc.vendor_id = vp.vendor_id
+		INNER JOIN services s ON s.service_id = vsc.service_id AND s.is_active = true
+		INNER JOIN categories c ON c.category_id = vsc.category_id AND c.is_active = true
+		INNER JOIN vendor_stores vs ON vs.vendor_store_id = vp.vendor_store_id AND vs.is_active = true
+		WHERE
+			vp.vendor_id = #{vendorId}
+		AND
+			vp.product_sku = #{productSku}
+		AND
+			vp.product_name = #{productName}
+		AND
+			vp.product_category = #{productCategory}
+		AND 	
+			vp.vendor_store_id = #{vendorStoreId}
+		AND
+			VP.product_barcode = #{productBarcode}
+		AND	
+			vp.is_active = true
+		AND
+			vp.is_deleted = false
+		
+	</select>
+	
+	<select id="getvendorProductByVendorIdAndProductSkuAndProductNameAndProductCategoryAndVendorStoreId" resultMap="VendorProductResultMap">
+		
+		SELECT
+			<include refid="VendorProductColumns"></include>,
+			concat(ui.first_name,' ',ui.last_name) as vendorName,
+			vs.store_name
+		FROM
+			vendor_products vp
+		INNER JOIN user_info ui ON ui.user_id = vp.vendor_id
+		INNER JOIN users u ON u.user_id = vp.vendor_id AND u.is_active = true
+		INNER JOIN vendor_service_categories vsc ON vsc.vendor_id = vp.vendor_id
+		INNER JOIN services s ON s.service_id = vsc.service_id AND s.is_active = true
+		INNER JOIN categories c ON c.category_id = vsc.category_id AND c.is_active = true
+		INNER JOIN vendor_stores vs ON vs.vendor_store_id = vp.vendor_store_id AND vs.is_active = true
+		WHERE
+			vp.vendor_id = #{vendorId}
+		AND
+			vp.product_sku = #{productSku}
+		AND
+			vp.product_name = #{productName}
+		AND
+			vp.product_category = #{productCategory}
+		AND 	
+			vp.vendor_store_id = #{vendorStoreId}
+		AND	
+			vp.is_active = true
+		AND
+			vp.is_deleted = false
+		
+	</select>
+	
+	<select id="getProductListWithOutPagination" resultMap="VendorProductResultMap">
+		
+		SELECT
+			<include refid="VendorProductColumns"></include>,
+			concat(ui.first_name,' ',ui.last_name) as vendorName,
+			vs.store_name
+		FROM
+			vendor_products vp
+		INNER JOIN user_info ui ON ui.user_id = vp.vendor_id
+		INNER JOIN users u ON u.user_id = vp.vendor_id AND u.is_active = true
+		INNER JOIN vendor_service_categories vsc ON vsc.vendor_id = vp.vendor_id
+		INNER JOIN services s ON s.service_id = vsc.service_id AND s.is_active = true
+		INNER JOIN categories c ON c.category_id = vsc.category_id AND c.is_active = true
+		INNER JOIN vendor_stores vs ON vs.vendor_store_id = vp.vendor_store_id AND vs.is_active = true
+		WHERE
+			vp.vendor_id = #{vendorId}
+		AND
+			(
+				vp.product_sku ilike #{searchKey}
+			OR
+				vp.product_category ilike #{searchKey}
+			OR
+				vp.product_name ilike #{searchKey}
+			OR 
+				vp.product_information ilike #{searchKey}
+			)	
+		<if test="vendorStoreId!=null">
+		AND
+			vp.vendor_store_id = #{vendorStoreId}
+		</if>
+		<if test="productStatus!=null">
+		
+			<if test="productStatus==1">
+				AND
+					vp.is_active = true
+				AND
+					vp.is_deleted = false
+			</if>
+		
+			<if test="productStatus==2">
+				AND
+					vp.is_active = false
+				AND
+					vp.is_deleted = true
+			</if>
+			
+			<if test="productStatus==3">
+				AND
+					vp.product_inventory_count &lt;= 0
+			</if>
+			
+		</if>
+		<if test="productCategoryId!=null">
+			AND
+				vp.product_category_id = #{productCategoryId}
+		</if>
+		<if test="productSubCategoryId!=null">
+			AND
+				vp.product_sub_category_id = #{productSubCategoryId}
+		</if>
+			AND 
+				(
+			
+				vp.product_quantity_type NOT IN ('L','')
+				
+				OR
+				
+				vp.product_quantity_type IS null
+				
+				)
+		
+		ORDER BY vp.product_name ASC
+		
+		
+	</select>
+	
+	<select id="getVendorProductsDetailsByProductIdsList" resultMap="VendorProductResultMap">
+		
+		SELECT
+			<include refid="VendorProductColumns"></include>
+		FROM
+			vendor_products vp
+		WHERE
+			
+			vp.vendor_product_id IN
+			<foreach item="item" index="index" collection="vendorProductIds" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		
+	</select>
+	
+	<select id="getProductDetailsByProductSkuAndVendorStoreIdList" resultMap="VendorProductResultMap">
+		
+		SELECT
+			<include refid="VendorProductColumns"></include>
+		FROM
+			vendor_products vp
+		INNER JOIN user_info ui ON ui.user_id = vp.vendor_id
+		INNER JOIN users u ON u.user_id = vp.vendor_id AND u.is_active = true
+		INNER JOIN vendor_service_categories vsc ON vsc.vendor_id = vp.vendor_id
+		INNER JOIN services s ON s.service_id = vsc.service_id AND s.is_active = true
+		INNER JOIN categories c ON c.category_id = vsc.category_id AND c.is_active = true
+		INNER JOIN vendor_stores vs ON vs.vendor_store_id = vp.vendor_store_id AND vs.is_active = true
+		WHERE
+			vp.is_active = true
+		AND
+			vp.is_deleted = false
+		AND
+			vp.vendor_store_id = #{vendorStoreId}
+		AND
+			vp.product_sku IN
+			<foreach item="item" index="index" collection="productSkuList" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		
+	</select>
+	
+	<update id="updateVendorProductsFromCSV" parameterType="VendorProductModel">
+		
+		UPDATE 
+			vendor_products
+		SET 
+		
+			product_actual_price = #{productActualPrice}, 
+			product_discounted_price = #{productDiscountedPrice}, 
+			product_inventory_count = #{productInventoryCount},
+			product_barcode = #{productBarcode}, 
+			updated_by = #{updatedBy}, 
+			updated_at = #{updatedAt}
+			
+		WHERE 
+			vendor_product_id = #{vendorProductId}
+		
+	</update>
+	
+	<select id="isVendorProductExistsByVendorIdAndVendorStoreIdAndProductBarcode" resultType="boolean">
+		
+		SELECT
+			(count(*)>0)
+		FROM
+			vendor_products vp
+		WHERE
+			vp.vendor_id = #{vendorId}
+		AND
+			vp.vendor_store_id = #{vendorStoreId}	
+		AND
+			vp.product_barcode = #{productBarcode}	
+		
+	</select>
+	
+	<select id="getNewlyAddedProductsList" resultMap="VendorProductResultMap">
+		
+		SELECT
+			<include refid="VendorProductColumns"></include>
+		FROM
+			vendor_products vp
+		INNER JOIN user_info ui ON ui.user_id = vp.vendor_id
+		INNER JOIN users u ON u.user_id = vp.vendor_id AND u.is_active = true
+		INNER JOIN vendor_service_categories vsc ON vsc.vendor_id = vp.vendor_id
+		INNER JOIN services s ON s.service_id = vsc.service_id AND s.is_active = true
+		INNER JOIN categories c ON c.category_id = vsc.category_id AND c.is_active = true
+		INNER JOIN vendor_stores vs ON vs.vendor_store_id = vp.vendor_store_id AND vs.is_active = true
+		WHERE
+			vp.is_active = true
+		AND
+			vp.is_deleted = false
+		AND
+			vp.vendor_id = #{vendorId}
+		AND
+			vp.vendor_store_id = #{vendorStoreId}
+		AND 
+				(
+			
+				vp.product_quantity_type NOT IN ('L','')
+				
+				OR
+				
+				vp.product_quantity_type IS null
+				
+				) 	
+		ORDER BY		
+			vp.created_at DESC
+		limit 10	
+	</select>
+	
+	
+	<select id="getOrganicProductsByVendorIdAndVendorStoreIdAndProductCategory" resultMap="VendorProductResultMap">
+		
+		SELECT
+			<include refid="VendorProductColumns"></include>,
+			concat(ui.first_name,' ',ui.last_name) as vendorName,
+			vs.store_name
+		FROM
+			vendor_products vp
+		INNER JOIN user_info ui ON ui.user_id = vp.vendor_id
+		INNER JOIN users u ON u.user_id = vp.vendor_id AND u.is_active = true
+		INNER JOIN vendor_service_categories vsc ON vsc.vendor_id = vp.vendor_id
+		INNER JOIN services s ON s.service_id = vsc.service_id AND s.is_active = true
+		INNER JOIN categories c ON c.category_id = vsc.category_id AND c.is_active = true
+		INNER JOIN vendor_stores vs ON vs.vendor_store_id = vp.vendor_store_id AND vs.is_active = true
+		WHERE
+			vp.is_active = true
+		AND
+			vp.is_deleted = false
+		AND
+			vp.vendor_id = #{vendorId}
+		AND
+			vp.vendor_store_id = #{vendorStoreId}
+		AND
+			UPPER(vp.product_category) = #{productCategory}	
+	
+		ORDER BY vp.created_at ASC
+		
+	</select>
+	
+	<select id="getProductListForStore" resultMap="VendorProductResultMap">
+		
+		SELECT
+			<include refid="VendorProductColumns"></include>,
+			concat(ui.first_name,' ',ui.last_name) as vendorName,
+			vs.store_name
+		FROM
+			vendor_products vp
+		INNER JOIN user_info ui ON ui.user_id = vp.vendor_id
+		INNER JOIN users u ON u.user_id = vp.vendor_id AND u.is_active = true
+		INNER JOIN vendor_service_categories vsc ON vsc.vendor_id = vp.vendor_id
+		INNER JOIN services s ON s.service_id = vsc.service_id AND s.is_active = true
+		INNER JOIN categories c ON c.category_id = vsc.category_id AND c.is_active = true
+		INNER JOIN vendor_stores vs ON vs.vendor_store_id = vp.vendor_store_id AND vs.is_active = true
+		WHERE
+			vp.vendor_id = #{vendorId}
+		<!-- <if test="vendorStoreId!=null">
+		AND
+			vp.vendor_store_id = #{vendorStoreId}
+		</if> -->
+		<if test="vendorStoreIdList!=null">
+		AND
+			vp.vendor_store_id IN
+			<foreach item="item" index="index" collection="vendorStoreIdList" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+		<if test="productStatus!=null">
+		
+			<if test="productStatus==1">
+				AND
+					vp.is_active = true
+				AND
+					vp.is_deleted = false
+			</if>
+		
+			<if test="productStatus==2">
+				AND
+					vp.is_active = false
+				AND
+					vp.is_deleted = true
+			</if>
+			
+			<if test="productStatus==3">
+				AND
+					vp.product_inventory_count &lt;= 0
+			</if>
+			
+		</if>
+		ORDER BY vp.product_name ASC
+		
+	</select>
+	
+	<select id="getVendorProductListForKPMARTByProductSkus" resultMap="VendorProductResultMap">
+		
+		SELECT
+			<include refid="VendorProductColumns"></include>
+		FROM
+			vendor_products vp
+		INNER JOIN user_info ui ON ui.user_id = vp.vendor_id
+		INNER JOIN users u ON u.user_id = vp.vendor_id AND u.is_active = true
+		INNER JOIN vendor_service_categories vsc ON vsc.vendor_id = vp.vendor_id
+		INNER JOIN services s ON s.service_id = vsc.service_id AND s.is_active = true
+		INNER JOIN categories c ON c.category_id = vsc.category_id AND c.is_active = true
+		INNER JOIN vendor_stores vs ON vs.vendor_store_id = vp.vendor_store_id AND vs.is_active = true
+		WHERE
+			vp.is_active = true
+		AND
+			vp.is_deleted = false
+		AND
+			vp.vendor_id = #{vendorId}
+		<if test="vendorStoreId!=null">
+		AND
+			vp.vendor_store_id = #{vendorStoreId}
+		</if>
+		AND
+			vp.product_sku IN
+			<foreach item="item" index="index" collection="productSkus" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		AND 
+				(
+			
+				vp.product_quantity_type NOT IN ('L','')
+				
+				OR
+				
+				vp.product_quantity_type IS null
+				
+				)	
+		ORDER BY vp.created_at ASC
+		
+	</select>
+	
+	<select id="getNewProductListWithOutPagination" resultMap="VendorProductResultMap">
+		
+		SELECT
+		
+			vp.vendor_product_id, vp.vendor_id, product_variant_name as product_name, pt.product_information as product_information,
+	   		vp.product_actual_price, vp.product_discounted_price, weight as product_weight, uom.uom_id as product_weight_unit, 
+	   		uom.uom_name as uomName, pt.product_specification, vp.vendor_store_id, vp.product_sku, pc.product_category_name as product_category, 
+	   		pt.product_category_id, vp.product_inventory_count, pv.barcode as product_barcode, pt.product_sub_category_id, vp.created_by,
+	   		vp.created_at, vp.updated_by, vp.updated_at, vp.is_active, vp.is_deleted, pv.product_variant_id, pt.product_template_id,
+	   		pv.product_quantity_type as product_quantity_type, pv.is_non_veg as is_non_veg, 
+	   		( SELECT product_image_url FROM product_images pi WHERE pi.product_variant_id = pv.product_variant_id limit 1) as product_image,
+			concat(ui.first_name,' ',ui.last_name) as vendorName,
+			vs.store_name
+			
+		FROM
+			vendor_products vp
+			
+		INNER JOIN user_info ui ON ui.user_id = vp.vendor_id
+		INNER JOIN users u ON u.user_id = vp.vendor_id AND u.is_active = true
+		INNER JOIN vendor_service_categories vsc ON vsc.vendor_id = vp.vendor_id
+		INNER JOIN services s ON s.service_id = vsc.service_id AND s.is_active = true
+		INNER JOIN categories c ON c.category_id = vsc.category_id AND c.is_active = true
+		INNER JOIN vendor_stores vs ON vs.vendor_store_id = vp.vendor_store_id AND vs.is_active = true
+		LEFT JOIN product_variants pv ON pv.product_variant_id = vp.product_variant_id
+		LEFT JOIN product_templates pt ON pv.product_template_id = pt.product_template_id
+		LEFT JOIN product_category pc ON pt.product_category_id = pc.product_category_id
+		LEFT JOIN unit_of_measures uom ON uom.uom_id = pt.uom_id
+		LEFT JOIN brands b ON b.brand_id = pt.brand_id
+		WHERE vp.product_variant_id is not null
+		AND
+			vp.vendor_id = #{vendorId}
+		AND
+			(
+				pv.product_variant_sku ilike #{searchKey}
+			OR
+				pc.product_category_name ilike #{searchKey}
+			OR
+				pv.product_variant_name ilike #{searchKey}
+			OR 
+				pt.product_information ilike #{searchKey}
+			)	
+		<if test="vendorStoreId!=null">
+		AND
+			vp.vendor_store_id = #{vendorStoreId}
+		</if>
+		<if test="productStatus!=null">
+		
+			<if test="productStatus==1">
+				AND
+					vp.is_active = true
+				AND
+					vp.is_deleted = false
+			</if>
+		
+			<if test="productStatus==2">
+				AND
+					vp.is_active = false
+				AND
+					vp.is_deleted = true
+			</if>
+			
+			<if test="productStatus==3">
+				AND
+					vp.product_inventory_count &lt;= 0
+			</if>
+			
+		</if>
+		<if test="productCategoryId!=null">
+			AND
+				pt.product_category_id = #{productCategoryId}
+		</if>
+		<if test="productSubCategoryId!=null">
+			AND
+				pt.product_sub_category_id = #{productSubCategoryId}
+		</if>
+			AND 
+				(
+			
+				pv.product_quantity_type NOT IN ('L','')
+				
+				OR
+				
+				pv.product_quantity_type IS null
+				
+				)
+		
+		ORDER BY pv.product_variant_name ASC
+		
+		
+	</select>
+	
+	
+	<select id="getNewVendorProductsDetailsByProductId" resultMap="VendorProductResultMap">
+		
+		SELECT
+			
+			vp.vendor_product_id, vp.vendor_id, product_variant_name as product_name, pt.product_information as product_information,
+	   		vp.product_actual_price, vp.product_discounted_price, weight as product_weight, uom.uom_id as product_weight_unit, 
+	   		uom.uom_name as uomName, pt.product_specification, vp.vendor_store_id, vp.product_sku, 
+	   		pc.product_category_name as product_category, pt.product_category_id, vp.product_inventory_count, 
+	   		pv.barcode as product_barcode, pt.product_sub_category_id, vp.created_by, vp.created_at, vp.updated_by, vp.updated_at,
+	   	    vp.is_active, vp.is_deleted, pv.product_variant_id, pt.product_template_id,
+	   	   (select product_image_url from product_images pi where pi.product_variant_id = pv.product_variant_id limit 1) as product_image 
+	   
+		FROM
+			vendor_products vp
+			
+		LEFT JOIN product_variants pv ON pv.product_variant_id = vp.product_variant_id
+		LEFT JOIN product_templates pt ON pv.product_template_id = pt.product_template_id
+		LEFT JOIN product_category pc ON pt.product_category_id = pc.product_category_id
+		LEFT JOIN unit_of_measures uom ON uom.uom_id = pt.uom_id
+		LEFT JOIN brands b ON b.brand_id = pt.brand_id
+		LEFT JOIN product_images pi ON pi.product_variant_id = pv.product_variant_id
+		WHERE
+			vp.vendor_product_id = #{vendorProductId}
+		AND
+			vp.product_variant_id is not null	
+		
+	</select>
+	
+	<select id="getVendorProductListForKPMARTByProductIds" resultMap="VendorProductResultMap">
+		
+		SELECT
+			
+			vp.vendor_product_id, vp.vendor_id, product_variant_name as product_name, pt.product_information as product_information,
+	   		vp.product_actual_price, vp.product_discounted_price, weight as product_weight, uom.uom_id as product_weight_unit, 
+	   		uom.uom_name as uomName, pt.product_specification, vp.vendor_store_id, vp.product_sku, 
+	   		pc.product_category_name as product_category, pt.product_category_id, vp.product_inventory_count, 
+	   		pv.barcode as product_barcode, pt.product_sub_category_id, vp.created_by, vp.created_at, vp.updated_by, vp.updated_at,
+	   	    vp.is_active, vp.is_deleted, pv.product_variant_id, pt.product_template_id,
+	   	   (select product_image_url from product_images pi where pi.product_variant_id = pv.product_variant_id limit 1) as product_image
+	   	   
+		FROM
+			vendor_products vp
+		INNER JOIN user_info ui ON ui.user_id = vp.vendor_id
+		INNER JOIN users u ON u.user_id = vp.vendor_id AND u.is_active = true
+		INNER JOIN vendor_service_categories vsc ON vsc.vendor_id = vp.vendor_id
+		INNER JOIN services s ON s.service_id = vsc.service_id AND s.is_active = true
+		INNER JOIN categories c ON c.category_id = vsc.category_id AND c.is_active = true
+		INNER JOIN vendor_stores vs ON vs.vendor_store_id = vp.vendor_store_id AND vs.is_active = true
+		LEFT JOIN product_variants pv ON pv.product_variant_id = vp.product_variant_id
+		LEFT JOIN product_templates pt ON pv.product_template_id = pt.product_template_id
+		LEFT JOIN product_category pc ON pt.product_category_id = pc.product_category_id
+		LEFT JOIN unit_of_measures uom ON uom.uom_id = pt.uom_id
+		LEFT JOIN brands b ON b.brand_id = pt.brand_id
+		LEFT JOIN product_images pi ON pi.product_variant_id = pv.product_variant_id
+		WHERE
+			vp.is_active = true
+		AND
+			vp.is_deleted = false
+		AND
+			vp.vendor_id = #{vendorId}
+		AND
+			vp.product_variant_id is not null	
+		<if test="vendorStoreId!=null">
+		AND
+			vp.vendor_store_id = #{vendorStoreId}
+		</if>
+		AND
+			vp.vendor_product_id IN
+			<foreach item="item" index="index" collection="productIds" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		AND 
+				(
+			
+				pv.product_quantity_type NOT IN ('L','')
+				
+				OR
+				
+				pv.product_quantity_type IS null
+				
+				)	
+		ORDER BY vp.created_at ASC
+		
+	</select>
+	
+	<select id="getNewlyAddedProductIdsList" resultMap="VendorProductResultMap">
+		
+		SELECT
+			
+			vp.vendor_product_id, vp.vendor_id, product_variant_name as product_name, pt.product_information as product_information,
+	   		vp.product_actual_price, vp.product_discounted_price, weight as product_weight, uom.uom_id as product_weight_unit, 
+	   		uom.uom_name as uomName, pt.product_specification, vp.vendor_store_id, vp.product_sku, 
+	   		pc.product_category_name as product_category, pt.product_category_id, vp.product_inventory_count, 
+	   		pv.barcode as product_barcode, pt.product_sub_category_id, vp.created_by, vp.created_at, vp.updated_by, vp.updated_at,
+	   	    vp.is_active, vp.is_deleted, pv.product_variant_id, pt.product_template_id,
+	   	   (select product_image_url from product_images pi where pi.product_variant_id = pv.product_variant_id limit 1) as product_image
+	   	   
+		FROM
+			vendor_products vp
+		INNER JOIN user_info ui ON ui.user_id = vp.vendor_id
+		INNER JOIN users u ON u.user_id = vp.vendor_id AND u.is_active = true
+		INNER JOIN vendor_service_categories vsc ON vsc.vendor_id = vp.vendor_id
+		INNER JOIN services s ON s.service_id = vsc.service_id AND s.is_active = true
+		INNER JOIN categories c ON c.category_id = vsc.category_id AND c.is_active = true
+		INNER JOIN vendor_stores vs ON vs.vendor_store_id = vp.vendor_store_id AND vs.is_active = true
+		LEFT JOIN product_variants pv ON pv.product_variant_id = vp.product_variant_id
+		LEFT JOIN product_templates pt ON pv.product_template_id = pt.product_template_id
+		LEFT JOIN product_category pc ON pt.product_category_id = pc.product_category_id
+		LEFT JOIN unit_of_measures uom ON uom.uom_id = pt.uom_id
+		LEFT JOIN brands b ON b.brand_id = pt.brand_id
+		LEFT JOIN product_images pi ON pi.product_variant_id = pv.product_variant_id
+		WHERE
+			vp.is_active = true
+		AND
+			vp.is_deleted = false
+		AND
+			vp.vendor_id = #{vendorId}
+		AND
+			vp.vendor_store_id = #{vendorStoreId}
+		AND
+			vp.product_variant_id is not null	
+		AND 
+				(
+			
+				pv.product_quantity_type NOT IN ('L','')
+				
+				OR
+				
+				pv.product_quantity_type IS null
+				
+				) 	
+		ORDER BY		
+			vp.created_at DESC
+		limit 10	
+	</select>
+	
+	<select id="getNewOrganicProductsByVendorIdAndVendorStoreIdAndProductCategory" resultMap="VendorProductResultMap">
+		
+		SELECT
+		
+			vp.vendor_product_id, vp.vendor_id, product_variant_name as product_name, pt.product_information as product_information,
+	   		vp.product_actual_price, vp.product_discounted_price, weight as product_weight, uom.uom_id as product_weight_unit, 
+	   		uom.uom_name as uomName, pt.product_specification, vp.vendor_store_id, vp.product_sku, 
+	   		pc.product_category_name as product_category, pt.product_category_id, vp.product_inventory_count, 
+	   		pv.barcode as product_barcode, pt.product_sub_category_id, vp.created_by, vp.created_at, vp.updated_by, vp.updated_at,
+	   	    vp.is_active, vp.is_deleted, pv.product_variant_id, pt.product_template_id,
+	   	   (select product_image_url from product_images pi where pi.product_variant_id = pv.product_variant_id limit 1) as product_image,
+			concat(ui.first_name,' ',ui.last_name) as vendorName,
+			vs.store_name
+		FROM
+			vendor_products vp
+		INNER JOIN user_info ui ON ui.user_id = vp.vendor_id
+		INNER JOIN users u ON u.user_id = vp.vendor_id AND u.is_active = true
+		INNER JOIN vendor_service_categories vsc ON vsc.vendor_id = vp.vendor_id
+		INNER JOIN services s ON s.service_id = vsc.service_id AND s.is_active = true
+		INNER JOIN categories c ON c.category_id = vsc.category_id AND c.is_active = true
+		INNER JOIN vendor_stores vs ON vs.vendor_store_id = vp.vendor_store_id AND vs.is_active = true
+		LEFT JOIN product_variants pv ON pv.product_variant_id = vp.product_variant_id
+		LEFT JOIN product_templates pt ON pv.product_template_id = pt.product_template_id
+		LEFT JOIN product_category pc ON pt.product_category_id = pc.product_category_id
+		LEFT JOIN unit_of_measures uom ON uom.uom_id = pt.uom_id
+		LEFT JOIN brands b ON b.brand_id = pt.brand_id
+		LEFT JOIN product_images pi ON pi.product_variant_id = pv.product_variant_id
+		WHERE
+			vp.is_active = true
+		AND
+			vp.is_deleted = false
+		AND
+			vp.vendor_id = #{vendorId}
+		AND
+			vp.vendor_store_id = #{vendorStoreId}
+		AND
+			UPPER(vp.product_category) = #{productCategory}
+		AND
+			vp.product_variant_id is not null		
+		ORDER BY vp.created_at ASC
+		
+	</select>
+	
+	<update id="updateProductNameAndWeightAndQtyTypeAndIsNonVeg" parameterType="VendorProductModel">
+		
+		UPDATE 
+			vendor_products
+		SET 
+			product_name = #{productName}, 
+			product_weight = #{productWeight}, 
+			updated_by = #{updatedBy}, 
+			updated_at = #{updatedAt},
+			product_quantity_type = #{prdQtyType},
+			is_non_veg = #{isNonVeg},
+			product_barcode = #{productBarcode}
+		WHERE 
+			product_variant_id = #{productVariantId}	
+		
+	</update>
+	
+	<select id="getProductListByProductVariantIdAndProductTemplateId" resultMap="VendorProductResultMap">
+		
+		SELECT
+			<include refid="VendorProductColumns"></include>,
+			concat(ui.first_name,' ',ui.last_name) as vendorName,
+			vs.store_name
+		FROM
+			vendor_products vp
+		INNER JOIN user_info ui ON ui.user_id = vp.vendor_id
+		INNER JOIN users u ON u.user_id = vp.vendor_id AND u.is_active = true
+		INNER JOIN vendor_service_categories vsc ON vsc.vendor_id = vp.vendor_id
+		INNER JOIN services s ON s.service_id = vsc.service_id AND s.is_active = true
+		INNER JOIN categories c ON c.category_id = vsc.category_id AND c.is_active = true
+		INNER JOIN vendor_stores vs ON vs.vendor_store_id = vp.vendor_store_id AND vs.is_active = true
+		WHERE
+			vp.is_active = true
+		AND
+			vp.is_deleted = false
+		<if test="productVariantId!=null">	
+		AND
+			vp.product_variant_id = #{productVariantId}
+		</if>
+		<if test="productTemplateId!=null">	
+		AND
+			vp.product_template_id = #{productTemplateId}
+		</if>	
+		ORDER BY vp.created_at ASC
+		
+	</select>
+	
+	<update id="updateInformationAndSpecificationAndWeightUnitAndCategoryAndSubCategory" parameterType="VendorProductModel">
+		
+		UPDATE 
+			vendor_products
+		SET 
+			product_information = #{productInformation}, 
+			product_weight_unit = #{productWeightUnit},
+			product_specification = #{productSpecification}, 
+			product_category = #{productCategory}, 
+			updated_by = #{updatedBy}, 
+			updated_at = #{updatedAt},
+			product_category_id = #{productCategoryId},
+			product_sub_category_id = #{productSubCategoryId}
+		WHERE 
+			product_template_id = #{productTemplateId}	
+		
+	</update>
+	
+	<update id="updateProductCategory" parameterType="VendorProductModel">
+		
+		UPDATE 
+			vendor_products
+		SET 
+			 
+			product_category = #{productCategory}, 
+			updated_by = #{updatedBy}, 
+			updated_at = #{updatedAt}
+		WHERE 
+			product_category_id = #{productCategoryId}	
+		
+	</update>
+	
+	<select id="isVendorStoreIdAndProductVariantIdExists" resultType="boolean">
+		
+		SELECT
+			(count(*)>0)
+		FROM
+			vendor_products vp
+		WHERE
+			vp.vendor_store_id = #{vendorStoreId}
+		AND
+			vp.product_variant_id = #{productVariantId}	
+		<if test="vendorProductId!=null">
+		AND
+			vp.vendor_product_id != #{vendorProductId}
+		</if>
+		
+	</select>
+	
+	<select id="getBrandProductsListForDashboard" resultMap="VendorProductResultMap">
+	
+		SELECT 
+			pv.product_variant_id, pv.product_variant_name as product_name, sum(quantity)  as products_in_cart, 
+			product_variant_price as product_discounted_price, ( sum(quantity) * product_variant_price ) as cart_value
+		FROM 
+			vendor_products vp
+		
+		INNER JOIN product_variants pv ON pv.product_variant_id = vp.product_variant_id
+		INNER JOIN product_templates pt ON pt.product_template_id = pv.product_template_id and pt.brand_id = #{brandId}
+		LEFT JOIN cart c ON c.vendor_product_id = vp.vendor_product_id
+		
+		GROUP BY 
+			pv.product_variant_id
+		
+	</select>
+	
+	<select id="getDistinctVendorStoreIdsBasedonBrandId" resultType="String">
+		
+		SELECT 
+			DISTINCT(vendor_store_id) 
+		FROM 
+			vendor_products vp
+		INNER JOIN product_variants pv on pv.product_variant_id = vp.product_variant_id
+		INNER JOIN product_templates pt on pt.product_template_id = pv.product_template_id and pt.brand_id = #{brandId}
+		
+	</select>
+	
+	<select id="getProductListForApiSearch" resultMap="VendorProductResultMap">
+		
+		SELECT
+			<include refid="VendorProductColumns"></include>,
+			concat(ui.first_name,' ',ui.last_name) as vendorName,
+			vs.store_name, vs.store_address_lat as store_lat, vs.store_address_lng as store_lng,
+			vs.store_image, vs.store_address, vs.is_closed_today, s.service_id
+		FROM
+			vendor_products vp
+		INNER JOIN user_info ui ON ui.user_id = vp.vendor_id
+		INNER JOIN users u ON u.user_id = vp.vendor_id AND u.is_active = true
+		INNER JOIN vendor_service_categories vsc ON vsc.vendor_id = vp.vendor_id
+		INNER JOIN services s ON s.service_id = vsc.service_id AND s.is_active = true
+		INNER JOIN categories c ON c.category_id = vsc.category_id AND c.is_active = true
+		INNER JOIN vendor_stores vs ON vs.vendor_store_id = vp.vendor_store_id AND vs.is_active = true
+		WHERE
+				(
+					vp.product_barcode ilike #{searchKey}
+				OR  	
+					vp.product_name ilike #{searchKey}
+				OR 
+					vp.product_information ilike #{searchKey}
+				OR
+					vp.product_category ilike #{searchKey}
+				)
+		
+		<if test="productStatus!=null">
+		
+			<if test="productStatus==1">
+				AND
+					vp.is_active = true
+				AND
+					vp.is_deleted = false
+			</if>
+		
+			<if test="productStatus==2">
+				AND
+					vp.is_active = false
+				AND
+					vp.is_deleted = true
+			</if>
+			
+			<if test="productStatus==3">
+				AND
+					vp.product_inventory_count &lt;= 0
+			</if>
+			
+		</if>
+		<if test="filterOrder!=null">
+		ORDER BY vp.product_inventory_count ${filterOrder}, vp.product_name ASC
+		</if>
+		<if test="filterOrder==null">
+		ORDER BY vp.product_name ASC
+		</if>
+		<if test="length>0">
+		LIMIT #{length} OFFSET #{start}
+		</if>
+		
+	</select>
+	
+</mapper>

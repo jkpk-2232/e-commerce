@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.webapp.daos.VendorStoreSubVendorDao">
+
+	<resultMap id="VendorStoreSubVendorModelResultMap" type="VendorStoreSubVendorModel">
+	
+		<result property="vendorStoreSubVendorId" column="vendor_store_sub_vendor_id" />
+		<result property="vendorStoreId" column="vendor_store_id" />
+		<result property="vendorId" column="vendor_id" />
+		<result property="subVendorId" column="sub_vendor_id" />
+
+		<result property="createdBy" column="created_by" />
+		<result property="createdAt" column="created_at" />
+		<result property="updatedBy" column="updated_by" />
+		<result property="updatedAt" column="updated_at" />
+		
+	</resultMap>
+	
+	<sql id="VendorStoreSubVendorColumns">
+		DISTINCT vssv.vendor_store_sub_vendor_id, vssv.vendor_store_id, vssv.vendor_id, 
+		vssv.sub_vendor_id, vssv.created_at, vssv.created_by, vssv.updated_at, 
+		vssv.updated_by
+	</sql>
+	
+	<insert id="batchInsertVendorStoreSubVendorEntry" parameterType="java.util.List">
+	
+		INSERT INTO vendor_store_sub_vendors
+			(
+				vendor_store_sub_vendor_id, vendor_store_id, vendor_id, 
+				sub_vendor_id, created_at, created_by, updated_at, updated_by
+			)
+    	VALUES 
+    		<foreach collection="list" item="modal" separator=",">
+    		(
+    			#{modal.vendorStoreSubVendorId}, #{modal.vendorStoreId}, #{modal.vendorId}, 
+    			#{modal.subVendorId}, #{modal.createdAt}, #{modal.createdBy}, #{modal.updatedAt}, #{modal.updatedBy}
+            )
+			</foreach>
+			
+	</insert>
+	
+	<select id="getVendorStoresAddedToTheSubVendor" resultMap="VendorStoreSubVendorModelResultMap">
+		
+		SELECT
+			<include refid="VendorStoreSubVendorColumns"></include>
+		FROM
+			vendor_store_sub_vendors vssv
+		INNER JOIN vendor_stores vs ON vs.vendor_store_id = vssv.vendor_store_id
+		WHERE
+			vssv.sub_vendor_id = #{subVendorId}
+		<if test="fetchAllStores!=null">
+		AND
+			vs.is_active = true
+		</if>
+			
+	</select>
+	
+	<delete id="deleteMapSubVendorsToVendorStore" parameterType="VendorStoreSubVendorModel">
+		DELETE FROM vendor_store_sub_vendors WHERE sub_vendor_id = #{subVendorId}
+	</delete>
+	
+	<select id="getSubVendorsAllocatedToTheStore" resultMap="VendorStoreSubVendorModelResultMap">
+		
+		SELECT
+			<include refid="VendorStoreSubVendorColumns"></include>
+		FROM
+			vendor_store_sub_vendors vssv
+		WHERE
+			vssv.vendor_store_id = #{vendorStoreId}
+			
+	</select>
+	
+</mapper>

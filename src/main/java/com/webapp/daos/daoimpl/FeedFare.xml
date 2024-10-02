@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="com.webapp.daos.FeedFareDao">
+
+
+	<resultMap id="FeedFareResultMap" type="FeedFareModel" >
+  
+		<result property="feedFareId" column="feed_fare_id" />
+		<result property="feedSettingsId" column="feed_settings_id" />
+		<result property="serviceId" column="service_id" />
+		
+		<result property="baseFare" column="base_fare" />
+		<result property="perMinuteFare" column="per_minute_fare" />
+		<result property="GSTPercentage" column="gst_fare" />
+		
+		<result property="createdAt" column="created_at" />
+		<result property="updatedAt" column="updated_at" />
+		<result property="createdBy" column="created_by" />
+		<result property="updatedBy" column="updated_by" />
+		
+		
+	</resultMap>
+
+	<insert id="insertFeedFareBatch" parameterType="java.util.List">
+	
+		INSERT INTO 
+			feed_fare 
+				(
+					feed_fare_id, feed_settings_id, service_id, base_fare, per_minute_fare, gst_fare,
+					created_at, created_by, updated_at, updated_by
+				)
+					
+		VALUES
+			<foreach collection="feedFareModelList" item="feedFareModel"  separator=",">
+				(
+					#{feedFareModel.feedFareId}, #{feedFareModel.feedSettingsId}, #{feedFareModel.serviceId}, 
+					#{feedFareModel.baseFare}, #{feedFareModel.perMinuteFare}, #{feedFareModel.GSTPercentage},
+					#{feedFareModel.createdAt}, #{feedFareModel.createdBy}, #{feedFareModel.updatedAt}, #{feedFareModel.updatedBy}
+				)
+			</foreach>
+				
+	</insert>
+	
+	<select id="getFeedFareListByFeedSettingsId" parameterType="map"  resultMap="FeedFareResultMap">
+	
+		SELECT 
+			feed_fare_id, feed_settings_id, service_id, base_fare, per_minute_fare, gst_fare,
+			created_at, created_by, updated_at, updated_by
+			
+		FROM 
+			feed_fare		
+			
+		WHERE 
+	    
+	    	feed_settings_id = #{feedSettingsId}
+	    	
+	</select>
+	
+	<update id="deleteFeedFareByFeedSettingsId" parameterType="FeedFareModel"> 	
+	
+		DELETE FROM 
+			feed_fare 
+		WHERE 
+			feed_settings_id = #{feedSettingsId}
+			
+	</update>
+	
+	<select id="getFeedFareListByFeedSettingsIdAndServiceId"   resultMap="FeedFareResultMap">
+	
+		SELECT 
+			feed_fare_id, feed_settings_id, service_id, base_fare, per_minute_fare, gst_fare,
+			created_at, created_by, updated_at, updated_by
+			
+		FROM 
+			feed_fare		
+			
+		WHERE 
+	    
+	    	feed_settings_id = #{feedSettingsId}
+	    	
+	    <if test="serviceIdList != null">	
+		AND
+			service_id IN
+			<foreach item="item" index="index" collection="serviceIdList" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>	
+	</select>
+	
+	<select id="getFeedFareDetailsByFeedSettingsIdAndServiceId"   resultMap="FeedFareResultMap">
+	
+		SELECT 
+			feed_fare_id, feed_settings_id, service_id, base_fare, per_minute_fare, gst_fare,
+			created_at, created_by, updated_at, updated_by
+			
+		FROM 
+			feed_fare		
+			
+		WHERE 
+	    
+	    	feed_settings_id = #{feedSettingsId}
+	    	
+		AND
+			service_id = #{serviceId}
+				
+	</select>
+
+</mapper>

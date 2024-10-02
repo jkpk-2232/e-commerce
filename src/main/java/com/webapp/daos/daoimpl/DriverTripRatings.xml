@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.webapp.daos.DriverTripRatingsDao">
+
+	<resultMap id="driverTripRatingsResultMap" type="DriverTripRatingsModel" >
+	    
+		<result property="driverTripRatingsId" column="driver_trip_ratings_id" />
+		<result property="passengerId" column="passenger_id" />
+		<result property="tripId" column="trip_id" />
+		<result property="driverId" column="driver_id" />
+		<result property="note" column="note" />
+		<result property="rate" column="rate" />
+		
+		<result property="driverJobId" column="driver_job_id" />
+		
+		<result property="createdAt" column="created_at" />
+		<result property="updatedAt" column="updated_at" />
+		<result property="createdBy" column="created_by" />
+		<result property="updatedBy" column="updated_by" />
+		
+	</resultMap>
+
+	<insert id="ratingsByDriver" useGeneratedKeys="true" parameterType="DriverTripRatingsModel">
+
+		INSERT INTO 
+			driver_trip_ratings
+				(
+					driver_trip_ratings_id,passenger_id,trip_id,driver_id,
+					note,rate,created_at,created_by
+				)
+		VALUES
+				(
+					#{driverTripRatingsId},#{passengerId},#{tripId},#{driverId},
+					#{note},#{rate},#{createdAt},#{createdBy}
+				)
+				
+	</insert>
+	
+	<select id="getPassengerIdFromTours" parameterType="String" resultType="String">
+		
+		 SELECT 
+			 passenger_id 
+		 FROM 
+		 	tours 
+		 WHERE 
+		 	tour_id= #{tripId}
+	    
+	</select>
+	
+	<select id="getDriversTripRatingsList" parameterType="String" resultType="DriverTripRatingsModel">
+	
+		SELECT 
+		 	rate 
+	 	FROM 
+	 		driver_trip_ratings 
+ 		WHERE 
+ 			driver_id = #{driverId}
+ 			
+	</select>
+	
+	<select id="getAllPassangerRatings" parameterType="String" resultType="DriverTripRatingsModel">
+	
+		SELECT 
+		 	rate 
+	 	FROM 
+	 		driver_trip_ratings 
+ 		WHERE 
+ 			passenger_id = #{passangerId}
+ 			
+	</select>
+	
+	<select id="getRatingDetailsByTourId" parameterType="String" resultType="DriverTripRatingsModel">
+	
+		SELECT 
+		 	rate, note
+	 	FROM 
+	 		driver_trip_ratings 
+ 		WHERE 
+ 			trip_id = #{tripId}
+ 			
+	</select>
+	
+	<select id="checkRating" parameterType="map" resultType="int">
+	
+		SELECT 
+		 	 count(*)
+	 	FROM 
+	 		driver_trip_ratings 
+ 		WHERE 
+ 			passenger_id = #{passangerId}
+ 		AND 
+ 		    driver_id = #{driverId}	
+ 		    
+	</select>
+	
+</mapper> 

@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.webapp.daos.TourTaxDao">
+
+	<resultMap id="tourTaxResultMap" type="TourTaxModel" >
+	
+		<result property="tourTaxId" column="tour_tax_id" /> 
+		<result property="tourId" column="tour_id" />
+		<result property="taxId" column="tax_id" />
+		<result property="taxPercentage" column="tax_percentage" />
+		<result property="taxAmount" column="tax_amount" />
+		
+		<result property="recordStatus" column="record_status" />
+		<result property="createdAt" column="created_at" />
+		<result property="createdBy" column="created_by" />
+		<result property="updatedAt" column="updated_at" />
+		<result property="updatedBy" column="updated_by" />
+		
+		<result property="taxName" column="tax_name" />
+		
+	</resultMap>
+	
+	<insert id="insertTourTaxBatch" parameterType="java.util.List">
+	
+		INSERT INTO 
+			tour_taxes 
+				(
+					tour_tax_id, tour_id, tax_id, tax_percentage, tax_amount,
+					record_status, created_at, created_by, updated_at, updated_by
+				)
+		VALUES
+			<foreach collection="tourTaxModelList" item="tourTaxModel"  separator=",">
+				(
+					#{tourTaxModel.tourTaxId}, #{tourTaxModel.tourId}, #{tourTaxModel.taxId}, #{tourTaxModel.taxPercentage}, #{tourTaxModel.taxAmount},
+					#{tourTaxModel.recordStatus}, #{tourTaxModel.createdAt}, #{tourTaxModel.createdBy}, #{tourTaxModel.updatedAt}, #{tourTaxModel.updatedBy}
+				)
+			</foreach>
+				
+	</insert>
+	
+	<select id="getTourTaxDetailsById" parameterType="String" resultMap="tourTaxResultMap">
+	
+		SELECT 
+			tour_tax_id, tour_id, tax_id, tax_percentage, tax_amount,
+			record_status, created_at, created_by, updated_at, updated_by
+		FROM 
+			tour_taxes 
+		WHERE 
+			tour_tax_id = #{tourTaxId} 
+		AND 
+			record_status = 'A'
+			
+	</select>
+	
+	<select id="getTourTaxListByTourId"  resultMap="tourTaxResultMap">
+		
+		SELECT     
+			TT.tour_tax_id, TT.tour_id, TT.tax_id, TT.tax_percentage, TT.tax_amount,
+			TT.record_status, TT.created_at, TT.created_by, TT.updated_at, TT.updated_by,
+			T.tax_name
+		FROM 
+			tour_taxes TT
+		LEFT JOIN
+				taxes T
+		ON
+			T.tax_id = TT.tax_id
+		WHERE 
+			TT.record_status = 'A'  
+		AND
+			TT.tour_id = #{tourId}
+			
+		ORDER BY T.tax_name
+        
+	</select>
+	
+</mapper>

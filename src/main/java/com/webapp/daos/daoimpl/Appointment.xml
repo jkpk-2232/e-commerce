@@ -1,0 +1,575 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.webapp.daos.AppointmentDao">
+
+	<resultMap id="AppointmentResultMap" type="AppointmentModel">
+	
+		<result property="appointmentId" column="appointment_id" />
+		<result property="appointmentShortId" column="appointment_short_id" />
+		<result property="appointmentUserId" column="appointment_user_id" />
+		<result property="appointmentReceivedAgainstVendorId" column="appointment_received_against_vendor_id" />
+		<result property="appointmentVendorStoreId" column="appointment_vendor_store_id" />
+		<result property="appointmentCreationTime" column="appointment_creation_time" />
+		<result property="appointmentTime" column="appointment_time" />
+		<result property="appointmentTimeString" column="appointment_time_string" />
+		<result property="appointmentStatus" column="appointment_status" />
+		<result property="appointmentPromoCodeId" column="appointment_promo_code_id" />
+		<result property="appointmentPromoCodeDiscount" column="appointment_promo_code_discount" />
+		<result property="appointmentTotal" column="appointment_total" />
+		<result property="appointmentCharges" column="appointment_charges" />
+		<result property="appointmentNumberOfItems" column="appointment_number_of_items" />
+		<result property="paymentMode" column="payment_mode" />
+		<result property="paymentStatus" column="payment_status" />
+		<result property="serviceTypeId" column="service_type_id" />
+		<result property="multicityCityRegionId" column="multicity_city_region_id" />
+		<result property="multicityCountryId" column="multicity_country_id" />
+		<result property="endOtp" column="end_otp" />
+		<result property="paymentToken" column="payment_token" />
+		<result property="paymentTokenGeneratedTime" column="payment_token_generated_time" />
+		
+		<result property="recordStatus" column="record_status" />
+		<result property="createdBy" column="created_by" />
+		<result property="createdAt" column="created_at" />
+		<result property="updatedBy" column="updated_by" />
+		<result property="updatedAt" column="updated_at" />
+
+		<result property="promoCode" column="promo_code" />
+		<result property="customerName" column="customerName" />
+		<result property="customerPhoneNo" column="customerPhoneNo" />
+		<result property="customerPhoneNoCode" column="customerPhoneNoCode" />
+		<result property="vendorName" column="vendorName" />
+		<result property="storeName" column="store_name" />
+		<result property="storeAddress" column="store_address" />
+		<result property="storeAddressLat" column="store_address_lat" />
+		<result property="storeAddressLng" column="store_address_lng" />
+		<result property="cronJobExpireTimeMins" column="cron_job_expire_time_mins" />
+		
+		<collection property="appointmentItemList" javaType="ArrayList" column="order_id" ofType="OrderItemModel" resultMap="com.webapp.daos.OrderItemDao.OrderItemResultMap" />
+		
+	</resultMap>
+	
+	<resultMap id="StatsResultMap" type="StatsModel">
+		<result property="userId" column="userId" />
+		<result property="revenue" column="revenue" />
+		<result property="numberOfOrders" column="numberOfOrders" />
+	</resultMap>
+	
+	<sql id="AppointmentColumns">
+		a.appointment_id, a.appointment_short_id, a.appointment_user_id, a.appointment_received_against_vendor_id, 
+		a.appointment_vendor_store_id, a.appointment_creation_time, a.appointment_time, a.appointment_time_string, 
+		a.appointment_status, a.appointment_promo_code_id, a.appointment_promo_code_discount, a.appointment_total, 
+		a.appointment_charges, a.appointment_number_of_items, a.payment_mode, a.payment_status, a.service_type_id, 
+		a.multicity_country_id, a.multicity_city_region_id, a.end_otp, a.payment_token, a.payment_token_generated_time, 
+		a.record_status, a.created_by, a.created_at, a.updated_by, a.updated_at
+	</sql>
+	
+	<sql id="OrderItemColumns">
+		oi.order_item_id, oi.order_id, oi.number_of_items_ordered, 
+		oi.vendor_product_id, oi.vendor_id, oi.product_name, oi.product_information, 
+		oi.product_actual_price, oi.product_discounted_price, oi.product_weight, 
+		oi.product_weight_unit, oi.product_specification, oi.product_image, oi.is_paid, 
+		oi.created_by, oi.created_at, oi.updated_by, oi.updated_at, oi.product_sku,
+		oi.product_category
+	</sql>
+	
+	<sql id="VendorStoreColumns">
+		vs.store_name, vs.store_image, vs.store_address,
+		vs.store_address_lat, vs.store_address_lng
+	</sql>
+	
+	<insert id="insertAppointment" useGeneratedKeys="true" parameterType="AppointmentModel">
+	
+		INSERT INTO appointments
+			(
+				appointment_id, appointment_user_id, appointment_received_against_vendor_id, 
+				appointment_vendor_store_id, appointment_creation_time, appointment_time, appointment_time_string, 
+				appointment_status, appointment_promo_code_id, appointment_promo_code_discount, appointment_total, 
+				appointment_charges, appointment_number_of_items, payment_mode, payment_status, service_type_id, 
+				multicity_country_id, multicity_city_region_id, end_otp, payment_token, payment_token_generated_time,
+				record_status, created_by, created_at, updated_by, updated_at
+			)
+		VALUES 
+			(
+				#{appointmentId}, #{appointmentUserId}, #{appointmentReceivedAgainstVendorId}, 
+				#{appointmentVendorStoreId}, #{appointmentCreationTime}, #{appointmentTime}, #{appointmentTimeString}, 
+				#{appointmentStatus}, #{appointmentPromoCodeId}, #{appointmentPromoCodeDiscount}, #{appointmentTotal}, 
+				#{appointmentCharges}, #{appointmentNumberOfItems}, #{paymentMode}, #{paymentStatus}, #{serviceTypeId}, 
+				#{multicityCountryId}, #{multicityCityRegionId}, #{endOtp}, #{paymentToken}, #{paymentTokenGeneratedTime}, 
+				#{recordStatus}, #{createdBy}, #{createdAt}, #{updatedBy}, #{updatedAt}
+			);
+			
+	</insert>
+	
+	<update id="updateAppointment" parameterType="AppointmentModel">
+	
+		UPDATE 
+			appointments
+		SET 
+			appointment_user_id=#{appointmentUserId},
+			appointment_received_against_vendor_id=#{appointmentReceivedAgainstVendorId},
+			appointment_vendor_store_id=#{appointmentVendorStoreId}, 
+			appointment_creation_time=#{appointmentCreationTime},
+			appointment_time=#{appointmentTime}, 
+			appointment_status=#{appointmentStatus}, 
+			appointment_promo_code_id=#{appointmentPromoCodeId}, 
+			appointment_promo_code_discount=#{appointmentPromoCodeDiscount},
+			appointment_total=#{appointmentTotal}, 
+			appointment_charges=#{appointmentCharges}, 
+			appointment_number_of_items=#{appointmentNumberOfItems}, 
+			payment_mode=#{paymentMode}, 
+			payment_status=#{paymentStatus}, 
+			service_type_id=#{serviceTypeId}, 
+			multicity_country_id=#{multicityCountryId},
+			multicity_city_region_id=#{multicityCityRegionId}, 
+			end_otp=#{endOtp},
+			payment_token=#{paymentToken}, 
+			payment_token_generated_time=#{paymentTokenGeneratedTime}, 
+			updated_by=#{updatedBy},
+			updated_at=#{updatedAt}
+		WHERE 
+			appointment_id = #{appointmentId}
+			
+	</update>
+	
+	<select id="getAppointmentLimitedDetailsByAppointmentId" resultMap="AppointmentResultMap">
+		
+		SELECT
+			<include refid="AppointmentColumns"></include>
+		FROM
+			appointments a
+		WHERE
+			a.appointment_id = #{appointmentId}
+		
+	</select>
+	
+	<select id="getAppointmentsByUserId" resultMap="AppointmentResultMap">
+		
+		SELECT
+			<include refid="AppointmentColumns"></include>,
+			<include refid="OrderItemColumns"></include>,
+			<include refid="VendorStoreColumns"></include>,
+			concat(vui.first_name,' ',vui.last_name) AS vendorName,
+			concat(cui.first_name,' ',cui.last_name) AS customerName,
+			pc.promo_code
+		FROM
+			appointments a
+		INNER JOIN order_items oi ON oi.order_id = a.appointment_id
+		INNER JOIN user_info cui ON cui.user_id = a.appointment_user_id
+		INNER JOIN user_info vui ON vui.user_id = a.appointment_received_against_vendor_id
+		INNER JOIN vendor_stores vs ON vs.vendor_store_id = a.appointment_vendor_store_id
+		LEFT JOIN promo_code pc ON pc.promo_code_id = a.appointment_promo_code_id
+		WHERE
+			a.appointment_user_id = #{userId}
+		<if test="appointmentShortId!=-1">
+		AND
+			(
+				a.appointment_short_id = #{appointmentShortId}
+			)
+		</if>
+		AND
+			a.appointment_status NOT IN
+	    	<foreach item="status" index="index" collection="statusNotToBeConsidered" open="(" separator="," close=")">
+				#{status}
+			</foreach>
+		ORDER BY a.appointment_time DESC
+		LIMIT #{length} OFFSET #{start}
+		
+	</select>
+	
+	<select id="getAppointmentDetailsByAppointmentIdWithOrderItems" resultMap="AppointmentResultMap">
+		
+		SELECT
+			<include refid="AppointmentColumns"></include>,
+			<include refid="OrderItemColumns"></include>,
+			<include refid="VendorStoreColumns"></include>,
+			concat(vui.first_name,' ',vui.last_name) AS vendorName,
+			concat(cui.first_name,' ',cui.last_name) AS customerName,
+			cui.phone_no_code AS customerPhoneNoCode, cui.phone_no AS customerPhoneNo,
+			pc.promo_code
+		FROM
+			appointments a
+		INNER JOIN order_items oi ON oi.order_id = a.appointment_id
+		INNER JOIN user_info cui ON cui.user_id = a.appointment_user_id
+		INNER JOIN user_info vui ON vui.user_id = a.appointment_received_against_vendor_id
+		INNER JOIN vendor_service_categories vsc ON vsc.vendor_id = a.appointment_received_against_vendor_id
+		INNER JOIN services s ON s.service_id = vsc.service_id
+		INNER JOIN categories c ON c.category_id = vsc.category_id
+		INNER JOIN vendor_stores vs ON vs.vendor_store_id = a.appointment_vendor_store_id
+		LEFT JOIN promo_code pc ON pc.promo_code_id = a.appointment_promo_code_id
+		WHERE
+			a.appointment_id = #{appointmentId}
+		
+	</select>
+	
+	<select id="getAppointmentDetailsByPaymentToken" resultMap="AppointmentResultMap">
+		
+		SELECT
+			<include refid="AppointmentColumns"></include>
+		FROM
+			appointments a
+		WHERE
+			a.payment_token = #{paymentToken}
+		
+	</select>
+	
+	<select id="getAppointmentDetailsByAppointmentId" resultMap="AppointmentResultMap">
+		
+		SELECT
+			<include refid="AppointmentColumns"></include>,
+			<include refid="VendorStoreColumns"></include>,
+			concat(vui.first_name,' ',vui.last_name) AS vendorName,
+			concat(cui.first_name,' ',cui.last_name) AS customerName,
+			cui.phone_no_code AS customerPhoneNoCode, cui.phone_no AS customerPhoneNo,
+			pc.promo_code
+		FROM
+			appointments a
+		INNER JOIN user_info cui ON cui.user_id = a.appointment_user_id
+		INNER JOIN user_info vui ON vui.user_id = a.appointment_received_against_vendor_id
+		INNER JOIN vendor_service_categories vsc ON vsc.vendor_id = a.appointment_received_against_vendor_id
+		INNER JOIN services s ON s.service_id = vsc.service_id
+		INNER JOIN categories c ON c.category_id = vsc.category_id
+		LEFT JOIN vendor_stores vs ON vs.vendor_store_id = a.appointment_vendor_store_id
+		LEFT JOIN promo_code pc ON pc.promo_code_id = a.appointment_promo_code_id
+		WHERE
+			a.appointment_id = #{appointmentId}
+		
+	</select>
+	
+	<update id="updatePaymentStatus" parameterType="AppointmentModel">
+		
+		UPDATE 
+			appointments
+		SET
+			payment_status = #{paymentStatus},
+			updated_by = #{updatedBy},
+			updated_at = #{updatedAt}
+		WHERE
+			appointment_id = #{appointmentId}
+		
+	</update>
+	
+	<select id="getAppointmentsSearchAPI" resultMap="AppointmentResultMap">
+	
+		SELECT
+			<include refid="AppointmentColumns"></include>,
+			<include refid="OrderItemColumns"></include>,
+			<include refid="VendorStoreColumns"></include>,
+			concat(vui.first_name,' ',vui.last_name) AS vendorName,
+			concat(cui.first_name,' ',cui.last_name) AS customerName,
+			cui.phone_no_code AS customerPhoneNoCode, cui.phone_no AS customerPhoneNo
+		FROM
+			appointments a
+		INNER JOIN user_info cui ON cui.user_id = a.appointment_user_id
+		INNER JOIN user_info vui ON vui.user_id = a.appointment_received_against_vendor_id
+		INNER JOIN vendor_service_categories vsc ON vsc.vendor_id = a.appointment_received_against_vendor_id
+		INNER JOIN vendor_stores vs ON vs.vendor_store_id = a.appointment_vendor_store_id
+		INNER JOIN services s ON s.service_id = vsc.service_id
+		INNER JOIN categories c ON c.category_id = vsc.category_id
+		INNER JOIN order_items oi ON oi.order_id = a.appointment_id
+		WHERE
+			(
+				concat(vui.first_name,' ',vui.last_name ) ilike #{searchKey}
+			OR
+				concat(cui.first_name,' ',cui.last_name ) ilike #{searchKey}
+			<if test="appointmentShortIdSearch!=-1">
+			OR
+				a.appointment_short_id = #{appointmentShortIdSearch}
+			</if>
+			)
+		AND
+			a.appointment_status IN
+	    	<foreach item="status" index="index" collection="appointmentStatus" open="(" separator="," close=")">
+				#{status}
+			</foreach>
+		<if test="vendorId!=null">
+		AND
+			a.appointment_received_against_vendor_id = #{vendorId}
+		</if>
+		<if test="vendorStoreIdList!=null">
+		AND
+			a.appointment_vendor_store_id IN
+			<foreach item="item" index="index" collection="vendorStoreIdList" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+		ORDER BY a.appointment_time DESC
+		<if test="length>0">
+		LIMIT #{length} OFFSET #{start}
+		</if>
+	
+	</select>
+	
+	<update id="updateAppointmentStatus" parameterType="AppointmentModel">
+		
+		UPDATE 
+			appointments
+		SET
+			appointment_status = #{appointmentStatus},
+			updated_by = #{updatedBy},
+			updated_at = #{updatedAt}
+		WHERE
+			appointment_id = #{appointmentId}
+		
+	</update>
+	
+	<select id="getAppointmentsCount" resultType="int">
+	
+		SELECT
+			count(a.appointment_id)
+		FROM
+			appointments a
+		INNER JOIN user_info cui ON cui.user_id = a.appointment_user_id
+		INNER JOIN user_info vui ON vui.user_id = a.appointment_received_against_vendor_id
+		INNER JOIN vendor_service_categories vsc ON vsc.vendor_id = a.appointment_received_against_vendor_id
+		INNER JOIN vendor_stores vs ON vs.vendor_store_id = a.appointment_vendor_store_id
+		INNER JOIN services s ON s.service_id = vsc.service_id
+		INNER JOIN categories c ON c.category_id = vsc.category_id
+		WHERE
+			a.appointment_creation_time &gt;= #{startDatelong}
+		AND
+			a.appointment_creation_time &lt;= #{endDatelong}
+		<if test="appointmentStatusFilter==null">
+		AND
+			a.appointment_status IN
+	    	<foreach item="status" index="index" collection="appointmentStatus" open="(" separator="," close=")">
+				#{status}
+			</foreach>
+		</if>
+		<if test="appointmentStatusFilter!=null">
+		AND
+			a.appointment_status = #{appointmentStatusFilter}
+		</if>
+		<if test="vendorId!=null">
+		AND
+			a.appointment_received_against_vendor_id = #{vendorId}
+		</if>
+		<if test="vendorStoreIdList!=null">
+		AND
+			a.appointment_vendor_store_id IN
+			<foreach item="item" index="index" collection="vendorStoreIdList" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+		<if test="serviceId!=null">
+		AND
+			vsc.service_id = #{serviceId}
+		</if>
+		<if test="categoryId!=null">
+		AND
+			vsc.category_id = #{categoryId}
+		</if>
+	
+	</select>
+	
+	<select id="getAppointmentsSearch" resultMap="AppointmentResultMap">
+	
+		SELECT
+			<include refid="AppointmentColumns"></include>,
+			<include refid="VendorStoreColumns"></include>,
+			concat(vui.first_name,' ',vui.last_name) AS vendorName,
+			concat(cui.first_name,' ',cui.last_name) AS customerName,
+			cui.phone_no_code AS customerPhoneNoCode, cui.phone_no AS customerPhoneNo
+		FROM
+			appointments a
+		INNER JOIN user_info cui ON cui.user_id = a.appointment_user_id
+		INNER JOIN user_info vui ON vui.user_id = a.appointment_received_against_vendor_id
+		INNER JOIN vendor_service_categories vsc ON vsc.vendor_id = a.appointment_received_against_vendor_id
+		INNER JOIN vendor_stores vs ON vs.vendor_store_id = a.appointment_vendor_store_id
+		INNER JOIN services s ON s.service_id = vsc.service_id
+		INNER JOIN categories c ON c.category_id = vsc.category_id
+		WHERE
+			(
+				concat(vui.first_name,' ',vui.last_name ) ilike #{searchKey}
+			OR
+				concat(cui.first_name,' ',cui.last_name ) ilike #{searchKey}
+			<if test="appointmentShortIdSearch!=-1">
+			OR
+				a.appointment_short_id = #{appointmentShortIdSearch}
+			</if>
+			)
+		<if test="startDatelong>0">
+		AND
+			a.appointment_creation_time &gt;= #{startDatelong}
+		AND
+			a.appointment_creation_time &lt;= #{endDatelong}
+		</if>
+		<if test="appointmentStatusFilter==null">
+		AND
+			a.appointment_status IN
+	    	<foreach item="status" index="index" collection="appointmentStatus" open="(" separator="," close=")">
+				#{status}
+			</foreach>
+		</if>
+		<if test="appointmentStatusFilter!=null">
+		AND
+			a.appointment_status = #{appointmentStatusFilter}
+		</if>
+		<if test="vendorId!=null">
+		AND
+			a.appointment_received_against_vendor_id = #{vendorId}
+		</if>
+		<if test="vendorStoreIdList!=null">
+		AND
+			a.appointment_vendor_store_id IN
+			<foreach item="item" index="index" collection="vendorStoreIdList" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+		<if test="serviceId!=null">
+		AND
+			vsc.service_id = #{serviceId}
+		</if>
+		<if test="categoryId!=null">
+		AND
+			vsc.category_id = #{categoryId}
+		</if>
+		ORDER BY a.appointment_creation_time DESC
+		<if test="length>0">
+		LIMIT #{length} OFFSET #{start}
+		</if>
+	
+	</select>
+	
+	<select id="getAppointmentsSearchCount" resultType="int">
+	
+		SELECT
+			count(a.appointment_id)
+		FROM
+			appointments a
+		INNER JOIN user_info cui ON cui.user_id = a.appointment_user_id
+		INNER JOIN user_info vui ON vui.user_id = a.appointment_received_against_vendor_id
+		INNER JOIN vendor_service_categories vsc ON vsc.vendor_id = a.appointment_received_against_vendor_id
+		INNER JOIN vendor_stores vs ON vs.vendor_store_id = a.appointment_vendor_store_id
+		INNER JOIN services s ON s.service_id = vsc.service_id
+		INNER JOIN categories c ON c.category_id = vsc.category_id
+		WHERE
+			(
+				concat(vui.first_name,' ',vui.last_name ) ilike #{searchKey}
+			OR
+				concat(cui.first_name,' ',cui.last_name ) ilike #{searchKey}
+			<if test="appointmentShortIdSearch!=-1">
+			OR
+				a.appointment_short_id = #{appointmentShortIdSearch}
+			</if>
+			)
+		<if test="startDatelong>0">
+		AND
+			a.appointment_creation_time &gt;= #{startDatelong}
+		AND
+			a.appointment_creation_time &lt;= #{endDatelong}
+		</if>
+		<if test="appointmentStatusFilter==null">
+		AND
+			a.appointment_status IN
+	    	<foreach item="status" index="index" collection="appointmentStatus" open="(" separator="," close=")">
+				#{status}
+			</foreach>
+		</if>
+		<if test="appointmentStatusFilter!=null">
+		AND
+			a.appointment_status = #{appointmentStatusFilter}
+		</if>
+		<if test="vendorId!=null">
+		AND
+			a.appointment_received_against_vendor_id = #{vendorId}
+		</if>
+		<if test="vendorStoreIdList!=null">
+		AND
+			a.appointment_vendor_store_id IN
+			<foreach item="item" index="index" collection="vendorStoreIdList" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+		<if test="serviceId!=null">
+		AND
+			vsc.service_id = #{serviceId}
+		</if>
+		<if test="categoryId!=null">
+		AND
+			vsc.category_id = #{categoryId}
+		</if>
+	
+	</select>
+	
+	<select id="getAppointmentForProcessingCronJob" resultMap="AppointmentResultMap">
+		
+		SELECT
+			<include refid="AppointmentColumns"></include>,
+			<include refid="VendorStoreColumns"></include>,
+			aas.cron_job_expire_time_mins
+		FROM
+			appointments a
+		INNER JOIN users cu ON (cu.user_id = a.appointment_user_id AND cu.is_active = true)
+		INNER JOIN users vu ON (vu.user_id = a.appointment_received_against_vendor_id AND vu.is_active = true)
+		INNER JOIN vendor_service_categories vsc ON vsc.vendor_id = a.appointment_received_against_vendor_id
+		INNER JOIN vendor_stores vs ON (vs.vendor_store_id = a.appointment_vendor_store_id AND vs.is_active = true)
+		INNER JOIN services s ON (s.service_id = vsc.service_id AND s.is_active = true)
+		INNER JOIN categories c ON (c.category_id = vsc.category_id AND c.is_active = true)
+		INNER JOIN appointment_settings aas ON aas.service_id = s.service_id
+		WHERE
+			a.appointment_status IN
+	    	<foreach item="status" index="index" collection="appointmentStatus" open="(" separator="," close=")">
+				#{status}
+			</foreach>
+		ORDER BY a.appointment_time ASC
+		LIMIT #{length} OFFSET #{start}
+			
+	</select>
+	
+	<select id="getAppointmentStatsByTimeForVendor" resultMap="StatsResultMap">
+		
+		SELECT
+			COALESCE(SUM(a.appointment_charges), 0.0) AS revenue, COALESCE(COUNT(a.appointment_id), 0) AS numberOfOrders
+		FROM
+			appointments a
+		WHERE
+			a.appointment_received_against_vendor_id = #{vendorId}
+		<if test="vendorStoreIdList!=null">
+		AND
+			a.appointment_vendor_store_id IN
+			<foreach item="item" index="index" collection="vendorStoreIdList" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+		<if test="startTime>0">
+		AND
+			a.created_at &gt;= #{startTime}
+		AND
+			a.created_at &lt;= #{endTime}
+		</if>			
+	
+	</select>
+	
+	<select id="getAppointmentListForHighestSpendingCustomers" resultMap="StatsResultMap">
+		
+		SELECT
+			COALESCE(SUM(a.appointment_charges), 0.0) AS revenue, 
+			COALESCE(COUNT(a.appointment_id), 0) AS numberOfOrders, 
+			a.appointment_user_id AS userId
+		FROM
+			appointments a
+		WHERE
+			a.appointment_received_against_vendor_id = #{vendorId}
+		<if test="vendorStoreIdList!=null">
+		AND
+			a.appointment_vendor_store_id IN
+			<foreach item="item" index="index" collection="vendorStoreIdList" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+		<if test="startTime>0">
+		AND
+			a.created_at &gt;= #{startTime}
+		AND
+			a.created_at &lt;= #{endTime}
+		</if>
+		GROUP BY a.appointment_user_id
+		ORDER BY revenue DESC	
+		<if test="length>0">
+		LIMIT #{length} OFFSET #{start}
+		</if>	
+	
+	</select>
+	
+</mapper>

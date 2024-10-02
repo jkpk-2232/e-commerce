@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.webapp.daos.DriverTransactionHistoryDao">
+
+	<resultMap id="DriverTransactionHistoryResultMap" type="DriverTransactionHistoryModel" >
+	    
+		<result property="driverTransactionHistoryId" column="driver_transaction_history_id" />
+		<result property="orderId" column="order_id" />
+		<result property="driverId" column="driver_id" />
+		<result property="vendorId" column="vendor_id" />
+		<result property="paymentTypeId" column="payment_type_id" />
+		<result property="transactionId" column="transaction_id" />
+		<result property="transactionType" column="transaction_type" />
+		<result property="isDebit" column="is_debit" />
+		<result property="amount" column="amount" />
+		<result property="status" column="status" />
+		<result property="createdAt" column="created_at" />
+		<result property="updatedAt" column="updated_at" />
+		<result property="createdBy" column="created_by" />
+		<result property="updatedBy" column="updated_by" />
+		
+		<result property="isDriverSubscriptionExtension" column="is_driver_subscription_extension" />
+		<result property="driverSubscriptionExtensionLogId" column="driver_subscription_extension_log_id" />
+		
+		<result property="driverName" column="driverName" />
+		<result property="vendorName" column="vendorName" />
+		<result property="paymentType" column="paymentType" />
+		
+	</resultMap>
+
+	<sql id="transactionHistoryTableColsWithOutTypeAlias">
+		driver_transaction_history_id, driver_id, vendor_id, payment_type_id, 
+		transaction_id, transaction_type, is_debit, amount, status, 
+		created_at, created_by, updated_at, updated_by, is_driver_subscription_extension, 
+		driver_subscription_extension_log_id
+	</sql>
+	
+	<sql id="transactionHistoryTableColsWithTypeAlias">
+		dth.driver_transaction_history_id, dth.order_id, dth.driver_id, dth.vendor_id, dth.payment_type_id, 
+		dth.transaction_id, dth.transaction_type, dth.is_debit, dth.amount, dth.status, 
+		dth.created_at, dth.created_by, dth.updated_at, dth.updated_by, dth.is_driver_subscription_extension, 
+		dth.driver_subscription_extension_log_id
+	</sql>
+
+	<sql id="transactionHistoryModelColsWithOutTypeAlias">
+		#{driverTransactionHistoryId}, #{driverId}, #{vendorId}, #{paymentTypeId}, 
+		#{transactionId}, #{transactionType}, #{isDebit}, #{amount}, #{status}, 
+		#{createdAt},#{createdBy},#{updatedAt},#{updatedBy}, #{isDriverSubscriptionExtension},
+		#{driverSubscriptionExtensionLogId}
+	</sql>
+	
+	<insert id="addTransactionHistory" parameterType="DriverTransactionHistoryModel">
+
+		INSERT INTO driver_transaction_history
+				(
+					<include refid="transactionHistoryTableColsWithOutTypeAlias" /> 
+				)
+		VALUES
+				(
+					<include refid="transactionHistoryModelColsWithOutTypeAlias" /> 
+				)
+				
+	</insert>
+	
+	<update id="updateTransactionHistory" parameterType="DriverTransactionHistoryModel" >
+	
+		UPDATE 
+			driver_transaction_history 
+		SET 
+			status = #{status},
+			updated_at = #{updatedAt},
+			updated_by = #{updatedBy}
+		WHERE  
+			transaction_id = #{transactionId}
+		AND
+			driver_id = #{driverId}
+			
+	</update>
+	
+	<select id="getTransactionHistoryList" resultMap="DriverTransactionHistoryResultMap">
+	
+		SELECT
+			<include refid="transactionHistoryTableColsWithTypeAlias" />, py.payment_type
+		FROM 
+			driver_transaction_history dth
+		INNER JOIN payment_type py ON dth.payment_type_id = py.payment_type_id
+		WHERE
+			dth.driver_id = #{driverId}
+		ORDER BY dth.updated_at DESC
+	    LIMIT #{length} OFFSET #{start}   
+			
+	</select>
+	
+	<select id="getTotalTransactionCountByUserId" parameterType="String" resultType="int">
+	
+		SELECT
+			count(*)
+		FROM 
+			driver_transaction_history dth
+		WHERE
+			dth.created_at &gt;= #{startDatelong}
+		AND
+			dth.created_at &lt;= #{endDatelong}
+		<if test="driverId != null">
+	    AND
+	    	dth.driver_id = #{driverId}
+	    </if>
+		<if test="vendorIds != null">
+		AND	   
+			dth.vendor_id IN
+			<foreach item="item" index="index" collection="vendorIds" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+			
+	</select>
+	
+	<select id="getTransactionListForSearch" resultMap="DriverTransactionHistoryResultMap">
+	
+		SELECT
+			<include refid="transactionHistoryTableColsWithTypeAlias" />,
+	    	CONCAT(VUI.first_name,CONCAT(' ',VUI.last_name)) AS vendorName,
+	    	CONCAT(DUI.first_name,CONCAT(' ',DUI.last_name)) AS driverName, 
+	    	PT.payment_type AS paymentType 
+		FROM 
+			driver_transaction_history dth
+		INNER JOIN user_info DUI ON DUI.user_id = dth.driver_id
+	    INNER JOIN user_info VUI ON VUI.user_id = dth.vendor_id
+	    INNER JOIN payment_type PT ON PT.payment_type_id = dth.payment_type_id
+		WHERE
+			(
+               		DUI.first_name iLIKE #{globalSearchString} 
+		 		OR 
+		 			DUI.last_name iLIKE #{globalSearchString}
+		 		OR 
+		 			CONCAT(DUI.first_name,CONCAT(' ',DUI.last_name)) iLIKE #{globalSearchString} 
+		 		OR
+		 			VUI.first_name iLIKE #{globalSearchString} 
+		 		OR 
+		 			VUI.last_name iLIKE #{globalSearchString}
+		 		OR 
+		 			CONCAT(VUI.first_name,CONCAT(' ',VUI.last_name)) iLIKE #{globalSearchString} 
+		 	) 
+		AND
+			dth.created_at &gt;= #{startDatelong}
+		AND
+			dth.created_at &lt;= #{endDatelong}
+		<if test="driverId != null">
+	    AND
+	    	dth.driver_id = #{driverId}
+	    </if>
+		<if test="vendorIds != null">
+		AND	   
+			dth.vendor_id IN
+			<foreach item="item" index="index" collection="vendorIds" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+		 ORDER BY dth.updated_at DESC
+	    <if test="length!=0">
+		LIMIT #{length} OFFSET #{start}	    
+	    </if>
+			
+	</select>
+	
+	<select id="getTrasactionHistoryByTrasactionId" parameterType="String" resultMap="DriverTransactionHistoryResultMap">
+	
+		SELECT
+			<include refid="transactionHistoryTableColsWithTypeAlias" /> 
+		FROM 
+			driver_transaction_history dth
+		WHERE
+			transaction_id = #{transactionId}
+			
+	</select>
+	
+</mapper> 

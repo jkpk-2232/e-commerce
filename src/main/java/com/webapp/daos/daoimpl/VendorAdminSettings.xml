@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.webapp.daos.VendorAdminSettingsDao">
+
+	<resultMap id="vendorAdminSettingsResultMap" type="VendorAdminSettingsModel" >
+	    
+		<result property="vendorAdminSettingsId" column="vendor_admin_settings_id" />
+		<result property="vendorId" column="vendor_id" />
+		<result property="aboutUs" column="about_us" />
+		<result property="privacyPolicy" column="privacy_policy" />
+		<result property="termsConditions" column="terms_conditions" /> 
+		<result property="refundPolicy" column="refund_policy" />
+		
+		<result property="recordStatus" column="record_status" />
+		<result property="createdAt" column="created_at" />
+		<result property="updatedAt" column="updated_at" />
+		<result property="createdBy" column="created_by" />
+		<result property="updatedBy" column="updated_by" />
+		
+	</resultMap>
+
+	<sql id="vendorAdminSettingsTableColsWithOutTypeAlias">
+		vendor_admin_settings_id, vendor_id, about_us, privacy_policy, 
+		terms_conditions, refund_policy,
+        record_status, created_at, created_by, updated_at, updated_by
+	</sql>
+	
+	<select id="getVendorAdminSettingsDetailsByVendorId" resultMap="vendorAdminSettingsResultMap">
+	
+		SELECT 
+			<include refid="vendorAdminSettingsTableColsWithOutTypeAlias"/> 
+		FROM 
+			vendor_admin_settings
+		WHERE 
+			vendor_id = #{vendorId}
+		
+	</select>
+	
+	<update id="updateVendorAdminSettings" parameterType="VendorAdminSettingsModel"> 	
+	
+		UPDATE 
+			vendor_admin_settings 
+		SET 
+			about_us = #{aboutUs},
+			privacy_policy = #{privacyPolicy},
+			terms_conditions = #{termsConditions},
+			refund_policy = #{refundPolicy},
+			updated_at = #{updatedAt},
+			updated_by = #{updatedBy}
+		WHERE 
+			vendor_admin_settings_id = #{vendorAdminSettingsId}
+			
+	</update>
+	
+	<insert id="insertVendorAdminSettings" parameterType="VendorAdminSettingsModel">
+	
+		INSERT INTO vendor_admin_settings
+			(
+	            vendor_admin_settings_id, vendor_id, about_us, privacy_policy, 
+	            terms_conditions, refund_policy, record_status, created_at, created_by, 
+	            updated_at, updated_by
+	        )
+	    VALUES 
+		    (
+		    	#{vendorAdminSettingsId}, #{vendorId}, #{aboutUs}, #{privacyPolicy}, 
+		        #{termsConditions}, #{refundPolicy}, 'A', #{createdAt}, #{createdBy}, 
+		        #{updatedAt}, #{updatedBy}
+		    );
+	            
+	</insert>
+
+</mapper> 

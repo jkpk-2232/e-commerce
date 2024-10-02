@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.webapp.daos.MulticityCountryDao">
+
+	<resultMap id="multicityCountryResultMap" type="MulticityCountryModel" >
+  
+		<result property="multicityCountryId" column="multicity_country_id" />
+		<result property="countryName" column="country_name" />
+		<result property="countryShortName" column="country_short_name" />
+		<result property="currencySymbol" column="currency_symbol" />
+		<result property="currencySymbolHtml" column="currency_symbol_html" />
+		<result property="senderBenefit" column="sender_benefit" />
+		<result property="receiverBenefit" column="receiver_benefit" />
+		<result property="phoneNoCode" column="phone_no_code" />
+		<result property="distanceType" column="distance_type" />
+		<result property="distanceUnits" column="distance_units" />
+		<result property="cancellationCharges" column="cancellation_charges" />
+		<result property="isActive" column="is_active" />
+		<result property="isDeleted" column="is_deleted" />
+		<result property="isPermanentDelete" column="is_permanent_delete" />
+		
+		<result property="recordStatus" column="record_status" />
+		<result property="createdAt" column="created_at" />
+		<result property="updatedAt" column="updated_at" />
+		<result property="createdBy" column="created_by" />
+		<result property="updatedBy" column="updated_by" />
+		
+	</resultMap>
+
+	<sql id="multicityCountryTableColsWithOutTypeAlias">
+		multicity_country_id, country_name, country_short_name, currency_symbol, currency_symbol_html, sender_benefit, 
+		receiver_benefit, phone_no_code, distance_type, distance_units, cancellation_charges,  is_active, is_deleted, 
+		record_status, created_by, created_at, updated_by, updated_at
+	</sql>
+	
+	<select id="getMulticityCountryCount" resultType="int">
+	
+		SELECT
+			count(*)
+		FROM
+			multicity_country
+		WHERE
+			is_active = true
+		AND
+			is_deleted = false
+	
+	</select>
+	
+	<select id="getMulticityCountrySearch" resultMap="multicityCountryResultMap">
+	
+		SELECT
+			<include refid="multicityCountryTableColsWithOutTypeAlias" /> 
+		FROM
+			multicity_country
+		WHERE
+			is_active = true
+		AND
+			is_deleted = false
+		AND	 
+		 	(
+		 		country_name iLIKE #{globalSearchString} 
+            OR 
+            	country_short_name iLIKE #{globalSearchString}
+            OR 
+            	currency_symbol iLIKE #{globalSearchString}
+            )
+		ORDER BY created_at DESC
+		LIMIT #{length} OFFSET #{start}
+	
+	</select>
+
+	<select id="getMulticityCountryIdDetailsById" resultMap="multicityCountryResultMap">
+	
+		SELECT
+			<include refid="multicityCountryTableColsWithOutTypeAlias" /> 
+		FROM
+			multicity_country
+		WHERE
+			is_active = true
+		AND
+			is_deleted = false
+		AND
+			multicity_country_id = #{multicityCountryId}
+		
+	</select>
+	
+	<select id="getMulticityCountryIdDetailsByCountryName" resultMap="multicityCountryResultMap">
+	
+		SELECT
+			<include refid="multicityCountryTableColsWithOutTypeAlias" /> 
+		FROM
+			multicity_country
+		WHERE
+			is_active = true
+		AND
+			is_deleted = false
+		AND
+			country_name ilike #{country}
+		
+	</select>
+	
+	<select id="getMulticityCountryIdDetailsByPhoneNumberCode" resultMap="multicityCountryResultMap">
+	
+		SELECT
+			<include refid="multicityCountryTableColsWithOutTypeAlias" /> 
+		FROM
+			multicity_country
+		WHERE
+			is_active = true
+		AND
+			is_deleted = false
+		AND
+			phone_no_code = #{phoneNoCode}
+		LIMIT 1
+		
+	</select>
+
+</mapper> 

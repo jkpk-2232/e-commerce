@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.webapp.daos.DriverDutyLogsDao">
+
+	<resultMap id="driverDutyLogsModelResultMap" type="DriverDutyLogsModel" >
+	    
+	    <result property="driverDutyStatusLogsId" column="driver_duty_logs_id" />
+		<result property="driverId" column="driver_id" />
+		<result property="dutyStatus" column="duty_status" />
+		<result property="latitude" column="latitude" />
+		<result property="longitude" column="longitude" />
+		
+		<result property="firstName" column="first_name" />
+		<result property="lastName" column="last_name" />
+		
+		<result property="recordStatus" column="record_status" />
+		<result property="createdAt" column="created_at" />
+		<result property="updatedAt" column="updated_at" />
+		<result property="createdBy" column="created_by" />
+		<result property="updatedBy" column="updated_by" />
+		
+	</resultMap>
+
+	<insert id="addDriverDutyLogs" parameterType="DriverDutyLogsModel">
+
+		INSERT INTO 
+			driver_duty_logs
+				(
+			        driver_duty_logs_id, driver_id, duty_status, latitude, longitude, 
+			        record_status, created_by, created_at, updated_by, updated_at
+			    )
+	    VALUES 
+				(
+					#{driverDutyStatusLogsId}, #{driverId}, 
+					#{dutyStatus}, #{latitude}, #{longitude},
+					'A', #{createdBy}, #{createdAt}, #{updatedBy}, #{updatedAt}
+				)
+				
+	</insert>
+	
+	<insert id="insertDriverDutyLogsBatch" parameterType="java.util.List">
+	
+		INSERT INTO 
+			driver_duty_logs
+				(
+			        driver_duty_logs_id, driver_id, duty_status, latitude, longitude, 
+			        record_status, created_by, created_at, updated_by, updated_at
+			    )
+		VALUES
+				<foreach collection="driverDutyLogsModelList" item="driverDutyLogsModel"  separator=",">
+				(
+					#{driverDutyLogsModel.driverDutyStatusLogsId}, #{driverDutyLogsModel.driverId}, #{driverDutyLogsModel.dutyStatus}, 
+					#{driverDutyLogsModel.latitude}, #{driverDutyLogsModel.longitude}, #{driverDutyLogsModel.recordStatus}, #{driverDutyLogsModel.createdBy}, 
+					#{driverDutyLogsModel.createdAt}, #{driverDutyLogsModel.updatedBy}, #{driverDutyLogsModel.updatedAt}
+				)
+				</foreach>
+				
+	</insert>
+	
+	<select id="getDriverDutyReportAdminListForSearch"  parameterType="map"  resultMap="driverDutyLogsModelResultMap">
+		
+		SELECT 
+			ddl.driver_duty_logs_id,u.user_id,u.email,ui.first_name, ui.last_name,
+			ddl.duty_status,ddl.created_at
+		FROM 
+			users u
+		INNER JOIN 
+		    user_info ui 
+		ON 
+			ui.user_id = u.user_id
+		INNER JOIN 
+			driver_duty_logs ddl
+		ON
+			ddl.driver_id = u.user_id		
+        WHERE 
+			ddl.driver_id = #{driverId}
+		AND 
+			ddl.created_at &gt; #{startDate}
+		AND 
+			ddl.created_at &lt; #{endDate}	
+			
+		ORDER BY ddl.created_at DESC
+        LIMIT  #{length}  OFFSET  #{start}          
+        
+	</select>
+	
+	<select id="getDriverDutyReportAdminListForSearchCount"  parameterType="map"  resultType="int">
+		
+		SELECT 
+			count(ui.user_id)
+		FROM 
+			users u
+		INNER JOIN 
+		    user_info ui 
+		ON 
+			ui.user_id = u.user_id
+		INNER JOIN 
+			driver_duty_logs ddl
+		ON
+			ddl.driver_id = u.user_id		
+        WHERE  
+			ddl.driver_id = #{driverId}	
+		AND 
+			ddl.created_at &gt; #{startDate} 
+		AND 
+			ddl.created_at &lt; #{endDate}			           
+        
+	</select>
+	
+	<select id="getDriverOnOffDutyReportAdminListForSearch"  parameterType="map"  resultMap="driverDutyLogsModelResultMap">
+		
+		SELECT 
+			ddl.driver_duty_logs_id,u.user_id,u.email,ui.first_name, ui.last_name,
+			ddl.duty_status, ddl.created_at
+		FROM 
+			users u
+		INNER JOIN 
+		    	user_info ui 
+		ON 
+			ui.user_id = u.user_id
+		INNER JOIN 
+				driver_duty_logs ddl
+		ON
+			ddl.driver_id = u.user_id		
+        WHERE  
+			ddl.driver_id = #{driverId}
+		AND 
+			ddl.created_at &gt; #{startDate}
+		AND 
+			ddl.created_at &lt; #{endDate}	
+		AND
+			ddl.duty_status = #{dutyStatus}	
+		ORDER BY ddl.created_at DESC
+        LIMIT  #{length}  OFFSET  #{start}          
+        
+	</select>
+	
+	<select id="getDriverOnOffDutyReportAdminListForSearchCount"  parameterType="map"  resultType="int">
+		
+		SELECT 
+			count(ui.user_id)
+		FROM 
+			users u
+		INNER JOIN 
+		    user_info ui 
+		ON 
+			ui.user_id = u.user_id
+		INNER JOIN 
+			driver_duty_logs ddl
+		ON
+			ddl.driver_id = u.user_id		
+        WHERE  
+			ddl.driver_id = #{driverId}	
+		AND 
+			ddl.created_at &gt; #{startDate} 
+		AND 
+			ddl.created_at &lt; #{endDate}
+		AND
+			ddl.duty_status = #{dutyStatus}				           
+        
+	</select>
+	
+	<select id="getTotalDutyReportCount" parameterType="String" resultType="int"> 		
+		
+	    SELECT 
+			count(driver_duty_logs_id)
+		FROM 
+			driver_duty_logs 
+		WHERE 
+			driver_id = #{driverId} 
+		AND 
+			created_at &gt; #{startDatelong} 
+		AND 
+			created_at &lt; #{endDatelong}
+		
+	</select>
+	
+	<select id="getTotalOnOffDutyReportCount" parameterType="String" resultType="int"> 		
+		
+	    SELECT 
+			count(driver_duty_logs_id)
+		FROM 
+			driver_duty_logs 
+		WHERE 
+			driver_id = #{driverId}
+		AND 
+			duty_status = #{dutyStatus}
+		
+	</select>
+	
+	<select id="getLastDriverDutyLogDetails"  parameterType="map"  resultMap="driverDutyLogsModelResultMap">
+		
+		SELECT 
+			driver_duty_logs_id, driver_id, duty_status, latitude, longitude, 
+			record_status, created_by, created_at, updated_by, updated_at
+		FROM 
+			driver_duty_logs		
+        WHERE 
+			driver_id = #{driverId}
+		ORDER BY created_at DESC
+        LIMIT 1    
+        
+	</select>
+	
+</mapper> 

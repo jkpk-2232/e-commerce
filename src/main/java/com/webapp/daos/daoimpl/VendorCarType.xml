@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.webapp.daos.VendorCarTypeDao">
+
+	<resultMap id="vendorCarTypeResultMap" type="vendorCarTypeModel" >
+	    
+		<result property="vendorCarTypeId" column="vendor_car_type_id" />
+		<result property="vendorId" column="vendor_id" />
+		<result property="carTypeId" column="car_type_id" />
+		<result property="isActive" column="is_active" />
+		<result property="isDeleted" column="is_deleted" />
+		<result property="isPermanentDeleted" column="is_permanent_deleted" />
+		<result property="createdAt" column="created_at" />
+		<result property="updatedAt" column="updated_at" />
+		<result property="createdBy" column="created_by" />
+		<result property="updatedBy" column="updated_by" />
+		
+		<result property="carType" column="car_type" />
+		<result property="icon" column="icon" />
+		
+		<result property="serviceTypeId" column="service_type_id" />
+		<result property="priority" column="priority" />
+		
+	</resultMap>
+	
+	<sql id="vendorCarTypeColumns">
+		vct.vendor_car_type_id, vct.vendor_id, vct.car_type_id, 
+		vct.created_by, vct.created_at, vct.updated_by, vct.updated_at, 
+       	vct.is_active, vct.is_deleted, vct.is_permanent_deleted, ct.car_type, ct.icon,
+       	vct.service_type_id, vct.priority
+	</sql>
+	
+	<insert id="insertVendorCarType" parameterType="vendorCarTypeModel">
+	
+		INSERT INTO vendor_car_type
+			(
+	            vendor_car_type_id, vendor_id, car_type_id, 
+	            created_by, created_at, updated_by, updated_at, 
+	            is_active, is_deleted, is_permanent_deleted, 
+	            service_type_id, priority
+	        )
+    	VALUES 
+    		(
+    			#{vendorCarTypeId}, #{vendorId}, #{carTypeId}, 
+    			#{createdBy}, #{createdAt}, #{updatedBy}, #{updatedAt}, 
+            	#{isActive}, #{isDeleted}, #{isPermanentDeleted}, 
+            	#{serviceTypeId}, #{priority}
+            );
+		
+	</insert>
+	
+	<insert id="batchInsertVendorCarType" parameterType="java.util.List">
+	
+		INSERT INTO vendor_car_type
+			(
+	            vendor_car_type_id, vendor_id, car_type_id, 
+	            created_by, created_at, updated_by, updated_at, 
+	            is_active, is_deleted, is_permanent_deleted, service_type_id
+	        )
+    	VALUES 
+    		<foreach collection="list" item="modal"  separator=",">
+    		(
+    			#{modal.vendorCarTypeId}, #{modal.vendorId}, #{modal.carTypeId}, 
+    			#{modal.createdBy}, #{modal.createdAt}, #{modal.updatedBy}, #{modal.updatedAt}, 
+            	#{modal.isActive}, #{modal.isDeleted}, #{modal.isPermanentDeleted}, #{modal.serviceTypeId}
+            )
+			</foreach>
+			
+	</insert>
+	
+	<select id="getVendorCarTypeListByVendorId" resultMap="vendorCarTypeResultMap">
+		
+		SELECT
+			<include refid="vendorCarTypeColumns"></include>,
+			ct.car_type, ct.icon
+		FROM	
+			vendor_car_type vct
+		INNER JOIN car_type ct ON ct.car_type_id = vct.car_type_id
+		WHERE
+			vct.vendor_id = #{vendorId}
+		AND
+			vct.is_active = true
+		AND
+			vct.is_deleted = false
+		AND
+			vct.is_permanent_deleted = false
+		AND
+			ct.is_active = true 
+		AND 
+			ct.is_deleted = false 
+		AND 
+			ct.is_permanent_deleted = false
+		AND
+			vct.service_type_id = #{serviceTypeId}
+			
+	</select>
+	
+	<select id="getVendorCarTypeListByVendorIdSortPriority" resultMap="vendorCarTypeResultMap">
+		
+		SELECT
+			<include refid="vendorCarTypeColumns"></include>,
+			ct.car_type, ct.icon
+		FROM	
+			vendor_car_type vct
+		INNER JOIN car_type ct ON ct.car_type_id = vct.car_type_id
+		WHERE
+			vct.vendor_id = #{vendorId}
+		AND
+			vct.is_active = true
+		AND
+			vct.is_deleted = false
+		AND
+			vct.is_permanent_deleted = false
+		AND
+			ct.is_active = true 
+		AND 
+			ct.is_deleted = false 
+		AND 
+			ct.is_permanent_deleted = false
+		AND
+			vct.service_type_id = #{serviceTypeId}
+		ORDER BY vct.priority ASC
+			
+	</select>
+	
+	<select id="getVendorCarTypeListByVendorIdForBike" resultMap="vendorCarTypeResultMap">
+		
+		SELECT
+			<include refid="vendorCarTypeColumns"></include>,
+			ct.car_type, ct.icon
+		FROM	
+			vendor_car_type vct
+		INNER JOIN car_type ct ON ct.car_type_id = vct.car_type_id
+		WHERE
+			vct.vendor_id = #{vendorId}
+		AND
+			vct.service_type_id = #{serviceTypeId}
+		AND
+			vct.car_type_id = #{carTypeId}
+			
+	</select>
+	
+	<update id="deleteExistingCarTypes" parameterType="vendorCarTypeModel">
+		DELETE FROM	vendor_car_type WHERE vendor_id = #{vendorId} AND service_type_id = #{serviceTypeId}
+	</update>
+	
+	<update id="updateVendorCarTypeStatusByCarTypeId" parameterType="vendorCarTypeModel">
+	
+		UPDATE
+			vendor_car_type
+		SET
+			is_active = #{isActive},
+			is_deleted = #{isDeleted}	
+		WHERE
+			car_type_id = #{carTypeId}	
+		AND
+			service_type_id = #{serviceTypeId}
+
+	</update>
+	
+</mapper> 

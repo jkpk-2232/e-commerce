@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.webapp.daos.CcavenueRsaRequestDao">
+
+	<resultMap id="ccavenueRsaRequestResultMap" type="CcavenueRsaRequestModel" >
+	
+		<result property="ccavenueRsaRequestId" column="ccavenue_rsa_request_id" />
+		<result property="userId" column="user_id" />
+		<result property="ccavenueRsaOrderId" column="ccavenue_rsa_order_id" />
+		<result property="rsaKey" column="rsa_key" />
+		<result property="paymentRequestType" column="payment_request_type" />
+		
+		<result property="recordStatus" column="record_status" />
+		<result property="createdAt" column="created_at" />
+		<result property="updatedAt" column="updated_at" />
+		<result property="createdBy" column="created_by" />
+		<result property="updatedBy" column="updated_by" />
+		
+		<result property="orderId" column="order_id" />
+		<result property="tourId" column="tour_id" />
+		<result property="subscriptionId" column="subscription_id" />
+		<result property="deliveryOrderId" column="delivery_order_id" />
+		
+	</resultMap>
+
+	<insert id="insertCcavenueRsaRequestDetails" parameterType="CcavenueRsaRequestModel" useGeneratedKeys="false">
+	
+		INSERT INTO ccavenue_rsa_requests
+			(
+				ccavenue_rsa_request_id, user_id, ccavenue_rsa_order_id, rsa_key,
+				record_status, created_at, created_by, updated_at, updated_by, 
+				payment_request_type
+			)
+		VALUES
+			(
+				#{ccavenueRsaRequestId}, #{userId}, #{ccavenueRsaOrderId}, #{rsaKey},
+				#{recordStatus}, #{createdAt}, #{createdBy}, #{updatedAt}, #{updatedBy},
+				#{paymentRequestType}
+			)
+			
+	</insert>
+	
+	<select id="getCcavenueRsaRequestByOrderId" parameterType="String" resultMap="ccavenueRsaRequestResultMap">
+	
+		SELECT 
+			CRR.ccavenue_rsa_request_id, CRR.user_id, CRR.ccavenue_rsa_order_id, CRR.rsa_key,
+			CRR.record_status, CRR.created_at, CRR.created_by, CRR.updated_at, CRR.updated_by,
+			CRR.payment_request_type, CRO.order_id, CRO.tour_id, CRO.subscription_id, CRO.delivery_order_id
+		FROM 
+			ccavenue_rsa_requests CRR
+		INNER JOIN ccavenue_rsa_orders CRO ON CRO.ccavenue_rsa_order_id = CRR.ccavenue_rsa_order_id
+		WHERE 
+			CRO.order_id = #{orderId}
+		ORDER BY CRO.created_at DESC
+		LIMIT 1
+		
+ 	</select>
+	
+</mapper>

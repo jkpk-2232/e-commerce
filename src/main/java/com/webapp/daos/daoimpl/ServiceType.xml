@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.webapp.daos.ServiceTypeDao">
+
+	<resultMap id="ServiceTypeResultMap" type="ServiceTypeModel">
+	
+		<result property="serviceTypeId" column="service_type_id" />
+		<result property="serviceTypeName" column="service_type_name" />
+		<result property="serviceTypeDescription" column="service_type_description" />
+		<result property="isActive" column="is_active" />
+		<result property="isDeleted" column="is_deleted" />
+		
+		<result property="createdBy" column="created_by" />
+		<result property="createdAt" column="created_at" />
+		<result property="updatedBy" column="updated_by" />
+		<result property="updatedAt" column="updated_at" />
+		
+	</resultMap>
+	
+	<sql id="ServiceTypeColumns">
+		st.service_type_id, st.service_type_name, st.service_type_description, st.is_active, 
+		st.is_deleted, st.created_by, st.created_at, st.updated_by, st.updated_at
+	</sql>
+	
+	<select id="getServiceTypeSearch" resultMap="ServiceTypeResultMap">
+	
+		SELECT
+			<include refid="ServiceTypeColumns"></include>
+		FROM
+			service_types st
+		WHERE
+			(
+				st.service_type_name ilike #{searchKey}
+			OR
+				st.service_type_description ilike #{searchKey}
+			)
+		<if test="startDatelong>0">
+		AND
+			st.created_at &gt;= #{startDatelong}
+		AND
+			st.created_at &lt;= #{endDatelong}
+		</if>
+		AND
+			st.is_active = true
+		AND
+			st.is_deleted = false
+		<if test="length>0">
+		ORDER BY st.updated_at DESC
+		LIMIT #{length} OFFSET #{start}
+		</if>
+		<if test="length==0">
+		ORDER BY st.service_type_name ASC
+		</if>
+
+	</select>
+	
+</mapper>

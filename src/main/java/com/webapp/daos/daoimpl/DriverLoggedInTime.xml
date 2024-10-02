@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.webapp.daos.DriverLoggedInTimeDao">
+
+	<resultMap id="driverLoggedInTimeResultMap" type="DriverLoggedInTimeModel" >
+  
+		<result property="driverLoggedInTimeId" column="driver_logged_in_time_id" />
+		<result property="driverId" column="driver_id" />
+		<result property="loggedInTime" column="logged_in_time" />
+		<result property="dateTime" column="date_time" />
+		
+		<result property="recordStatus" column="record_status" />
+		<result property="createdAt" column="created_at" />
+		<result property="updatedAt" column="updated_at" />
+		<result property="createdBy" column="created_by" />
+		<result property="updatedBy" column="updated_by" />
+	
+	</resultMap>
+	
+	<insert id="addDriverLoggedInTimeDetails" parameterType="DriverLoggedInTimeModel">
+
+		INSERT INTO 
+			driver_logged_in_times
+				(
+			        driver_logged_in_time_id, driver_id, logged_in_time, date_time,
+			        record_status, created_by, created_at, updated_by, updated_at
+			    )
+	    VALUES 
+				(
+					#{driverLoggedInTimeId}, #{driverId}, #{loggedInTime}, #{dateTime},
+					#{recordStatus}, #{createdBy}, #{createdAt}, #{updatedBy}, #{updatedAt}
+				)
+				
+	</insert>
+	
+	<insert id="insertDriverLoggedInTimeBatch" parameterType="java.util.List">
+	
+		INSERT INTO 
+			driver_logged_in_times 
+		 		(
+					driver_logged_in_time_id, driver_id, logged_in_time, date_time,
+			        record_status, created_by, created_at, updated_by, updated_at
+				)
+		VALUES
+				<foreach collection="driverLoggedInTimeModelList" item="driverLoggedInTimeModel"  separator=",">
+				(
+					#{driverLoggedInTimeModel.driverLoggedInTimeId}, #{driverLoggedInTimeModel.driverId}, #{driverLoggedInTimeModel.loggedInTime}, 
+					#{driverLoggedInTimeModel.dateTime}, #{driverLoggedInTimeModel.recordStatus}, #{driverLoggedInTimeModel.createdBy}, 
+					#{driverLoggedInTimeModel.createdAt}, #{driverLoggedInTimeModel.updatedBy}, #{driverLoggedInTimeModel.updatedAt}
+				)
+				</foreach>
+				
+	</insert>
+	
+	<update id="updateLoggedInTimeById" parameterType="DriverLoggedInTimeModel">
+	
+		UPDATE 
+			driver_logged_in_times 
+		SET 
+			logged_in_time = #{loggedInTime}, 
+			updated_at = #{updatedAt},
+			updated_by = #{updatedBy}
+		WHERE  
+			driver_logged_in_time_id = #{driverLoggedInTimeId}
+			
+	</update>
+	
+	<select id="getLoggedInTimesListByDriverIdAndTime" parameterType="map" resultMap="driverLoggedInTimeResultMap">
+		
+	    SELECT 
+	    	driver_logged_in_time_id, driver_id, logged_in_time, date_time,
+			record_status, created_by, created_at, updated_by, updated_at
+		FROM 
+			driver_logged_in_times 
+		WHERE  
+			driver_id = #{driverId}
+		AND
+			date_time &gt; #{startTimeInMillies}
+		AND
+			date_time &lt; #{endTimeInMillies} 
+			
+ 	</select>
+ 	
+ 	<select id="getTotalLoggedInTimeByDriverIdandDate" parameterType="map" resultType="long">
+	
+		SELECT
+			COALESCE(sum(logged_in_time), 0)
+		FROM 
+		    driver_logged_in_times
+		WHERE	
+			driver_id = #{driverId}
+		<if test="startDatelong > 0">
+		AND
+			date_time &gt; #{startDatelong}
+		</if>
+		<if test="endDatelong > 0">
+		AND
+			date_time &lt; #{endDatelong} 
+		</if>
+		
+<!-- 		<if test="startDatelong > 0"> -->
+<!-- 		AND -->
+<!-- 			created_at &gt; #{startDatelong} -->
+<!-- 		</if> -->
+<!-- 		<if test="endDatelong > 0"> -->
+<!-- 		AND -->
+<!-- 			created_at &lt; #{endDatelong}  -->
+<!-- 		</if> -->
+			
+	</select>
+	
+	<select id="getTotalDriverLoggedInTimeLogCount" parameterType="map" resultType="int"> 		
+		
+	    SELECT 
+			count(driver_logged_in_time_id)
+		FROM 
+			driver_logged_in_times 
+		WHERE 
+			driver_id = #{driverId} 
+		<if test="startDatelong > 0">
+		AND
+			date_time &gt; #{startDatelong}
+		</if>
+		<if test="endDatelong > 0">
+		AND
+			date_time &lt; #{endDatelong} 
+		</if>
+		
+<!-- 		<if test="startDatelong > 0"> -->
+<!-- 		AND -->
+<!-- 			created_at &gt; #{startDatelong} -->
+<!-- 		</if> -->
+<!-- 		<if test="endDatelong > 0"> -->
+<!-- 		AND -->
+<!-- 			created_at &lt; #{endDatelong}  -->
+<!-- 		</if> -->
+		
+	</select>
+	
+	<select id="getDriverLoggedInTimeLogListForSearch"  parameterType="map"  resultMap="driverLoggedInTimeResultMap">
+		
+		SELECT 
+			driver_logged_in_time_id, driver_id, logged_in_time, date_time,
+			record_status, created_by, created_at, updated_by, updated_at
+		FROM 
+			driver_logged_in_times
+        WHERE  
+			driver_id = #{driverId}
+		<if test="startDatelong > 0">
+		AND
+			date_time &gt; #{startDatelong}
+		</if>
+		<if test="endDatelong > 0">
+		AND
+			date_time &lt; #{endDatelong} 
+		</if>
+		
+<!-- 		<if test="startDatelong > 0"> -->
+<!-- 		AND -->
+<!-- 			created_at &gt; #{startDatelong} -->
+<!-- 		</if> -->
+<!-- 		<if test="endDatelong > 0"> -->
+<!-- 		AND -->
+<!-- 			created_at &lt; #{endDatelong}  -->
+<!-- 		</if> -->
+		
+		ORDER BY date_time DESC
+		<if test="length>0">
+        LIMIT  #{length}  OFFSET  #{start}          
+        </if>
+	</select>
+	
+</mapper>

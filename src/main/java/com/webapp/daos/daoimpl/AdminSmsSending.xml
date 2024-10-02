@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.webapp.daos.AdminSmsSendingDao">
+
+	<resultMap id="adminSmsSendingResultMap" type="AdminSmsSendingModel" >
+	    
+		<result property="adminSmsSendingId" column="admin_sms_sending_id" />
+		
+		<result property="pAcceptByDriver" column="p_accept_by_driver" />
+		<result property="pArrivedAndWaiting" column="p_arrived_and_waiting" />
+		<result property="pCancelledByDriver" column="p_cancelled_by_driver" />
+		<result property="pCancelledByBusinessO" column="p_cancelled_by_business_o" />
+		<result property="pInvoice" column="p_invoice" />
+		<result property="pBookByOwner" column="p_book_by_owner" />
+		<result property="pRefund" column="p_refund" />
+		
+		<result property="dBookingRequest" column="d_booking_request" />
+		<result property="dCancelledByPassengerBusinessO" column="d_cancelled_by_passenger_business_o" />
+		<result property="dPaymentReceived" column="d_payment_received" />
+		
+		<result property="boAccepted" column="bo_accepted" />
+		<result property="boArrivedAndWaiting" column="bo_arrived_and_waiting" />
+		<result property="boCancelledByDriver" column="bo_cancelled_by_driver" />
+		<result property="boInvoice" column="bo_invoice" />
+		<result property="language" column="language" />
+		<result property="pCreditUpdateAdmin" column="p_credit_update_admin" />
+		
+		<result property="recordStatus" column="record_status" />
+		<result property="createdAt" column="created_at" />
+		<result property="updatedAt" column="updated_at" />
+		<result property="createdBy" column="created_by" />
+		<result property="updatedBy" column="updated_by" />
+		
+	</resultMap>
+
+	<sql id="adminSmsSendingTableColsWithOutTypeAlias">
+		admin_sms_sending_id, p_accept_by_driver, p_arrived_and_waiting, 
+		p_cancelled_by_driver, p_cancelled_by_business_o, p_invoice, 
+        p_book_by_owner, p_refund, d_booking_request, d_cancelled_by_passenger_business_o, d_payment_received,
+        bo_accepted, bo_arrived_and_waiting, bo_cancelled_by_driver,  bo_invoice, language, p_credit_update_admin,
+        record_status, created_at, created_by, updated_at, updated_by
+	</sql>
+
+	<select id="getAdminSmsSendingDetails" resultMap="adminSmsSendingResultMap">
+	
+		SELECT 
+			<include refid="adminSmsSendingTableColsWithOutTypeAlias"/> 
+		FROM 
+			admin_sms_sending
+		LIMIT 1 
+		
+	</select>
+
+	<update id="updateAdminSmsSending" parameterType="AdminSmsSendingModel"> 	
+	
+		UPDATE 
+			admin_sms_sending 
+		SET 
+			p_accept_by_driver = #{pAcceptByDriver},
+			p_arrived_and_waiting = #{pArrivedAndWaiting},
+			p_cancelled_by_driver = #{pCancelledByDriver},
+			p_cancelled_by_business_o = #{pCancelledByBusinessO},
+			p_invoice = #{pInvoice},
+			p_book_by_owner = #{pBookByOwner},
+			p_refund = #{pRefund},
+			d_booking_request = #{dBookingRequest},
+			d_cancelled_by_passenger_business_o = #{dCancelledByPassengerBusinessO},
+			d_payment_received = #{dPaymentReceived},
+			bo_accepted = #{boAccepted},
+			bo_arrived_and_waiting = #{boArrivedAndWaiting},
+			bo_cancelled_by_driver = #{boCancelledByDriver},
+			bo_invoice = #{boInvoice},
+			language = #{language},
+			p_credit_update_admin = #{pCreditUpdateAdmin}
+		WHERE 
+			admin_sms_sending_id = #{adminSmsSendingId}
+			
+	</update>
+	
+	<update id="updatePreviousAdminSmsSendingEntryToFalse"> 	
+	
+		UPDATE 
+			admin_sms_sending 
+		SET 
+			p_accept_by_driver = false,
+			p_arrived_and_waiting = false,
+			p_cancelled_by_driver = false,
+			p_cancelled_by_business_o = false,
+			p_invoice = false,
+			p_book_by_owner = false,
+			p_refund = false,
+			d_booking_request = false,
+			d_cancelled_by_passenger_business_o = false,
+			d_payment_received = false,
+			bo_accepted = false,
+			bo_arrived_and_waiting = false,
+			bo_cancelled_by_driver = false,
+			bo_invoice = false
+			
+	</update>
+	
+</mapper> 

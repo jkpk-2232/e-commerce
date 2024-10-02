@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.webapp.daos.BusinessOperatorDao">
+	
+	<resultMap id="businessOperatorResultMap" type="BusinessOperatorModel">
+
+		<result property="businessOperatorId" column="business_operator_id" />
+		<result property="businessOwnerId" column="business_owner_id" />
+		<result property="operatorId" column="operator_id" />
+		<result property="deleted" column="is_deleted" />
+	
+		<result property="createdBy" column="created_by" />
+		<result property="createdAt" column="created_at" />
+		<result property="updatedBy" column="updated_by" />
+		<result property="updatedAt" column="updated_at" />
+		
+	</resultMap>
+	
+	<insert id="assignBusinessOperatorToBusinessOwner" useGeneratedKeys="true" parameterType="BusinessOperatorModel">
+
+		INSERT INTO 
+			business_operator
+				(
+					business_operator_id,business_owner_id,operator_id,
+					created_by,created_at,updated_by,updated_at
+				)
+		VALUES
+				(
+					#{businessOperatorId},#{businessOwnerId},#{operatorId},
+					#{createdBy},#{createdAt},#{updatedBy},#{updatedAt}
+				)
+				
+	</insert>
+	
+	<select id="getBusinessOwnerId" parameterType="String" resultType="String">
+	
+		SELECT 
+			business_owner_id 
+		FROM 
+			business_operator 
+		WHERE 
+			operator_id = #{userId}
+		LIMIT 1
+			
+	</select>
+	
+</mapper>

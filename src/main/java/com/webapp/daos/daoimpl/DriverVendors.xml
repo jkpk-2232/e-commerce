@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.webapp.daos.DriverVendorsDao">
+
+	<resultMap id="driveVendorResultMap" type="DriverVendorsModel" >
+	    
+		<result property="driverVendorId" column="driver_vendors_id" />
+		<result property="driverId" column="driver_id" />
+		<result property="vendorId" column="vendor_id" />
+		<result property="roleId" column="role_id" />
+		
+		<result property="createdAt" column="created_at" />
+		<result property="updatedAt" column="updated_at" />
+		<result property="createdBy" column="created_by" />
+		<result property="updatedBy" column="updated_by" />
+		
+		<result property="vendorName" column="vendor_name" />
+		<result property="vendorRoleId" column="vendor_role_id" />
+		
+	</resultMap>
+	
+	<insert id="addDriverVendorMapping"  parameterType="DriverVendorsModel">
+	
+		INSERT INTO 
+			driver_vendors
+				(
+					driver_vendors_id, driver_id, vendor_id, role_id, 
+					created_at, created_by, updated_at, updated_by
+				)
+		VALUES
+				(	
+					#{driverVendorId}, #{driverId}, #{vendorId}, #{roleId},
+					#{createdAt}, #{createdBy}, #{updatedAt}, #{updatedBy}
+				)
+		
+	</insert>
+	
+	<update id="deleteDriverVendorMapping" parameterType="DriverVendorsModel" >
+	
+	   DELETE FROM 
+	   		driver_vendors
+	   WHERE
+	   		driver_id = #{driverId}
+	
+	</update>
+	
+	<select id="getDriverVendorDetailsByDriverId" parameterType="String" resultMap="driveVendorResultMap">
+		
+	    SELECT 
+	    	DV.driver_vendors_id, DV.driver_id, DV.vendor_id, DV.role_id, 
+	    	DV.created_at, DV.created_by, DV.updated_at, DV.updated_by,
+	    	VU.role_id AS vendor_role_id, CONCAT(VUI.first_name,' ',VUI.last_name ) AS vendor_name
+		FROM 
+			driver_vendors DV
+		INNER JOIN users VU ON VU.user_id = DV.vendor_id
+		INNER JOIN user_info VUI ON VUI.user_id = VU.user_id
+		WHERE 
+			DV.driver_id = #{driverId}
+		
+ 	</select>
+	
+	<insert id="batchInsertDefaultUserVendorMapping" parameterType="java.util.List">
+	
+		INSERT INTO driver_vendors
+				(
+					driver_vendors_id, driver_id, vendor_id, role_id, 
+					created_at, created_by, updated_at, updated_by
+				)
+		VALUES
+				<foreach collection="list" item="modal"  separator=",">
+				(	
+					#{modal.driverVendorId}, #{modal.driverId}, #{modal.vendorId}, #{modal.roleId},
+					#{modal.createdAt}, #{modal.createdBy}, #{modal.updatedAt}, #{modal.updatedBy}
+				)
+				</foreach>
+	</insert>
+	
+</mapper>	

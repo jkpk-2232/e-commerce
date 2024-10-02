@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.webapp.daos.EmergencyNumbersDao">
+
+	<resultMap id="emergencyNumbersModelResultMap" type="EmergencyNumbersModel" >
+	
+		<result property="emergencyNumberId" column="emergency_number_id" />
+		<result property="name" column="name" />
+		<result property="phoneNo" column="phone_no" />
+		<result property="noType" column="no_type" />
+		
+		<result property="recordStatus" column="record_status" />
+		<result property="createdAt" column="created_at" />
+		<result property="createdBy" column="created_by" />
+		<result property="updatedAt" column="updated_at" />
+		<result property="updatedBy" column="updated_by" />
+		
+	</resultMap>
+	
+	<select id="getEmergencyPoliceNumbers" parameterType="String" resultMap="emergencyNumbersModelResultMap">
+	
+		SELECT 
+			emergency_number_id, name, phone_no, no_type, record_status, created_at, created_by, updated_at, updated_by 	
+		FROM 
+			emergency_numbers		
+		WHERE
+			no_type = #{noType} 
+		AND
+	    	record_status = 'A'
+	    
+	    ORDER BY name ASC
+	    
+	</select>
+	
+	<insert id="addEmergencyNumber" parameterType="EmergencyNumbersModel">
+	
+		INSERT INTO 
+			emergency_numbers
+				(
+            		emergency_number_id, name, phone_no, no_type, 
+            		record_status, created_by, created_at, updated_by, updated_at
+            	)
+	   	VALUES 
+				(
+					#{emergencyNumberId}, #{name}, #{phoneNo}, #{noType}, 
+					'A', #{createdBy}, #{createdAt}, #{updatedBy}, #{updatedAt}
+				)
+				
+	</insert>
+	
+	<select id="getEmergencyNumberCountByType" parameterType="String" resultType="int">
+	
+		SELECT 
+			count(*)
+		FROM 
+			emergency_numbers
+		WHERE
+			no_type = #{noType}
+		AND
+			record_status = 'A'
+	
+	</select>
+	
+	<select id="getEmergencyNumberListByTypeForSearch" resultMap="emergencyNumbersModelResultMap">
+	
+		SELECT     
+			emergency_number_id, name, phone_no, no_type, 
+            record_status, created_by, created_at, updated_by, updated_at
+		FROM 
+			emergency_numbers
+ 		WHERE
+ 		 	no_type = #{noType} 
+		AND
+	    	record_status = 'A'
+	    AND
+ 			(
+ 				name iLIKE #{globalSearchString}
+ 				
+ 				OR phone_no iLIKE #{globalSearchString}
+ 				
+ 			) 
+		ORDER BY updated_at DESC
+		LIMIT  #{length}  OFFSET  #{start} 
+		        
+	</select>
+	
+	<select id="getTotalEmergencyNumberListByTypeCountBySearch" resultType="int"> 	
+		
+	   	SELECT     
+			count(*)
+		FROM 
+			emergency_numbers
+ 		WHERE 
+ 			no_type = #{noType} 
+		AND
+	    	record_status = 'A'
+	    AND 
+          	name iLIKE #{globalSearchString}
+        OR
+        	phone_no iLIKE #{globalSearchString}
+        	
+	</select>
+	
+	<update id="deleteEmergencyNumber" parameterType="EmergencyNumbersModel">
+	
+		UPDATE
+			emergency_numbers
+		SET
+			record_status = #{recordStatus},
+			updated_at = #{updatedAt},
+			updated_by = #{updatedBy}
+		WHERE
+			emergency_number_id = #{emergencyNumberId}
+			
+	</update>
+	
+</mapper>

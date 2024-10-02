@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.webapp.daos.UserLoginOtpDao">
+
+	<resultMap id="userLoginOtpMap" type="UserLoginOtpModel" >
+	
+		<result property="userLoginOtpId" column="user_login_otp_id" />
+		<result property="isVerified" column="is_verified" />
+		<result property="userId" column="user_id" />
+		<result property="roleId" column="role_id" />
+		<result property="verificationCode" column="verification_code" />
+		<result property="phoneNo" column="phone_no" />
+		<result property="phoneNoCode" column="phone_no_code" />
+		<result property="createdAt" column="created_at" />
+		<result property="updatedAt" column="updated_at" />
+		<result property="createdBy" column="created_by" />
+		<result property="updatedBy" column="updated_by" />
+		
+	</resultMap>
+
+	<select id="getUserDetailsByOtp" parameterType="String" resultMap="userLoginOtpMap">
+	
+		SELECT 
+			* 
+		FROM 
+			user_login_otp 
+		WHERE 
+			verification_code = #{verificationCode}
+		AND 
+		 	user_id = #{userId}
+			
+	</select>
+	
+	<insert id="addVerificationCode" parameterType="UserLoginOtpModel">
+	
+		INSERT INTO
+			user_login_otp
+				(
+					user_login_otp_id,user_id, verification_code, role_id,is_verified,
+					created_at, created_by, updated_at, updated_by
+				)
+		VALUES
+				(
+					#{userLoginOtpId},#{userId}, #{verificationCode}, #{roleId}, #{isVerified},
+					#{createdAt}, #{createdBy}, #{updatedAt}, #{updatedBy}
+				)
+				
+	</insert>
+	
+	<delete id="deleteVerificationCode" parameterType="String">
+	
+		 DELETE FROM 
+		 	user_login_otp  
+	 	WHERE
+	 		user_id=#{userId}
+	 		
+	</delete>
+	
+	<select id="getVerificationCodeCount" parameterType="String" resultType="int">
+	
+		SELECT 
+			count(user_id)
+		FROM 
+			user_login_otp 
+		WHERE 
+			user_id=#{userId}
+			
+	</select>
+	
+	<select id="getVerificationCodeOfUser" parameterType="String" resultType="String">
+	
+		SELECT 
+			verification_code 
+		FROM 
+			user_login_otp
+		WHERE  
+			user_id = #{userId}
+	
+	</select>
+	
+	<select id="getUserDetails" parameterType="String" resultMap="userLoginOtpMap">
+	
+		SELECT 
+			user_login_otp_id,ulo.user_id,phone_no_code,phone_no
+		FROM 
+			user_login_otp ulo
+		LEFT JOIN
+			user_info ui
+		ON
+			(ulo.user_id = ui.user_id)
+		WHERE 
+		 	user_login_otp_id = #{userLoginOtpId}
+			
+	</select>
+	
+</mapper>

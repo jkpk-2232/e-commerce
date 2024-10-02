@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.webapp.daos.TrackLocationTokenDao">
+
+	<resultMap id="trackLocationTokenResultMap" type="TrackLocationTokenModel" >
+	
+		<result property="trackLocationTokenId" column="track_location_token_id" /> 
+		<result property="userId" column="user_id" />
+		<result property="tourId" column="tour_id" />
+		
+		<result property="recordStatus" column="record_status" />
+		<result property="createdAt" column="created_at" />
+		<result property="createdBy" column="created_by" />
+		<result property="updatedAt" column="updated_at" />
+		<result property="updatedBy" column="updated_by" />
+		
+	</resultMap>
+	
+	<insert id="insertTrackLocationDetails" parameterType="TrackLocationTokenModel" useGeneratedKeys="false">
+	
+		INSERT INTO 
+			track_location_tokens
+				(
+					track_location_token_id, user_id, tour_id, record_status,
+					created_at, created_by, updated_at, updated_by
+				)
+		VALUES
+				(
+					#{trackLocationTokenId}, #{userId}, #{tourId},  #{recordStatus},
+					#{createdAt}, #{createdBy}, #{updatedAt}, #{updatedBy}
+				)
+				
+	</insert>
+	
+	<select id="getTrackLocationTokenDetailsById" parameterType="String" resultMap="trackLocationTokenResultMap">
+	
+		SELECT
+				track_location_token_id, user_id, tour_id, record_status,
+				created_at, created_by, updated_at, updated_by
+		FROM
+			track_location_tokens
+		WHERE
+			track_location_token_id = #{trackLocationTokenId}
+		AND
+			record_status = 'A'
+	
+	</select> 
+	
+</mapper>

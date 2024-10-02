@@ -1,0 +1,229 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.webapp.daos.BrandDao">
+	
+	<resultMap id="BrandResultMap" type="BrandModel">
+	
+		<result property="brandId" column="brand_id" />
+		<result property="brandName" column="brand_name" />
+		<result property="brandDescription" column="brand_description" />
+		<result property="brandImage" column="brand_image" />
+		<result property="isActive" column="is_active" />
+		<result property="isDeleted" column="is_deleted" />
+		
+		<result property="createdBy" column="created_by" />
+		<result property="createdAt" column="created_at" />
+		<result property="updatedBy" column="updated_by" />
+		<result property="updatedAt" column="updated_at" />
+		
+		<result property="vendorName" column="vendorName" />
+		<result property="vendorBrandName" column="vendorBrandName" />
+		
+		<result property="isPublic" column="is_public" />
+	
+	</resultMap>
+	
+	<sql id="BrandColumns">
+		b.brand_id, b.brand_name, b.brand_description, b.brand_image, b.is_active, 
+		b.is_deleted, b.created_by, b.created_at, b.updated_by, b.updated_at, b.is_public
+	</sql>
+	
+	<select id="isBrandNameExists" resultType="boolean">
+		
+		SELECT
+			(count(*)>0)
+		FROM
+			brands b
+		WHERE
+			b.brand_name = #{brandName}
+		<if test="brandId!=null">
+		AND
+			b.brand_id != #{brandId}
+		</if>
+		
+	</select>
+	
+	<insert id="insertBrand" parameterType="BrandModel">
+	
+		INSERT INTO brands
+			(
+				brand_id, brand_name, brand_description, brand_image, is_active, 
+				is_deleted, created_by, created_at, updated_by, updated_at
+			)
+		VALUES 
+			(
+				#{brandId}, #{brandName}, #{brandDescription}, #{brandImage}, #{isActive}, 
+				#{isDeleted}, #{createdBy}, #{createdAt}, #{updatedBy}, #{updatedAt}
+			);
+	
+	</insert>
+	
+	<select id="getBrandDetailsByBrandId" resultMap="BrandResultMap">
+		
+		SELECT
+			<include refid="BrandColumns"></include>
+		FROM
+			brands b
+		WHERE
+			b.brand_id = #{brandId}
+		
+	</select>
+	
+	<update id="updateBrand" parameterType="BrandModel">
+		
+		UPDATE 
+			brands
+		SET 
+			brand_name = #{brandName}, 
+			brand_description = #{brandDescription},
+			brand_image = #{brandImage},
+			updated_by = #{updatedBy}, 
+			updated_at = #{updatedAt}
+		WHERE 
+			brand_id = #{brandId}
+		
+	</update>
+	
+	<select id="getBrandsCount" resultType="int">
+	
+		SELECT
+			count(b.brand_id)
+		FROM
+			brands b
+		WHERE
+			b.created_at &gt;= #{startDatelong}
+		AND
+			b.created_at &lt;= #{endDatelong}
+			
+		<if test="userIdList!=null">
+		AND	
+			b.created_by IN
+				<foreach item="item" index="index" collection="userIdList" open="(" separator="," close=")">
+					#{item}
+				</foreach>	
+		</if>	
+		
+	</select>
+	
+	<select id="getBrandSearch" resultMap="BrandResultMap">
+	
+		SELECT
+			<include refid="BrandColumns"></include>,
+			concat(ui.first_name,' ',ui.last_name) as vendorName,
+			ui.vendor_brand_name as vendorBrandName
+		FROM
+			brands b
+		INNER JOIN users u ON u.user_id = b.created_by
+		INNER JOIN user_info ui ON ui.user_id = b.created_by	
+		WHERE
+			(
+				b.brand_name ilike #{searchKey}
+			OR
+				b.brand_description ilike #{searchKey}
+			)
+		<if test="startDatelong>0">
+		AND
+			b.created_at &gt;= #{startDatelong}
+		AND
+			b.created_at &lt;= #{endDatelong}
+		</if>
+		
+		<if test="userIdList!=null">
+		AND	
+			b.created_by IN
+				<foreach item="item" index="index" collection="userIdList" open="(" separator="," close=")">
+					#{item}
+				</foreach>	
+		</if>
+		
+		<if test="brandStatus!=null">
+		
+			<if test="brandStatus==1">
+				AND
+					b.is_active = true
+				AND
+					b.is_deleted = false
+			</if>
+		
+			<if test="brandStatus==2">
+				AND
+					b.is_active = false
+				AND
+					b.is_deleted = true
+			</if>
+			
+		</if>
+		
+		<if test="approvedBrands!=null">
+			
+			<if test="approvedBrands==-1">
+			OR
+				b.is_public = true
+			</if>		
+		</if>
+		
+		<if test="length>0">
+		ORDER BY b.updated_at DESC
+		LIMIT #{length} OFFSET #{start}
+		</if>
+		
+		<if test="length==0">
+		ORDER BY b.brand_name ASC
+		</if>
+
+	</select>
+	
+	<select id="getBrandSearchCount" resultType="int">
+	
+		SELECT
+			count(b.brand_id)
+		FROM
+			brands b
+		WHERE
+			(
+				b.brand_name ilike #{searchKey}
+			OR
+				b.brand_description ilike #{searchKey}
+			)
+		<if test="startDatelong>0">
+		AND
+			b.created_at &gt;= #{startDatelong}
+		AND
+			b.created_at &lt;= #{endDatelong}
+		</if>
+		
+		<if test="userIdList!=null">
+		AND	
+			b.created_by IN
+				<foreach item="item" index="index" collection="userIdList" open="(" separator="," close=")">
+					#{item}
+				</foreach>	
+		</if>
+	
+	</select>
+	
+	<update id="updateBrandStatus" parameterType="BrandModel">
+	
+		UPDATE 
+			brands
+		SET
+			is_active = #{isActive},
+			is_deleted = #{isDeleted}
+		WHERE
+			brand_id = #{brandId}
+	
+	</update>
+	
+	<update id="updateBrandPublicStatus" parameterType="BrandModel">
+	
+		UPDATE 
+			brands
+		SET
+			is_public = #{isPublic}
+		WHERE
+			brand_id = #{brandId}
+	
+	</update>
+	
+</mapper>

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.webapp.daos.TempAirportRegionDao">
+
+	<resultMap id="tempAirportRegionResultMap" type="TempAirportRegionModel" >
+	
+		<result property="tempAirportRegionId" column="temp_airport_region_id" />
+		<result property="areaPolygon" column="area_polygon" />
+		<result property="regionLatitude" column="region_latitude" />
+		<result property="regionLongitude" column="region_longitude" />
+		
+	</resultMap>
+		
+	<select id="checkMarkerLiesInPolygonRegion" parameterType="map" resultMap="tempAirportRegionResultMap">
+	    
+       	SELECT
+        	temp_airport_region_id
+       	FROM 
+        	temp_airport_regions  
+		WHERE 
+	        ${latAndLong}
+	   			    
+	</select>
+	
+	<insert id="addTempAirportRegion" parameterType="TempAirportRegionModel">
+
+		INSERT INTO temp_airport_regions
+				(
+					temp_airport_region_id,area_polygon,region_latitude,
+				 	region_longitude
+				) 
+	    VALUES 
+				(
+					#{tempAirportRegionId},st_geomfromtext(${areaPolygon}),
+		            #{regionLatitude},#{regionLongitude}
+				)
+	</insert>
+	
+	<update id="deleteTempAirportRegion" parameterType="TempAirportRegionModel">
+	
+		DELETE FROM temp_airport_regions
+		
+	</update>
+	
+</mapper>

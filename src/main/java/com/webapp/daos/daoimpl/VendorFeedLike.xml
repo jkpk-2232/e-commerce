@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.webapp.daos.VendorFeedLikeDao">
+
+	<resultMap id="VendorFeedLikeResultMap" type="VendorFeedLikeModel">
+	
+		<result property="vendorFeedLikeId" column="vendor_feed_like_id" />
+		<result property="vendorFeedId" column="vendor_feed_id" />
+		<result property="vendorId" column="vendor_id" />
+		<result property="userId" column="user_id" />
+		<result property="createdBy" column="created_by" />
+		<result property="createdAt" column="created_at" />
+		<result property="updatedBy" column="updated_by" />
+		<result property="updatedAt" column="updated_at" />
+		
+	</resultMap>
+	
+	<sql id="VendorFeedLikeColumns">
+		vfl.vendor_feed_like_id, vfl.vendor_feed_id, vfl.vendor_id, vfl.user_id, 
+		vfl.created_by, vfl.created_at, vfl.updated_by, vfl.updated_at
+	</sql>
+	
+	<insert id="insertVendorFeedLike" parameterType="VendorFeedModel">
+	
+		INSERT INTO vendor_feed_likes
+			(
+				vendor_feed_like_id, vendor_feed_id, vendor_id, user_id, 
+				created_by, created_at, updated_by, updated_at
+			)
+		VALUES 
+			(
+				#{vendorFeedLikeId}, #{vendorFeedId}, #{vendorId}, #{userId}, 
+				#{createdBy}, #{createdAt}, #{updatedBy}, #{updatedAt}
+			);
+	
+	</insert>
+	
+	<delete id="deleteVendorFeedLikesByVendorFeedId">
+		DELETE FROM vendor_feed_likes WHERE vendor_feed_id = #{vendorFeedId}
+	</delete>
+	
+	<select id="isVendorFeedLikedByUserId" resultType="boolean">
+		
+		SELECT
+			(count(vfl.vendor_feed_like_id)>0)
+		FROM
+			vendor_feed_likes vfl
+		WHERE
+			vfl.vendor_feed_id = #{vendorFeedId}
+		AND
+			vfl.user_id = #{userId}
+		
+	</select>
+	
+	<delete id="deleteVendorFeedLikeByUserId">
+		DELETE FROM vendor_feed_likes WHERE vendor_feed_id = #{vendorFeedId} AND user_id = #{userId}
+	</delete>
+	
+	<select id="getVendorFeedLikesCount" resultType="int">
+		
+		SELECT
+			count(vfl.vendor_feed_like_id)
+		FROM
+			vendor_feed_likes vfl
+		WHERE
+			vfl.vendor_feed_id = #{vendorFeedId}
+		
+	</select>
+	
+</mapper>

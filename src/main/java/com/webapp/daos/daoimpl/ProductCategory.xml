@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.webapp.daos.ProductCategoryDao">
+
+	<resultMap id="ProductCategoryResultMap" type="ProductCategoryModel">
+	
+		<result property="productCategoryId" column="product_category_id" />
+		<result property="productCategoryName" column="product_category_name" />
+		<result property="productCategoryDescription" column="product_category_description" />
+		<result property="isActive" column="is_active" />
+		<result property="isDeleted" column="is_deleted" />
+		<result property="productCategoryImage" column="product_category_image"/>
+		
+		<result property="createdBy" column="created_by" />
+		<result property="createdAt" column="created_at" />
+		<result property="updatedBy" column="updated_by" />
+		<result property="updatedAt" column="updated_at" />
+	
+	</resultMap>
+	
+	<sql id="ProductCategoryColumns">
+		pc.product_category_id, pc.product_category_name, pc.product_category_description, pc.is_active, 
+		pc.is_deleted, pc.created_by, pc.created_at, pc.updated_by, pc.updated_at, pc.product_category_image
+	</sql>
+	
+	<insert id="insertProductCategory" parameterType="ProductCategoryModel">
+	
+		INSERT INTO product_category
+			(
+				product_category_id, product_category_name, product_category_description, is_active, 
+				is_deleted, created_by, created_at, updated_by, updated_at, product_category_image
+			)
+		VALUES 
+			(
+				#{productCategoryId}, #{productCategoryName}, #{productCategoryDescription}, #{isActive}, 
+				#{isDeleted}, #{createdBy}, #{createdAt}, #{updatedBy}, #{updatedAt}, #{productCategoryImage}
+			);
+	
+	</insert>
+	
+	<update id="updateProductCategory" parameterType="ProductCategoryModel">
+		
+		UPDATE 
+			product_category
+		SET 
+			product_category_name = #{productCategoryName}, 
+			product_category_description = #{productCategoryDescription}, 
+			updated_by = #{updatedBy}, 
+			updated_at = #{updatedAt},
+			product_category_image = #{productCategoryImage}
+		WHERE 
+			product_category_id = #{productCategoryId}
+		
+	</update>
+	
+	<select id="getProductCategorySearchCount" resultType="int">
+	
+		SELECT
+			count(pc.product_category_id)
+		FROM
+			product_category pc
+		WHERE
+			(
+				pc.product_category_name ilike #{searchKey}
+			OR
+				pc.product_category_description ilike #{searchKey}
+			)
+		<if test="startDatelong>0">
+		AND
+			pc.created_at &gt;= #{startDatelong}
+		AND
+			pc.created_at &lt;= #{endDatelong}
+		</if>
+	
+	</select>
+	
+	<update id="updateProductCategoryStatus" parameterType="ProductCategoryModel">
+	
+		UPDATE 
+			product_category
+		SET
+			is_active = #{isActive},
+			is_deleted = #{isDeleted}
+		WHERE
+			product_category_id = #{productCategoryId}
+	
+	</update>
+	
+	<select id="getProductCategoryCount" resultType="int">
+	
+		SELECT
+			count(pc.product_category_id)
+		FROM
+			product_category pc
+		WHERE
+			pc.created_at &gt;= #{startDatelong}
+		AND
+			pc.created_at &lt;= #{endDatelong}
+		
+	
+	</select>
+	
+	
+	<select id="getProductCategoryList" resultMap="ProductCategoryResultMap">
+	
+		SELECT
+			<include refid="ProductCategoryColumns"></include>
+		FROM
+			product_category pc
+		
+		WHERE
+			pc.is_active = true
+		AND
+			pc.is_deleted = false
+		
+		ORDER BY pc.product_category_name ASC
+
+	</select>
+	
+	<select id="getProductCategorySearch" resultMap="ProductCategoryResultMap">
+	
+		SELECT
+			<include refid="ProductCategoryColumns"></include>
+		FROM
+			product_category pc
+		WHERE
+			(
+				pc.product_category_name ilike #{searchKey}
+			OR
+				pc.product_category_description ilike #{searchKey}
+			)
+		<if test="startDatelong>0">
+		AND
+			pc.created_at &gt;= #{startDatelong}
+		AND
+			pc.created_at &lt;= #{endDatelong}
+		</if>
+		<!-- AND
+			pc.is_active = true
+		AND
+			pc.is_deleted = false -->
+		<if test="length>0">
+		ORDER BY pc.updated_at DESC
+		LIMIT #{length} OFFSET #{start}
+		</if>
+		<if test="length==0">
+		ORDER BY pc.product_category_name ASC
+		</if>
+
+	</select>
+	
+	<select id="getProductCategoryDetailsByProductCategoryId" resultMap="ProductCategoryResultMap">
+		
+		SELECT
+			<include refid="ProductCategoryColumns"></include>
+		FROM
+			product_category pc
+		WHERE
+			pc.product_category_id = #{productCategoryId}
+		
+	</select>
+	
+	<select id="getProductCategoryDetailsByProductCategoryName" resultMap="ProductCategoryResultMap">
+		
+		SELECT
+			<include refid="ProductCategoryColumns"></include>
+		FROM
+			product_category pc
+		WHERE
+			UPPER(pc.product_category_name) = #{productCategory}
+		
+	</select>
+	
+	<select id="isProductCategoryNameExists" resultType="boolean">
+		
+		SELECT
+			(count(*)>0)
+		FROM
+			product_category pc
+		WHERE
+			pc.product_category_name = #{productCategoryName}
+		<if test="productCategoryId!=null">
+		AND
+			pc.product_category_id != #{productCategoryId}
+		</if>
+		
+	</select>
+	
+	<select id="getProductCategoryListByProductCategoryId" resultMap="ProductCategoryResultMap">
+		
+		SELECT
+			<include refid="ProductCategoryColumns"></include>
+		FROM
+			product_category pc
+		WHERE
+			is_active = true
+		AND
+			is_deleted = false
+		AND	
+			pc.product_category_id IN
+			<foreach collection="productCategoryIdList" item="item" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		
+	</select>
+
+</mapper>

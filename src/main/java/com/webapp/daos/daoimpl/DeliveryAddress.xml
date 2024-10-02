@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.webapp.daos.DeliveryAddressDao">
+
+	<resultMap id="DeliveryAddressResultMap" type="DeliveryAddressModel">
+	
+		<result property="deliveryAddressId" column="delivery_address_id" />
+		<result property="userId" column="user_id" />
+		<result property="addressType" column="address_type" />
+		<result property="address" column="address" />
+		<result property="addressLat" column="address_lat" />
+		<result property="addressLng" column="address_lng" />
+		<result property="placeId" column="place_id" />
+		<result property="addressGeolocation" column="address_geolocation" />
+		<result property="recordStatus" column="record_status" />
+		<result property="createdBy" column="created_by" />
+		<result property="createdAt" column="created_at" />
+		<result property="updatedBy" column="updated_by" />
+		<result property="updatedAt" column="updated_at" />
+		<result property="isDefault" column="is_default" />
+		<result property="name" column="name" />
+		<result property="phoneNum" column="phone_num" />
+		
+	</resultMap>
+	
+	<sql id="DeliveryAddressColumns">
+		da.delivery_address_id, da.user_id, da.address_type, da.address, 
+		da.address_lat, da.address_lng, da.place_id, da.address_geolocation, 
+		da.record_status, da.created_by, da.created_at, da.updated_by, da.updated_at, 
+		da.is_default, da.name, da.phone_num
+	</sql>
+	
+	<insert id="insertDeliveryAddress" parameterType="DeliveryAddressModel">
+	
+		INSERT INTO delivery_addresses
+			(
+				delivery_address_id, user_id, address_type, address, 
+				address_lat, address_lng, place_id, address_geolocation, 
+				record_status, created_by, created_at, updated_by, updated_at, 
+				is_default, name, phone_num
+			)
+		VALUES 
+			(
+				#{deliveryAddressId}, #{userId}, #{addressType}, #{address}, 
+				#{addressLat}, #{addressLng}, #{placeId}, ${addressGeolocation}, 
+				'A', #{createdBy}, #{createdAt}, #{updatedBy}, #{updatedAt}, 
+				#{isDefault}, #{name}, #{phoneNum}
+			);
+	
+	</insert>
+	
+	<update id="updateDeliveryAddress" parameterType="DeliveryAddressModel">
+	
+		UPDATE
+			delivery_addresses
+		SET
+			address_type = #{addressType},
+			address = #{address},
+			address_lat = #{addressLat},
+			address_lng = #{addressLng},
+			place_id = #{placeId},
+			address_geolocation = ${addressGeolocation},
+			updated_by = #{updatedBy},
+			updated_at = #{updatedAt},
+			is_default = #{isDefault},
+			name = #{name},
+			phone_num = #{phoneNum}
+		WHERE
+			delivery_address_id = #{deliveryAddressId}
+	
+	</update>
+	
+	<select id="getDeliveryAddressByAddressTypeAndUserId" resultMap="DeliveryAddressResultMap">
+		
+		SELECT
+			<include refid="DeliveryAddressColumns"></include>
+		FROM
+			delivery_addresses da
+		WHERE
+			da.user_id = #{userId}
+		AND
+			da.record_status = 'A'
+		AND
+			da.address_type = #{addressType}
+		LIMIT 1
+			
+	</select>
+	
+	<select id="getDeliveryAddressList" resultMap="DeliveryAddressResultMap">
+		
+		SELECT
+			<include refid="DeliveryAddressColumns"></include>
+		FROM
+			delivery_addresses da
+		WHERE
+			da.user_id = #{userId}
+		AND
+			da.record_status = 'A'
+		AND
+			(
+				address ilike #{searchKey}
+			)
+		ORDER BY da.updated_at DESC
+		<if test="length>0">
+		LIMIT #{length} OFFSET #{start}
+		</if>
+			
+	</select>
+	
+	<update id="deleteDeliveryAddress" parameterType="DeliveryAddressModel">
+	
+		UPDATE
+			delivery_addresses
+		SET
+			record_status = 'D',
+			updated_by = #{updatedBy},
+			updated_at = #{updatedAt}
+		WHERE
+			delivery_address_id = #{deliveryAddressId}
+	
+	</update>
+	
+	<update id="updateIsDefaultByUserId" parameterType="DeliveryAddressModel">
+	
+		UPDATE
+			delivery_addresses
+		SET
+			updated_by = #{updatedBy},
+			updated_at = #{updatedAt},
+			is_default = #{isDefault}
+		WHERE
+			user_id = #{loggedInuserId}
+	
+	</update>
+	
+</mapper>

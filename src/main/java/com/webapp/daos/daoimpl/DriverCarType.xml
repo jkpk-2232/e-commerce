@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.webapp.daos.DriverCarTypeDao">
+
+	<resultMap id="driverCarTypesResultMap" type="DriverCarTypeModel" >
+	
+		<result property="driverCarTypeId" column="driver_car_type_id" /> 
+		<result property="driverId" column="driver_id" />
+		<result property="carTypeId" column="car_type_id" />
+		
+		<result property="recordStatus" column="record_status" />
+		<result property="createdAt" column="created_at" />
+		<result property="createdBy" column="created_by" />
+		<result property="updatedAt" column="updated_at" />
+		<result property="updatedBy" column="updated_by" />
+		
+	</resultMap>
+	
+	<insert id="insertDriverCarTypesBatch" parameterType="java.util.List">
+	
+		INSERT INTO 
+			driver_car_types 
+		 		(
+					driver_car_type_id, driver_id, car_type_id,
+					record_status, created_at, created_by, updated_at, updated_by
+				)
+		VALUES
+			
+				<foreach collection="driverCarTypeModelList" item="driverCarTypeModel"  separator=",">
+				(
+					#{driverCarTypeModel.driverCarTypeId}, #{driverCarTypeModel.driverId}, #{driverCarTypeModel.carTypeId}, #{driverCarTypeModel.recordStatus}, 
+					#{driverCarTypeModel.createdAt}, #{driverCarTypeModel.createdBy}, #{driverCarTypeModel.updatedAt}, #{driverCarTypeModel.updatedBy}
+				)
+				</foreach>
+	</insert>
+	
+	<select id="getDriverCarTypesListByDriverId" parameterType="map"  resultMap="driverCarTypesResultMap">
+	
+		SELECT 
+			driver_car_type_id, driver_id, car_type_id,
+			record_status, created_at, created_by, updated_at, updated_by	
+			
+		FROM 
+			driver_car_types		
+			
+		WHERE 
+	    	record_status = 'A'
+	    AND
+	    	driver_id = #{driverId}
+	    	
+	</select>
+	
+	<update id="deleteDriverCarTypes" parameterType="DriverCarTypeModel">
+	
+		DELETE FROM 
+				driver_car_types 
+		WHERE 
+			driver_id = #{driverId}
+			
+	</update>
+	
+</mapper>

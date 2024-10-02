@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.webapp.daos.GeoStateDao">
+
+	<resultMap id="geoStateResultMap" type="GeoStateModel" >
+	    
+		<result property="stateId" column="sta_id" />
+		<result property="countryId" column="con_id" />
+		<result property="stateName" column="name" />
+		
+	</resultMap>
+
+	<select id="getAllStatesByCountryId" parameterType="GeoStateModel" resultMap="geoStateResultMap">
+		
+	    SELECT 
+	    	sta_id,con_id, name 
+	    FROM
+	    	geo_states 
+	    WHERE 
+	        con_id=#{countryId}
+	    ORDER BY name    
+	    
+	</select>
+	
+	<select id="getStateNameByStateId" parameterType="long" resultType="String">
+	
+	    SELECT 
+	    	name
+	    FROM
+	    	geo_states 
+	    WHERE sta_id = #{stateId}
+	    
+	</select>
+	
+</mapper> 
